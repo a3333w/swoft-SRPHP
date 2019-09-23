@@ -4,8 +4,10 @@
 兼容普通用户及管理员用户的验证及模块权限区分。
 （将不定期更新）。
 
+
 author:刘乔木 
 email:329593870@qq.com
+For you with stars in your eyes。Every spring, summer, autumn and winter。
 
 更新日志：
 10月7日支持swoft2.0.6
