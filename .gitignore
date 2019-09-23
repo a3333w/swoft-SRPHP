@@ -1,0 +1,16 @@
+.gitignore
+
+.env
+.phpstorm.meta.php
+Dockerfile
+bin/
+composer.json
+composer.lock
+config/
+lanka/
+public/
+resource/
+runtime/
+swoftcli.phar
+test/
+vendor/

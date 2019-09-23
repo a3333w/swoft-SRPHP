@@ -1,0 +1,34 @@
+<?php declare(strict_types=1);
+
+
+namespace {= namespace};
+
+
+use Swoft\Db\Annotation\Mapping\Migration;
+use Swoft\Db\Contract\MigrationInterface;
+
+/**
+ * Class {= name}
+ *
+ * @since 2.0
+ *
+ * @Migration(time={= time})
+ */
+class {= name} implements MigrationInterface
+{
+    /**
+     * @return bool
+     */
+    public function up(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function down(): bool
+    {
+        return true;
+    }
+}
