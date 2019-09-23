@@ -11,9 +11,9 @@ email:329593870@qq.com
 10月7日将取消包启动改为项目启动（php swoftcli.phar run -c http:start 将改为 swoft http:start）
 
 配置SRPHP
-1、将bean.php中DB1,DB2账号密码变为自己的。
-2、将app\InstallDb中数据库文件数据入库。
-3、请将首页地址指向xadmin目录。
-4、配置好后输入php swoftcli.phar run -c http:start。
+1、将bean.php中DB1,DB2账号密码变为自己的 
+2、将app\InstallDb中数据库文件数据入库 
+3、请将首页地址指向xadmin目录 
+4、配置好后输入php swoftcli.phar run -c http:start 
 
 演示地址：http://swoft.lkvip.com/admin/  admin admin
