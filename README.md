@@ -11,7 +11,7 @@ For you with stars in your eyes。Every spring, summer, autumn and winter。
 
 更新日志：
 10月7日支持swoft2.0.6
-10月7日支持一键安装模块
+10月7日支持一键安装
 10月7日将取消包启动改为项目启动（php swoftcli.phar run -c http:start 将改为 swoft http:start）
 
 配置SRPHP
