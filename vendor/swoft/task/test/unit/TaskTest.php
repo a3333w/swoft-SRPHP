@@ -14,10 +14,7 @@ use Swoft\Task\Exception\TaskException;
 class TaskTest extends TestCase
 {
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Task\Exception\TaskException
-     *
+     * @throws TaskException
      * @expectedException \Swoft\Task\Exception\TaskException
      */
     public function testCo()
@@ -26,9 +23,7 @@ class TaskTest extends TestCase
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Task\Exception\TaskException
+     * @throws TaskException
      */
     public function testCo2()
     {
@@ -41,9 +36,7 @@ class TaskTest extends TestCase
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Task\Exception\TaskException
+     * @throws TaskException
      */
     public function testCo3()
     {
@@ -67,9 +60,7 @@ class TaskTest extends TestCase
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Task\Exception\TaskException
+     * @throws TaskException
      * @expectedException \Swoft\Task\Exception\TaskException
      */
     public function testCo6()
@@ -78,9 +69,6 @@ class TaskTest extends TestCase
     }
 
     /**
-     * @throws TaskException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function testAsync()
     {
@@ -90,8 +78,6 @@ class TaskTest extends TestCase
 
     /**
      * @throws TaskException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function testContext()
     {
@@ -113,8 +99,6 @@ class TaskTest extends TestCase
 
     /**
      * @throws TaskException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function testNotMapping()
     {
@@ -124,12 +108,28 @@ class TaskTest extends TestCase
 
     /**
      * @throws TaskException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function testBooReturn()
     {
         $result = $this->mockTaskServer->co('demoTestTask', 'booReturn', []);
         $this->assertTrue($result);
+    }
+
+    /**
+     * @throws TaskException
+     */
+    public function testNullReturn()
+    {
+        $result = $this->mockTaskServer->co('demoTestTask', 'nullReturn', []);
+        $this->assertNull($result);
+    }
+
+    /**
+     * @throws TaskException
+     */
+    public function testVoidReturn()
+    {
+        $result = $this->mockTaskServer->co('demoTestTask', 'voidReturn2', []);
+        $this->assertNull($result);
     }
 }

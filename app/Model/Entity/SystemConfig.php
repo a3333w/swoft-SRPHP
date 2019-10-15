@@ -108,14 +108,6 @@ class SystemConfig extends Model
     private $sort;
 
     /**
-     * 状态
-     *
-     * @Column()
-     * @var int
-     */
-    private $status;
-
-    /**
      * 创建时间
      *
      * @Column(name="created_at", prop="createdAt")
@@ -262,17 +254,6 @@ class SystemConfig extends Model
     }
 
     /**
-     * @param int $status
-     * @return self
-     */
-    public function setStatus(int $status): self
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    /**
      * @param string $createdAt
      * @return self
      */
@@ -391,14 +372,6 @@ class SystemConfig extends Model
     public function getSort(): int
     {
         return $this->sort;
-    }
-
-    /**
-     * @return int
-     */
-    public function getStatus(): int
-    {
-        return $this->status;
     }
 
     /**

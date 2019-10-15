@@ -18,17 +18,26 @@
     },
     "require-dev": {
         "doctrine/cache": "1.*",
-        "phpunit/phpunit": "^6.4"
+        "phpunit/phpunit": "^7.5"
+    },
+    "config": {
+        "sort-packages": true
     },
     "autoload": {
         "psr-4": { "Doctrine\\Common\\Annotations\\": "lib/Doctrine/Common/Annotations" }
     },
     "autoload-dev": {
-        "psr-4": { "Doctrine\\Tests\\Common\\Annotations\\": "tests/Doctrine/Tests/Common/Annotations" }
+        "psr-4": {
+            "Doctrine\\Performance\\Common\\Annotations\\": "tests/Doctrine/Performance/Common/Annotations",
+            "Doctrine\\Tests\\Common\\Annotations\\": "tests/Doctrine/Tests/Common/Annotations"
+        },
+        "files": [
+            "tests/Doctrine/Tests/Common/Annotations/Fixtures/SingleClassLOC1000.php"
+        ]
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.6.x-dev"
+            "dev-master": "1.7.x-dev"
         }
     }
 }

@@ -9,7 +9,6 @@ use Swoft\Aop\Concern\AopTrait;
 use Swoft\Aop\Point\JoinPoint;
 use Swoft\Aop\Point\ProceedingJoinPoint;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Reflections;
 use Throwable;
 use function array_shift;
@@ -30,6 +29,11 @@ class AspectHandler
     private $target;
 
     /**
+     * @var string
+     */
+    private $className = '';
+
+    /**
      * Method name
      *
      * @var string
@@ -42,6 +46,11 @@ class AspectHandler
      * @var array
      */
     private $args = [];
+
+    /**
+     * @var array
+     */
+    private $argsMap = [];
 
     /**
      * All aspect to do
@@ -67,7 +76,6 @@ class AspectHandler
      *
      * @return mixed
      * @throws ReflectionException
-     * @throws ContainerException
      * @throws Throwable
      */
     public function invokeAspect()
@@ -180,15 +188,30 @@ class AspectHandler
     }
 
     /**
+     * @param string $className
+     */
+    public function setClassName(string $className): void
+    {
+        $this->className = $className;
+    }
+
+    /**
+     * @param array $argsMap
+     */
+    public function setArgsMap(array $argsMap): void
+    {
+        $this->argsMap = $argsMap;
+    }
+
+    /**
      * Invoke advice
      *
-     * @param array      $aspectAry
+     * @param array     $aspectAry
      * @param Throwable $catch
-     * @param mixed      $return
+     * @param mixed     $return
      *
      * @return mixed
      * @throws ReflectionException
-     * @throws ContainerException
      */
     private function invokeAdvice(array $aspectAry, Throwable $catch = null, $return = null)
     {
@@ -236,42 +259,44 @@ class AspectHandler
      * New proceeding join point
      *
      * @param Throwable|null $catch
-     * @param mixed           $return
+     * @param mixed          $return
      *
      * @return ProceedingJoinPoint
      */
     private function getProceedingJoinPoint(Throwable $catch = null, $return = null): ProceedingJoinPoint
     {
-        $proceedingJoinPoint = new ProceedingJoinPoint($this->target, $this->methodName, $this->args);
-        $proceedingJoinPoint->setHandler($this);
+        $pgp = new ProceedingJoinPoint($this->className, $this->target, $this->methodName, $this->args, $this->argsMap);
+        $pgp->setHandler($this);
 
         if ($catch) {
-            $proceedingJoinPoint->setCatch($catch);
+            $pgp->setCatch($catch);
         }
 
-        if ($return) {
-            $proceedingJoinPoint->setReturn($return);
+        // Must use all equal to fixed `0` bug
+        if ($return !== null) {
+            $pgp->setReturn($return);
         }
 
-        return $proceedingJoinPoint;
+        return $pgp;
     }
 
     /**
      * New join point
      *
      * @param Throwable|null $catch
-     * @param mixed           $return
+     * @param mixed          $return
      *
      * @return JoinPoint
      */
     private function getJoinPoint(Throwable $catch = null, $return = null): JoinPoint
     {
-        $joinPoint = new JoinPoint($this->target, $this->methodName, $this->args);
+        $joinPoint = new JoinPoint($this->className, $this->target, $this->methodName, $this->args, $this->argsMap);
         if ($catch) {
             $joinPoint->setCatch($catch);
         }
 
-        if ($return) {
+        // Must use all equal to fixed `0` bug
+        if ($return !== null) {
             $joinPoint->setReturn($return);
         }
 

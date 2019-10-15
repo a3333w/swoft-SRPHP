@@ -1,37 +1,67 @@
-# swoole-ide-helper
+# Swoole IDE Helper
 
-add ide-helper for **swoole**, forked from [swoole/ide-helper](https://github.com/swoole/ide-helper)
+[![Latest Stable Version](http://img.shields.io/packagist/v/swoft/swoole-ide-helper.svg)](https://packagist.org/packages/swoft/swoole-ide-helper)
+[![Packagist](https://img.shields.io/packagist/dt/swoft/swoole-ide-helper)](https://packagist.org/packages/swoft/swoole-ide-helper)
+[![License](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)](https://github.com/swoft-cloud/swoole-ide-helper/blob/master/LICENSE)
 
-## Usage
+Add IDE helper for the **swoole** extension, forked from [swoole/ide-helper](https://github.com/swoole/ide-helper)
 
-the [swoft](https://github.com/swoft-cloud/swoft) use it as default.
+> `swoft/swoole-ide-helper` keep the same version of **swoole**
 
-you can add it by `composer`:
+## Diff With swoole/ide-helper
 
-```bash
-composer require swoft/swoole-ide-helper
+Different from the source repository: variable types are added to most method parameters for easy reference. 
+
+Old：
+
+```php
+/**
+ * @param $fd
+ * @param $data
+ * @param $opcode
+ * @param $finish
+ * @return mixed
+ */
+public function push($fd, $data, $opcode = null, $finish = null){}
 ```
 
-`swoft/swoole-ide-helper` keep the same version of **swoole**
+**Now**:
 
-## Generate
+```php
+/**
+ * @param int $fd
+ * @param mixed $data
+ * @param int $opcode
+ * @param bool $finish
+ * @return mixed
+ */
+public function push(int $fd, $data, int $opcode = null, bool $finish = null){}
+```
+
+## Install
+
+The [Swoft](https://github.com/swoft-cloud/swoft) use it as default.
+
+You can add it by `composer`:
+
+```bash
+composer require --dev swoft/swoole-ide-helper
+
+# use latest code
+composer require --dev swoft/swoole-ide-helper@dev-master
+
+# for specific version
+composer require --dev swoft/swoole-ide-helper:~4.4.2
+```
+
+## Build
+
+You can regenerate it locally. Of course, you must ensure that the `swoole` extension is already installed.
 
 ```bash
 php dump.php
 ```
 
-## Diff With swoole/ide-helper
+## LICENSE
 
-跟源仓库稍微不同的是：给大部分方法参数添加了变量类型。
-
-eg, old：
-
-```php
-public function send($fd, $send_data, $reactor_id=null){}
-```
-
-now:
-
-```php
-public function send(int $fd, string $send_data, int $reactor_id=null){}
-```
+See [LICENSE](LICENSE)

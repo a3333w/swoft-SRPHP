@@ -3,12 +3,10 @@
 
 namespace Swoft\Db\Connection;
 
-use ReflectionException;
 use RuntimeException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
-use Swoft\Concern\DataPropertyTrait;
+use Swoft\Concern\ArrayPropertyTrait;
 use Swoft\Connection\Pool\Contract\ConnectionInterface as BaseConnection;
 
 /**
@@ -61,7 +59,7 @@ class ConnectionManager
      *   ],
      * ]
      */
-    use DataPropertyTrait;
+    use ArrayPropertyTrait;
 
 
     /**
@@ -197,9 +195,6 @@ class ConnectionManager
      * release
      *
      * @param bool $final
-     *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function release(bool $final = false): void
     {
@@ -215,6 +210,7 @@ class ConnectionManager
         $tsKey  = sprintf('%d.transaction.%d', Co::tid(), Co::id());
 
         $ordConnections = $this->get($ordKey, []);
+
         foreach ($ordConnections as $poolName => $ordPoolConnection) {
             foreach ($ordPoolConnection as $ordConId => $ordConnection) {
                 if (!$ordConnection instanceof Connection) {

@@ -1,7 +1,14 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace App\Exception\Handler;
-
 
 use App\Exception\ApiException;
 use Swoft\Error\Annotation\Mapping\ExceptionHandler;
@@ -18,10 +25,9 @@ use Throwable;
  */
 class ApiExceptionHandler extends AbstractHttpErrorHandler
 {
-
     /**
      * @param Throwable $except
-     * @param Response $response
+     * @param Response  $response
      *
      * @return Response
      */
@@ -33,6 +39,7 @@ class ApiExceptionHandler extends AbstractHttpErrorHandler
             'file'  => sprintf('At %s line %d', $except->getFile(), $except->getLine()),
             'trace' => $except->getTraceAsString(),
         ];
-       return $response->withData($data);
+
+        return $response->withData($data);
     }
 }

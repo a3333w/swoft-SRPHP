@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace App\WebSocket;
 
@@ -6,7 +14,7 @@ use App\WebSocket\Chat\HomeController;
 use Swoft\Http\Message\Request;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnOpen;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
-use Swoft\WebSocket\Server\MessageParser\TokenTextParser;
+use Swoft\WebSocket\Server\MessageParser\JsonParser;
 use function server;
 
 /**
@@ -14,7 +22,7 @@ use function server;
  *
  * @WsModule(
  *     "/chat",
- *     messageParser=TokenTextParser::class,
+ *     messageParser=JsonParser::class,
  *     controllers={HomeController::class}
  * )
  */

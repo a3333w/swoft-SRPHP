@@ -1,8 +1,14 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace App\Rpc\Service;
-
 
 use App\Rpc\Lib\UserInterface;
 use Exception;
@@ -27,7 +33,7 @@ class UserService implements UserInterface
      */
     public function getList(int $id, $type, int $count = 10): array
     {
-        return ['name' => ['listssee']];
+        return ['name' => ['list']];
     }
 
     /**
@@ -38,6 +44,14 @@ class UserService implements UserInterface
     public function delete(int $id): bool
     {
         return false;
+    }
+
+    /**
+     * @return void
+     */
+    public function returnNull(): void
+    {
+        return;
     }
 
     /**
@@ -56,5 +70,15 @@ class UserService implements UserInterface
     public function exception(): void
     {
         throw new Exception('exception version');
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return int
+     */
+    public function sendBigContent(string $content): int
+    {
+        return strlen($content);
     }
 }

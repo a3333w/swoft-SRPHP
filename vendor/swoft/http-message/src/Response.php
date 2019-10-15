@@ -3,10 +3,8 @@
 namespace Swoft\Http\Message;
 
 use InvalidArgumentException;
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
+use Swoft\Bean\BeanFactory;
 use Swoft\Http\Message\Concern\CookiesTrait;
 use Swoft\Http\Message\Concern\MessageTrait;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
@@ -25,7 +23,14 @@ use function in_array;
  */
 class Response implements ResponseInterface
 {
-    use CookiesTrait, MessageTrait, PrototypeTrait;
+    use CookiesTrait, MessageTrait;
+
+    /**
+     * Mark response has been sent. deny repeat send
+     *
+     * @var bool
+     */
+    private $sent = false;
 
     /**
      * @var string
@@ -104,15 +109,14 @@ class Response implements ResponseInterface
      * @param CoResponse $coResponse
      *
      * @return Response
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(CoResponse $coResponse): self
     {
-        $self = self::__instance();
+        /** @var Response $self */
+        $self = BeanFactory::getBean('httpResponse');
 
         // $self = \bean('httpResponse');
-        /** @var Response $self */
+        $self->sent       = false;
         $self->coResponse = $coResponse;
 
         return $self;
@@ -152,14 +156,14 @@ class Response implements ResponseInterface
 
     /**
      * Send response
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function send(): void
     {
         // Is send file
         if ($this->filePath) {
+            $this->sent = true;
+
+            // Do send file
             $this->coResponse->header(ContentType::KEY, $this->fileType);
             $this->coResponse->sendfile($this->filePath);
             return;
@@ -173,9 +177,6 @@ class Response implements ResponseInterface
      * Quick send response
      *
      * @param self|null $response
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function quickSend(Response $response = null): void
     {
@@ -206,6 +207,9 @@ class Response implements ResponseInterface
         // Set body
         $content = $response->getBody()->getContents();
         $coResponse->end($content);
+
+        // Ensure sent
+        $this->sent = true;
     }
 
     /**
@@ -234,8 +238,6 @@ class Response implements ResponseInterface
      * @param $content
      *
      * @return static
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function withContent($content): Response
     {
@@ -574,5 +576,13 @@ class Response implements ResponseInterface
     public function isServerError(): bool
     {
         return $this->getStatusCode() >= 500 && $this->getStatusCode() < 600;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSent(): bool
+    {
+        return $this->sent;
     }
 }

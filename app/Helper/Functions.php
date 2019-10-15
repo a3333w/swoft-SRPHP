@@ -1,7 +1,17 @@
 <?php
 /**
- * Custom global functions
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
+function user_func(): string
+{
+    return 'hello';
+}
 
 if (!function_exists('generateOrderSn')) {
     /**
@@ -94,13 +104,13 @@ if(!function_exists('exArray')){
      * Time: 14:36
      */
     function exArray($str) {
-            $arr = explode("\n",$str);
-            $options = [];
-            foreach ($arr as $value){
-                $option = explode('-',$value);
-                $options[$option[0]] = $option[1];
-            }
-            return $options;
+        $arr = explode("\n",$str);
+        $options = [];
+        foreach ($arr as $value){
+            $option = explode('-',$value);
+            $options[$option[0]] = $option[1];
+        }
+        return $options;
     }
 }
 
@@ -114,15 +124,15 @@ if(!function_exists('menuList')){
      */
     function menuList($arr) {
         foreach ($arr as $key => $value) {
-           $data = \Swoft\Db\DB::table('system_menu')
+            $data = \Swoft\Db\DB::table('system_menu')
                 ->where('pid',$value['id'])
                 ->get();
-           $data = \Swoft\Stdlib\Helper\ArrayHelper::toArray($data);
-           if(!empty($data)){
-               $arr[$key]['children'] = menuList($data);
-           }else{
-               $arr[$key]['children'] = [];
-           }
+            $data = \Swoft\Stdlib\Helper\ArrayHelper::toArray($data);
+            if(!empty($data)){
+                $arr[$key]['children'] = menuList($data);
+            }else{
+                $arr[$key]['children'] = [];
+            }
         }
         return $arr;
     }
@@ -249,23 +259,18 @@ if(!function_exists('checkUri')){
     }
 }
 
-if(!function_exists('object_array')){
+if(!function_exists('object_array')) {
 
-    function object_array($array) {
-        if(is_object($array)) {
+    function object_array($array)
+    {
+        if (is_object($array)) {
             $array = (array)$array;
-        } if(is_array($array)) {
-            foreach($array as $key=>$value) {
+        }
+        if (is_array($array)) {
+            foreach ($array as $key => $value) {
                 $array[$key] = object_array($value);
             }
         }
         return $array;
     }
-
-
 }
-
-
-
-
-

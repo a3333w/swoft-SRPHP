@@ -6,9 +6,7 @@ namespace Swoft\Db;
 use function bean;
 use Closure;
 use Generator;
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\Exception\ConnectionPoolException;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Connection\ConnectionManager;
@@ -24,7 +22,6 @@ use Throwable;
  * @see   Connection
  * @since 2.0
  *
- * @method static Expression raw($value)
  * @method static mixed selectOne(string $query, $bindings = [], $useReadPdo = true)
  * @method static array select(string $query, array $bindings = [], bool $useReadPdo = true)
  * @method static Generator cursor(string $query, array $bindings = [], bool $useReadPdo = true)
@@ -48,7 +45,6 @@ class DB
      * @var array
      */
     private static $passthru = [
-        'raw',
         'selectOne',
         'select',
         'cursor',
@@ -92,9 +88,7 @@ class DB
      * @param string $table
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public static function table(string $table): Builder
     {
@@ -105,9 +99,7 @@ class DB
      * @param string $name
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public static function query(string $name = Pool::DEFAULT_POOL): Builder
     {
@@ -134,14 +126,25 @@ class DB
     }
 
     /**
+     * Get a new raw query expression.
+     *
+     * @param $value
+     *
+     * @return Expression
+     */
+    public static function raw($value): Expression
+    {
+        return Expression::new($value);
+    }
+
+    /**
      * Get connection from pool
      *
      * @param string $name
      *
      * @return Connection
-     * @throws ContainerException
      * @throws ConnectionPoolException
-     * @throws Throwable
+     * @throws DbException
      */
     private static function getConnectionFromPool(string $name): Connection
     {

@@ -12,6 +12,7 @@
     <script src="./lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/xadmin.js"></script>
     <script src="./js/global.js"></script>
+    <script src="./js/config.js"></script>
 
 </head>
 
@@ -71,7 +72,7 @@
             })();
 
             //获取分组title
-            request.ajax('http://swoft.lkvip.com:8306/admin/system/config/getconfigtitle', 'get', 'json', {
+            request.ajax(requestUri+'/admin/system/config/getconfigtitle', 'get', 'json', {
                 'token': adminToken
             }, function (req) {
                 if(req.code == 1000){
@@ -84,7 +85,7 @@
             });
 
             //获取分组title
-            request.ajax('http://swoft.lkvip.com:8306/admin/system/config/getlist', 'get', 'json', {
+            request.ajax(requestUri+'/admin/system/config/getlist', 'get', 'json', {
                 'token': adminToken,
                 'group':$_GET['group']
             }, function (req) {
@@ -156,7 +157,7 @@
             form.on('submit(add)',
                 function(data) {
                     //发异步，把数据提交给php，提交修改
-                    request.ajax('http://swoft.lkvip.com:8306/admin/system/config/systemconfigedit', 'get', 'json', {
+                    request.ajax(requestUri+'/admin/system/config/systemconfigedit', 'get', 'json', {
                         'token': adminToken,
                         'input':data.field
                     }, function (req) {
@@ -173,7 +174,7 @@
 
     //跳转配置list页面
     function configHref (e) {
-        window.location.href='http://swoft.lkvip.com/admin/system.html?group='+e;
+        window.location.href=requesturi+'/admin/system.html?group='+e;
     }
 
     function foo(str){

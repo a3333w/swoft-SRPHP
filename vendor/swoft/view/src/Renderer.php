@@ -2,12 +2,21 @@
 
 namespace Swoft\View;
 
-use function in_array;
-use function rtrim;
+use RuntimeException;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Stdlib\Helper\FileHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\View\Contract\ViewInterface;
+use Throwable;
+use function array_merge;
+use function extract;
+use function in_array;
+use function ob_end_clean;
+use function ob_get_clean;
+use function ob_start;
+use function rtrim;
+use function str_replace;
 
 /**
  * Class Renderer - PHP view scripts renderer
@@ -68,7 +77,7 @@ class Renderer implements ViewInterface
      * @param array             $data   extract data to view, cannot contain view as a key
      * @param string|null|false $layout Override default layout file
      * @return string
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function render(string $view, array $data = [], $layout = null): string
     {
@@ -86,7 +95,7 @@ class Renderer implements ViewInterface
      * @param string $view
      * @param array  $data
      * @return string
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function renderPartial(string $view, array $data = []): string
     {
@@ -98,7 +107,7 @@ class Renderer implements ViewInterface
      * @param array       $data
      * @param string|null $layout override default layout file
      * @return string
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function renderBody(string $content, array $data = [], $layout = null): string
     {
@@ -110,15 +119,15 @@ class Renderer implements ViewInterface
      * @param array       $data
      * @param string|null $layout override default layout file
      * @return string
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function renderContent(string $content, array $data = [], $layout = null): string
     {
         // Render layout
         if ($layout = $layout ?: $this->layout) {
-            $mark    = $this->placeholder;
-            $main    = $this->fetch($layout, $data);
-            $content = \preg_replace("/$mark/", $content, $main, 1);
+            $main = $this->fetch($layout, $data);
+
+            $content = str_replace($this->placeholder, $content, $main);
         }
 
         return $content;
@@ -129,7 +138,7 @@ class Renderer implements ViewInterface
      * @param array  $data
      * @param bool   $outputIt
      * @return string
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function include(string $view, array $data = [], $outputIt = true): string
     {
@@ -148,14 +157,14 @@ class Renderer implements ViewInterface
      * @param string $view
      * @param array  $data
      * @return mixed
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function fetch(string $view, array $data = [])
     {
         $file = $this->getViewFile($view);
 
         if (!is_file($file)) {
-            throw new \RuntimeException("cannot render '$view' because the view file does not exist. File: $file");
+            throw new RuntimeException("cannot render '$view' because the view file does not exist. File: $file");
         }
 
         /*
@@ -167,14 +176,14 @@ class Renderer implements ViewInterface
             }
         }
         */
-        $data = \array_merge($this->attributes, $data);
+        $data = array_merge($this->attributes, $data);
 
         try {
-            \ob_start();
+            ob_start();
             $this->protectedIncludeScope($file, $data);
-            $output = \ob_get_clean();
-        } catch (\Throwable $e) { // PHP 7+
-            \ob_end_clean();
+            $output = ob_get_clean();
+        } catch (Throwable $e) { // PHP 7+
+            ob_end_clean();
             throw $e;
         }
 
@@ -198,7 +207,7 @@ class Renderer implements ViewInterface
      */
     protected function protectedIncludeScope($file, array $data): void
     {
-        \extract($data, EXTR_OVERWRITE);
+        extract($data, EXTR_OVERWRITE);
         include $file;
     }
 
@@ -255,7 +264,7 @@ class Renderer implements ViewInterface
      */
     public function getViewsPath(): string
     {
-        return $this->viewsPath ? \Swoft::getAlias($this->viewsPath) : '';
+        return $this->viewsPath ? Swoft::getAlias($this->viewsPath) : '';
     }
 
     /**

@@ -1,24 +1,29 @@
-<?php
+<?php declare(strict_types=1);
+/**
+ *
+ */
 
 namespace App\Http\Middleware;
 
-use Co\Http\Client\Exception;
 use Firebase\JWT\JWT;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\BeanFactory;
-use Swoft\Config\Config;
-use Swoft\Context\Context;
-use Swoft\Http\Message\Response;
+use Swoft\Exception\SwoftException;
+use Swoft\Http\Message\Request;
 use Swoft\Http\Server\Contract\MiddlewareInterface;
+use function context;
+use Swoole\Exception;
 
 /**
+ * Class FavIconMiddleware
+ *
  * @Bean()
  */
-class   AuthMiddleware implements MiddlewareInterface
+class AuthMiddleware implements MiddlewareInterface
 {
+    /**
     /**
      * Process an incoming server request and return a response, optionally delegating
      * response creation to a handler.
@@ -61,27 +66,24 @@ class   AuthMiddleware implements MiddlewareInterface
         (  $grepAdministration   || ( $userTokenBoll || $grepUser )) ? $bool = 1 : $bool = 0;
         $token = getToken($request);
         if($bool){
-                try {
-                    $auth = JWT::decode($token, \config('jwt.publicKey'), ['type' => \config('jwt.type')]);
-                    //角色和uri不匹配的情况抛出错误
-                    if(
+            try {
+                $auth = JWT::decode($token, \config('jwt.publicKey'), ['type' => \config('jwt.type')]);
+                //角色和uri不匹配的情况抛出错误
+                if(
                     ( ( $userTokenBoll || $grepUser ) && (\config('jwt.userRole') !=$auth->data->role) ) ||
                     ( $grepAdministration && (\config('jwt.systemUserRole') != $auth->data->role) )
-                    ){
-                        throw new Exception('角色不匹配');
-                    }
-                } catch (\Exception $e) {
-                    $json = ['code'=>0,'msg'=>'授权失败'];
-                    $response = Context::mustGet()->getResponse();
-                    return $response->withData($json);
+                ){
+                    throw new Exception('角色不匹配');
                 }
+            } catch (\Exception $e) {
+                $json = ['code'=>0,'msg'=>'授权失败'];
+                $response = context()->getResponse();
+                return $response->withData($json);
+            }
         }
 
         $response = $handler->handle($request);
         return $response;
+
     }
-
-
-
-
 }

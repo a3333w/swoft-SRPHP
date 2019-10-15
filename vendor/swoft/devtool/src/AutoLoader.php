@@ -2,12 +2,16 @@
 
 namespace Swoft\Devtool;
 
+use Swoft;
 use Swoft\Helper\ComposerJSON;
 use Swoft\SwoftComponent;
+use function dirname;
+use function env;
 
 /**
  * Class AutoLoader
- * @since 2.0
+ *
+ * @since   2.0
  * @package Swoft\Devtool
  */
 class AutoLoader extends SwoftComponent
@@ -19,7 +23,7 @@ class AutoLoader extends SwoftComponent
     {
         parent::__construct();
 
-        \Swoft::setAlias('@devtool', \dirname(__DIR__, 2));
+        Swoft::setAlias('@devtool', dirname(__DIR__, 2));
     }
 
     /**
@@ -29,7 +33,7 @@ class AutoLoader extends SwoftComponent
      */
     public function enable(): bool
     {
-        return (int)\env('SWOFT_DEBUG', 0) > 0;
+        return (int)env('ENABLE_DEVTOOL', 0) > 0;
     }
 
     /**
@@ -58,20 +62,12 @@ class AutoLoader extends SwoftComponent
     /**
      * Metadata information for the component.
      *
-     * Quick config:
-     *
-     * ```php
-     * $jsonFile = \dirname(__DIR__) . '/composer.json';
-     *
-     * return ComposerJSON::open($jsonFile)->getMetadata();
-     * ```
-     *
      * @return array
      * @see ComponentInterface::getMetadata()
      */
     public function metadata(): array
     {
-        $jsonFile = \dirname(__DIR__) . '/composer.json';
+        $jsonFile = dirname(__DIR__) . '/composer.json';
 
         return ComposerJSON::open($jsonFile)->getMetadata();
     }

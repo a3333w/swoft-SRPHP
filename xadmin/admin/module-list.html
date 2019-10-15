@@ -12,6 +12,7 @@
     <script src="./lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/xadmin.js"></script>
     <script src="./js/global.js"></script>
+    <script src="./js/config.js"></script>
 </head>
 
 <body>
@@ -75,7 +76,7 @@
         var laypage = layui.laypage;
         var adminToken = localStorage.getItem("adminToken");
 
-        request.ajax('http://swoft.lkvip.com:8306/admin/system/module/getlist', 'get', 'json', {
+        request.ajax(requestUri+'/admin/system/module/getlist', 'get', 'json', {
             'token': adminToken,
             'limit' : 10,
             'curr': 1
@@ -123,7 +124,7 @@
 
                     //首次不执行
                     if(!first){
-                        request.ajax('http://swoft.lkvip.com:8306/admin/system/module/getlist', 'get', 'json', {
+                        request.ajax(requestUri+'/admin/system/module/getlist', 'get', 'json', {
                             'token': adminToken,
                             'curr':obj.curr,
                             'limit':obj.limit
@@ -185,7 +186,7 @@ function member_del(obj, id) {
                     var request = layui.request;
                     var adminToken = localStorage.getItem("adminToken");
                     //发异步删除数据
-                    request.ajax('http://swoft.lkvip.com:8306/admin/system/module/deletemodule', 'get', 'json', {
+                    request.ajax(requestUri+'/admin/system/module/deletemodule', 'get', 'json', {
                         'token': adminToken,
                         'id': id
                     }, function (req) {

@@ -1,25 +1,5 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : 蓝卡线上
- Source Server Type    : MySQL
- Source Server Version : 50616
- Source Host           : rm-2zeo1o8454uv23zjb.mysql.rds.aliyuncs.com:3306
- Source Schema         : swofttext
-
- Target Server Type    : MySQL
- Target Server Version : 50616
- File Encoding         : 65001
-
- Date: 23/09/2019 20:10:46
-*/
-
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
--- Table structure for users
--- ----------------------------
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users`  (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
@@ -33,10 +13,5 @@ CREATE TABLE `users`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`username`) USING BTREE COMMENT '账号唯一索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
-
--- ----------------------------
--- Records of users
--- ----------------------------
 INSERT INTO `users` VALUES (1, '小张', 'xiaozhang', '92eb5ffee6ae2fec3ad71c777531578f', 0, '2019-09-16 10:09:54', '0000-00-00 00:00:00', NULL);
-
 SET FOREIGN_KEY_CHECKS = 1;

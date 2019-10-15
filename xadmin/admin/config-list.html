@@ -11,6 +11,7 @@
     <script src="./lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/xadmin.js"></script>
     <script src="./js/global.js"></script>
+    <script src="./js/config.js"></script>
 </head>
 <body>
 <div class="x-nav">
@@ -87,7 +88,7 @@
         })();
 
         //获取获取分组的配置
-        request.ajax('http://swoft.lkvip.com:8306/admin/system/config/getconfigcount', 'get', 'json', {
+        request.ajax(requestUri+'/admin/system/config/getconfigcount', 'get', 'json', {
             'token': adminToken,
             'group': $_GET['group']
         }, function (req) {
@@ -104,7 +105,7 @@
                     console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
                     console.log(obj.limit); //得到每页显示的条数
 
-                        request.ajax('http://swoft.lkvip.com:8306/admin/system/config/getlist', 'get', 'json', {
+                        request.ajax(requestUri+'/admin/system/config/getlist', 'get', 'json', {
                             'token': adminToken,
                             'curr':obj.curr,
                             'limit':obj.limit,
@@ -147,7 +148,7 @@
         });
 
         //获取分组title
-        request.ajax('http://swoft.lkvip.com:8306/admin/system/config/getconfigtitle', 'get', 'json', {
+        request.ajax(requestUri+'/admin/system/config/getconfigtitle', 'get', 'json', {
             'token': adminToken
         }, function (req) {
             if(req.code == 1000){
@@ -168,7 +169,7 @@
 
     //跳转配置list页面
     function configHref (e) {
-        window.location.href='http://swoft.lkvip.com/admin/config-list.html?group='+e;
+        window.location.href=requesturi+'/admin/config-list.html?group='+e;
     }
 
 /*用户-删除*/
@@ -183,7 +184,7 @@ function member_del(obj, id) {
                     var request = layui.request;
                     var adminToken = localStorage.getItem("adminToken");
                     //发异步删除数据
-                    request.ajax('http://swoft.lkvip.com:8306/admin/system/config/deleteconfig', 'get', 'json', {
+                    request.ajax(requestUri+'/admin/system/config/deleteconfig', 'get', 'json', {
                         'token': adminToken,
                         'id': id
                     }, function (req) {

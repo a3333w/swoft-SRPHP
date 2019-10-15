@@ -14,15 +14,17 @@ use Swoft;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractConnection;
+use Swoft\Db\Concern\HasEvent;
 use Swoft\Db\Contract\ConnectionInterface;
 use Swoft\Db\Database;
 use Swoft\Db\DbEvent;
+use Swoft\Db\Exception\DbException;
 use Swoft\Db\Pool;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\Processor;
-use Swoft\Db\Exception\DbException;
-use Swoft\Log\Debug;
+use Swoft\Stdlib\Helper\StringHelper;
+use Swoft\Log\Helper\CLog;
 use Throwable;
 use function bean;
 
@@ -33,6 +35,8 @@ use function bean;
  */
 class Connection extends AbstractConnection implements ConnectionInterface
 {
+    use HasEvent;
+
     /**
      * Default fetch mode
      */
@@ -111,8 +115,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param Pool     $pool
      * @param Database $database
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function initialize(Pool $pool, Database $database)
     {
@@ -144,8 +146,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Set the query post processor to the default implementation.
      *
      * @return void
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function useDefaultPostProcessor()
     {
@@ -156,8 +156,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Get the default post processor instance.
      *
      * @return Processor
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function getDefaultPostProcessor()
     {
@@ -181,9 +179,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Create connection
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function create(): void
     {
@@ -231,9 +227,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
     /**
      * @param bool $force
-     *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function release(bool $force = false): void
     {
@@ -327,8 +320,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param mixed $value
      *
      * @return Expression
-     * @throws ContainerException
-     * @throws ReflectionException
+     * @deprecated This method unsafe, This connection unreleased
      */
     public function raw($value): Expression
     {
@@ -375,7 +367,13 @@ class Connection extends AbstractConnection implements ConnectionInterface
             $statement = $this->getPdoForSelect($useReadPdo)->prepare($query);
             $statement = $this->prepared($statement);
 
-            $this->bindValues($statement, $this->prepareBindings($bindings));
+            $prepareBindings = $this->prepareBindings($bindings);
+
+            $this->bindValues($statement, $prepareBindings);
+
+            if ($this->fireEvent(DbEvent::SELECTING, $statement, $prepareBindings) === false) {
+                return [];
+            }
 
             $statement->execute();
 
@@ -438,6 +436,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             return $statement;
         });
 
+        /** @var PDOStatement $statement */
         while ($record = $statement->fetch()) {
             yield $record;
         }
@@ -573,7 +572,13 @@ class Connection extends AbstractConnection implements ConnectionInterface
             // to execute the statement and then we'll use PDO to fetch the affected.
             $statement = $this->getPdo()->prepare($query);
 
-            $this->bindValues($statement, $this->prepareBindings($bindings));
+            $prepareBindings = $this->prepareBindings($bindings);
+
+            $this->bindValues($statement, $prepareBindings);
+
+            if ($this->fireEvent(DbEvent::AFFECTING_STATEMENTING, $statement, $prepareBindings) === false) {
+                return 0;
+            }
 
             $statement->execute();
             $count = $statement->rowCount();
@@ -646,10 +651,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
         // caused by a connection that has been lost. If that is the cause, we'll try
         $result = $this->runQueryCallback($query, $bindings, $callback);
 
+        $this->fireEvent(DbEvent::SQL_RAN, $query, $bindings);
+
         // Once we have run the query we will calculate the time that it took to run and
         // then log the query, bindings, and execution time so we will report them on
         // the event that the developer needs them. We'll log time in milliseconds.
-
         return $result;
     }
 
@@ -678,29 +684,74 @@ class Connection extends AbstractConnection implements ConnectionInterface
             // Release connection
             $this->release();
         } catch (Throwable $e) {
+            // Connection is in transaction not to reconnect
+            $cm = $this->getConMananger();
+            if ($cm->isTransaction($this->poolName)) {
+                // Whether to release Or remove connection
+                $this->releaseOrRemove();
+
+                // Throw exception
+                throw new DbException($e->getMessage());
+            }
+
             // If an exception occurs when attempting to run a query, we'll format the error
             // message to include the bindings with SQL, which will make this exception a
             // lot more helpful to the developer instead of just the database's errors.
-
             if (!$reconnect && $this->isReconnect() && $this->reconnect()) {
                 return $this->runQueryCallback($query, $bindings, $callback, true);
             }
 
-            // Reconnect fail to remove exception connection
-            if ($this->isReconnect()) {
-                $this->pool->remove();
-            } else {
-                // Other exception to release connection
-                $this->release();
-            }
+            // Whether to release Or remove connection
+            $this->releaseOrRemove();
+
+            // Print Error Sql
+            $rawSql = $this->getRawSql($query, $bindings);
+            CLog::error('Fail sql = <error>%s</error>', $rawSql);
 
             // Throw exception
-            throw new DbException($e->getMessage());
+            throw new DbException($e->getMessage(), (int)$e->getCode());
         }
 
         $this->pdoType = self::TYPE_DEFAULT;
         return $result;
     }
+
+    /**
+     * Returns the raw SQL by inserting parameter values into the corresponding placeholders in [[sql]].
+     * Note that the return value of this method should mainly be used for logging purpose.
+     * It is likely that this method returns an invalid SQL due to improper replacement of parameter placeholders.
+     *
+     * @param string $sql
+     * @param array  $bindings
+     *
+     * @return string the raw SQL with parameter values inserted into the corresponding placeholders in [[sql]].
+     */
+    public function getRawSql(string $sql, array $bindings)
+    {
+        if (empty($bindings)) {
+            return $sql;
+        }
+        foreach ($bindings as $name => $value) {
+            if (is_int($name)) {
+                $name = '?';
+            }
+
+            if (is_string($value) || is_array($value)) {
+                $param = $this->getQueryGrammar()->quoteString($value);
+            } elseif (is_bool($value)) {
+                $param = ($value ? 'TRUE' : 'FALSE');
+            } elseif ($value === null) {
+                $param = 'NULL';
+            } else {
+                $param = (string)$value;
+            }
+
+            $sql = StringHelper::replaceFirst($name, $param, $sql);
+        }
+
+        return $sql;
+    }
+
 
     /**
      * Whether to reconnect
@@ -755,18 +806,33 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param Closure $callback
      * @param int     $attempts
      *
-     * @return mixed|void
+     * @return mixed
+     * @throws Throwable
      */
     public function transaction(Closure $callback, $attempts = 1)
     {
+        for ($currentAttempt = 1; $currentAttempt <= $attempts; $currentAttempt++) {
+            $this->beginTransaction();
 
+            // We'll simply execute the given callback within a try / catch block and if we
+            // catch any exception we can rollback this transaction so that none of this
+            // gets actually persisted to a database or stored in a permanent fashion.
+            try {
+                return tap($callback($this), function () {
+                    $this->commit();
+                });
+            } catch (Throwable $e) {
+                $this->rollBack();
+
+                throw $e;
+            }
+        }
+        return false;
     }
 
     /**
      * Start a new database transaction.
      *
-     * @throws ContainerException
-     * @throws Throwable
      */
     public function beginTransaction(): void
     {
@@ -782,8 +848,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     }
 
     /**
-     * @throws ContainerException
-     * @throws Throwable
      */
     public function commit(): void
     {
@@ -815,8 +879,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @param int|null $toLevel
      *
-     * @throws ContainerException
-     * @throws Throwable
      */
     public function rollBack(int $toLevel = null): void
     {
@@ -843,8 +905,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @param int|null $toLevel
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function forceRollBack(int $toLevel = null): void
     {
@@ -867,8 +927,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param bool $useReadPdo
      *
      * @return PDO
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function getPdoForSelect($useReadPdo = true)
     {
@@ -890,8 +948,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Get the current PDO connection used for reading.
      *
      * @return PDO
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function getReadPdo(): PDO
     {
@@ -956,8 +1012,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param int $toLevel
      *
      * @return void
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function performRollBack(int $toLevel): void
     {
@@ -1012,8 +1066,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @return ConnectionManager
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function getConMananger(): ConnectionManager
     {
@@ -1024,9 +1076,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Create pdo
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     private function createPdo()
     {
@@ -1042,9 +1092,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Create read pdo
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     private function createReadPdo()
     {
@@ -1057,6 +1105,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
     /**
      * @param string $dns
+     *
+     * @throws DbException
      */
     private function parseDbName(string $dns): void
     {
@@ -1065,7 +1115,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
         $params = [];
         foreach ($paramsAry as $param) {
-            [$key, $value] = explode('=', $param);
+            $explodeParams = explode('=', $param);
+            if (count($explodeParams) !== 2) {
+                throw new DbException(sprintf('Dsn(%s) format error, please check Dsn', $dns));
+            }
+            [$key, $value] = $explodeParams;
             $params[$key] = $value;
         }
 
@@ -1109,5 +1163,19 @@ class Connection extends AbstractConnection implements ConnectionInterface
         }
 
         $this->selectDb = '';
+    }
+
+    /**
+     * Release Or remove connection
+     */
+    private function releaseOrRemove(): void
+    {
+        // Reconnect fail to remove exception connection
+        if ($this->isReconnect()) {
+            $this->pool->remove();
+        } else {
+            // Other exception to release connection
+            $this->release();
+        }
     }
 }

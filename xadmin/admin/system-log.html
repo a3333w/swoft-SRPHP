@@ -11,6 +11,7 @@
     <script src="./lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/xadmin.js"></script>
     <script src="./js/global.js"></script>
+    <script src="./js/config.js"></script>
     <!--[if lt IE 9]>
     <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
     <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
@@ -79,7 +80,7 @@
 
 
 
-            request.ajax('http://swoft.lkvip.com:8306/admin/system/log/getlist', 'get', 'json', {
+            request.ajax(requestUri+'/admin/system/log/getlist', 'get', 'json', {
                 'token': adminToken,
                 'limit' : 10,
                 'curr': 1
@@ -113,7 +114,7 @@
 
                         //首次不执行
                         if(!first){
-                            request.ajax('http://swoft.lkvip.com:8306/admin/system/log/getlist', 'get', 'json', {
+                            request.ajax(requestUri+'/admin/system/log/getlist', 'get', 'json', {
                                 'token': adminToken,
                                 'curr':obj.curr,
                                 'limit':obj.limit

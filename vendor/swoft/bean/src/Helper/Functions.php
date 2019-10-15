@@ -2,7 +2,6 @@
 
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Container;
-use Swoft\Bean\Exception\ContainerException;
 
 if (!function_exists('bean')) {
     /**
@@ -11,8 +10,6 @@ if (!function_exists('bean')) {
      * @param string $name Bean name Or alias Or class name
      *
      * @return object|string|mixed
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     function bean(string $name)
     {

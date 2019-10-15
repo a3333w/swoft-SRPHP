@@ -14,6 +14,7 @@
         <script src="./lib/layui/layui.js" charset="utf-8"></script>
         <script type="text/javascript" src="./js/xadmin.js"></script>
         <script src="./js/global.js"></script>
+        <script src="./js/config.js"></script>
         <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
         <!--[if lt IE 9]>
           <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -123,7 +124,7 @@
                         }
                     })();
 
-                    request.ajax('http://swoft.lkvip.com:8306/admin/system/information/getsysteminformation', 'get', 'json', {
+                    request.ajax(requestUri+'/admin/system/information/getsysteminformation', 'get', 'json', {
                         'token': adminToken
                     }, function (req) {
                         //基本信息填充
@@ -139,7 +140,7 @@
                         $('#modules').html(str);
 
                         //所属权限菜单获取
-                        request.ajax('http://swoft.lkvip.com:8306/admin/system/menu/getauthmenu', 'get', 'json', {
+                        request.ajax(requestUri+'/admin/system/menu/getauthmenu', 'get', 'json', {
                             'token': adminToken,
                             'auth': req.data.roleAuth,
                             'module': $_GET['module']

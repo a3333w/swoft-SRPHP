@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit942fe00874fea480f2beb74527016f49
+class ComposerStaticInit89ec761be8eb5835eb03e3f8209dcb3f
 {
     public static $files = array (
         'ba66f41e40a9697abbd6ad188c225b53' => __DIR__ . '/..' . '/swoft/stdlib/src/Helper/Functions.php',
@@ -12,16 +12,7 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         '9ae26d4cc56bd1c2226b67ffc59eacc2' => __DIR__ . '/..' . '/swoft/bean/src/Helper/Functions.php',
         'cc37a1befbed2103104b095911899e94' => __DIR__ . '/..' . '/swoft/console/src/Helper/Functions.php',
         '40725293a2ac2c3dc06eda78738e3ff6' => __DIR__ . '/..' . '/swoft/framework/src/Helper/Functions.php',
-        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
-        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
-        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-        'd767e4fc2dc52fe66584ab8c6684783e' => __DIR__ . '/..' . '/adbario/php-dot-notation/src/helpers.php',
-        '65fec9ebcfbb3cbb4fd0d519687aea01' => __DIR__ . '/..' . '/danielstjules/stringy/src/Create.php',
-        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
-        'b067bc7112e384b61c701452d53a14a8' => __DIR__ . '/..' . '/mtdowling/jmespath.php/src/JmesPath.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
-        '66453932bc1be9fb2f910a27947d11b6' => __DIR__ . '/..' . '/alibabacloud/client/src/Functions.php',
         'd0b12a6e9f0416b1f736e52ca82d7ae3' => __DIR__ . '/..' . '/swoft/db/src/Helper/Functions.php',
         '2f302328dcf56dd8b9fca7051cc3ad19' => __DIR__ . '/..' . '/swoft/view/src/Helper/Functions.php',
         '27fa043e85be7ce6a60ae0470bef7ae1' => __DIR__ . '/../..' . '/app/Helper/Functions.php',
@@ -31,10 +22,6 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         'p' => 
         array (
             'phpDocumentor\\Reflection\\' => 25,
-        ),
-        'c' => 
-        array (
-            'clagiordano\\weblibs\\configmanager\\' => 34,
         ),
         'W' => 
         array (
@@ -46,12 +33,18 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         ),
         'S' => 
         array (
-            'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
+            'Symfony\\Contracts\\Service\\' => 26,
+            'Symfony\\Contracts\\Cache\\' => 24,
             'Symfony\\Component\\Yaml\\' => 23,
+            'Symfony\\Component\\VarExporter\\' => 30,
+            'Symfony\\Component\\ExpressionLanguage\\' => 37,
+            'Symfony\\Component\\Cache\\' => 24,
             'Swoft\\WebSocket\\Server\\' => 23,
             'Swoft\\View\\' => 11,
             'Swoft\\Validator\\' => 16,
+            'Swoft\\Tcp\\Server\\' => 17,
+            'Swoft\\Tcp\\' => 10,
             'Swoft\\Task\\' => 11,
             'Swoft\\Stdlib\\' => 13,
             'Swoft\\Server\\' => 13,
@@ -60,7 +53,9 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
             'Swoft\\Rpc\\' => 10,
             'Swoft\\Redis\\' => 12,
             'Swoft\\Proxy\\' => 12,
+            'Swoft\\Process\\' => 14,
             'Swoft\\Log\\' => 10,
+            'Swoft\\Limiter\\' => 14,
             'Swoft\\I18n\\' => 11,
             'Swoft\\Http\\Server\\' => 18,
             'Swoft\\Http\\Message\\' => 19,
@@ -68,15 +63,17 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
             'Swoft\\Error\\' => 12,
             'Swoft\\Devtool\\' => 14,
             'Swoft\\Db\\' => 9,
+            'Swoft\\Crontab\\' => 14,
+            'Swoft\\Consul\\' => 13,
             'Swoft\\Console\\' => 14,
             'Swoft\\Connection\\Pool\\' => 22,
             'Swoft\\Config\\' => 13,
+            'Swoft\\Breaker\\' => 14,
             'Swoft\\Bean\\' => 11,
+            'Swoft\\Apollo\\' => 13,
             'Swoft\\Aop\\' => 10,
             'Swoft\\Annotation\\' => 17,
             'Swoft\\' => 6,
-            'SwoftTest\\Testing\\' => 18,
-            'Stringy\\' => 8,
         ),
         'P' => 
         array (
@@ -84,6 +81,7 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
             'Psr\\Http\\Server\\' => 16,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
+            'Psr\\Cache\\' => 10,
             'Prophecy\\' => 9,
             'PhpParser\\' => 10,
             'PhpDocReader\\' => 13,
@@ -96,16 +94,6 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         array (
             'Leuffen\\TextTemplate\\' => 21,
         ),
-        'J' => 
-        array (
-            'JmesPath\\' => 9,
-        ),
-        'G' => 
-        array (
-            'GuzzleHttp\\Psr7\\' => 16,
-            'GuzzleHttp\\Promise\\' => 19,
-            'GuzzleHttp\\' => 11,
-        ),
         'F' => 
         array (
             'Firebase\\JWT\\' => 13,
@@ -117,14 +105,13 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
             'Doctrine\\Common\\Lexer\\' => 22,
             'Doctrine\\Common\\Annotations\\' => 28,
             'DeepCopy\\' => 9,
+            'Database\\' => 9,
         ),
         'A' => 
         array (
             'App\\' => 4,
             'AppTest\\Unit\\' => 13,
             'AppTest\\Testing\\' => 16,
-            'AlibabaCloud\\Client\\' => 20,
-            'Adbar\\' => 6,
         ),
     );
 
@@ -135,10 +122,6 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
             1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
             2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
-        'clagiordano\\weblibs\\configmanager\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/clagiordano/weblibs-configmanager/src',
-        ),
         'Webmozart\\Assert\\' => 
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
@@ -147,17 +130,33 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         array (
             0 => __DIR__ . '/..' . '/toolkit/cli-utils/src',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
-        ),
         'Symfony\\Polyfill\\Ctype\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
+        'Symfony\\Contracts\\Service\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/service-contracts',
+        ),
+        'Symfony\\Contracts\\Cache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/cache-contracts',
+        ),
         'Symfony\\Component\\Yaml\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/yaml',
+        ),
+        'Symfony\\Component\\VarExporter\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/var-exporter',
+        ),
+        'Symfony\\Component\\ExpressionLanguage\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/expression-language',
+        ),
+        'Symfony\\Component\\Cache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/cache',
         ),
         'Swoft\\WebSocket\\Server\\' => 
         array (
@@ -170,6 +169,14 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         'Swoft\\Validator\\' => 
         array (
             0 => __DIR__ . '/..' . '/swoft/validator/src',
+        ),
+        'Swoft\\Tcp\\Server\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/swoft/tcp-server/src',
+        ),
+        'Swoft\\Tcp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/swoft/tcp/src',
         ),
         'Swoft\\Task\\' => 
         array (
@@ -203,9 +210,17 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         array (
             0 => __DIR__ . '/..' . '/swoft/proxy/src',
         ),
+        'Swoft\\Process\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/swoft/process/src',
+        ),
         'Swoft\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/swoft/log/src',
+        ),
+        'Swoft\\Limiter\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/swoft/limiter/src',
         ),
         'Swoft\\I18n\\' => 
         array (
@@ -235,6 +250,14 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         array (
             0 => __DIR__ . '/..' . '/swoft/db/src',
         ),
+        'Swoft\\Crontab\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/swoft/crontab/src',
+        ),
+        'Swoft\\Consul\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/swoft/consul/src',
+        ),
         'Swoft\\Console\\' => 
         array (
             0 => __DIR__ . '/..' . '/swoft/console/src',
@@ -247,9 +270,17 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         array (
             0 => __DIR__ . '/..' . '/swoft/config/src',
         ),
+        'Swoft\\Breaker\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/swoft/breaker/src',
+        ),
         'Swoft\\Bean\\' => 
         array (
             0 => __DIR__ . '/..' . '/swoft/bean/src',
+        ),
+        'Swoft\\Apollo\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/swoft/apollo/src',
         ),
         'Swoft\\Aop\\' => 
         array (
@@ -262,14 +293,6 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         'Swoft\\' => 
         array (
             0 => __DIR__ . '/..' . '/swoft/framework/src',
-        ),
-        'SwoftTest\\Testing\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/swoft/framework/test/testing',
-        ),
-        'Stringy\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/danielstjules/stringy/src',
         ),
         'Psr\\Log\\' => 
         array (
@@ -287,6 +310,10 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'Psr\\Cache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/cache/src',
         ),
         'Prophecy\\' => 
         array (
@@ -307,22 +334,6 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         'Leuffen\\TextTemplate\\' => 
         array (
             0 => __DIR__ . '/..' . '/text/template/src',
-        ),
-        'JmesPath\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/mtdowling/jmespath.php/src',
-        ),
-        'GuzzleHttp\\Psr7\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
-        ),
-        'GuzzleHttp\\Promise\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
-        ),
-        'GuzzleHttp\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
         'Firebase\\JWT\\' => 
         array (
@@ -348,6 +359,10 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         array (
             0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
         ),
+        'Database\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/database',
+        ),
         'App\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
@@ -360,13 +375,15 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         array (
             0 => __DIR__ . '/../..' . '/test/testing',
         ),
-        'AlibabaCloud\\Client\\' => 
+    );
+
+    public static $prefixesPsr0 = array (
+        'P' => 
         array (
-            0 => __DIR__ . '/..' . '/alibabacloud/client/src',
-        ),
-        'Adbar\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/adbario/php-dot-notation/src',
+            'PhpOption\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/phpoption/phpoption/src',
+            ),
         ),
     );
 
@@ -435,6 +452,7 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         'PHPUnit\\Framework\\IncompleteTestCase' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/IncompleteTestCase.php',
         'PHPUnit\\Framework\\IncompleteTestError' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/IncompleteTestError.php',
         'PHPUnit\\Framework\\InvalidCoversTargetException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/InvalidCoversTargetException.php',
+        'PHPUnit\\Framework\\InvalidParameterGroupException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/InvalidParameterGroupException.php',
         'PHPUnit\\Framework\\MissingCoversAnnotationException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/MissingCoversAnnotationException.php',
         'PHPUnit\\Framework\\MockObject\\BadMethodCallException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/MockObject/Exception/BadMethodCallException.php',
         'PHPUnit\\Framework\\MockObject\\Builder\\Identity' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/MockObject/Builder/Identity.php',
@@ -499,6 +517,7 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         'PHPUnit\\Framework\\TestResult' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/TestResult.php',
         'PHPUnit\\Framework\\TestSuite' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/TestSuite.php',
         'PHPUnit\\Framework\\TestSuiteIterator' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/TestSuiteIterator.php',
+        'PHPUnit\\Framework\\UnexpectedValueException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/UnexpectedValueException.php',
         'PHPUnit\\Framework\\UnintentionallyCoveredCodeError' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/UnintentionallyCoveredCodeError.php',
         'PHPUnit\\Framework\\Warning' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Warning.php',
         'PHPUnit\\Framework\\WarningTestCase' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/WarningTestCase.php',
@@ -597,6 +616,7 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         'PHP_Token_CLOSE_SQUARE' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_CLOSE_TAG' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_COALESCE' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
+        'PHP_Token_COALESCE_EQUAL' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_COLON' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_COMMA' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_COMMENT' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
@@ -642,6 +662,7 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         'PHP_Token_FILE' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_FINAL' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_FINALLY' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
+        'PHP_Token_FN' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_FOR' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_FOREACH' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_FUNCTION' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
@@ -732,6 +753,7 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
         'PHP_Token_UNSET_CAST' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_USE' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_USE_FUNCTION' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
+        'PHP_Token_Util' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token/Util.php',
         'PHP_Token_VAR' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_VARIABLE' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_WHILE' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
@@ -920,9 +942,10 @@ class ComposerStaticInit942fe00874fea480f2beb74527016f49
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit942fe00874fea480f2beb74527016f49::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit942fe00874fea480f2beb74527016f49::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit942fe00874fea480f2beb74527016f49::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit89ec761be8eb5835eb03e3f8209dcb3f::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit89ec761be8eb5835eb03e3f8209dcb3f::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit89ec761be8eb5835eb03e3f8209dcb3f::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit89ec761be8eb5835eb03e3f8209dcb3f::$classMap;
 
         }, null, ClassLoader::class);
     }

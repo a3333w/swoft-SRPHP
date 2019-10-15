@@ -9,25 +9,17 @@ use Swoft\Bean\BeanFactory;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
+use Swoft\Console\Exception\ConsoleErrorException;
 use Swoft\Console\Helper\Show;
+use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
+use Swoft\Devtool\DevTool;
+use Swoft\Http\Server\Router\Router;
 use Swoft\Stdlib\Helper\DirHelper;
-use Swoft\Stdlib\Helper\Sys;
-use Swoole\Coroutine;
-use function array_merge;
-use function class_exists;
-use function extension_loaded;
 use function implode;
 use function input;
-use function is_int;
 use function output;
-use function sprintf;
-use function str_pad;
 use function strpos;
-use function version_compare;
-use const PHP_VERSION;
-use const PHP_VERSION_ID;
-use const SWOOLE_VERSION;
 
 /**
  * There are some help command for application[by <cyan>devtool</cyan>]
@@ -61,110 +53,144 @@ class AppCommand
     }
 
     /**
-     * @CommandMapping()
-     * @CommandOption("type", desc="Display the bean names of the type")
+     * @CommandMapping(alias="beans")
+     * @CommandOption("type", type="string", default="sig",
+     *     desc="Display the bean names of the type
+     *     sig  - singleton
+     *     pro  - prototype
+     *     req  - request
+     *     sess - session
+     *     def  - definition"
+     * )
+     * @CommandOption("include", short="c", type="string", desc="must contains the string on bean name")
+     * @CommandOption("exclude", short="e", type="string", desc="must exclude the string on bean name")
+     * @param Input  $input
+     * @param Output $output
+     *
+     * @throws ConsoleErrorException
      */
-    public function bean(): void
+    public function bean(Input $input, Output $output): void
     {
         $names = BeanFactory::getContainer()->getNames();
-        $type  = input()->getOpt('type');
+        $type  = input()->getStringOpt('type', 'sig');
 
-        if (isset($names[$type])) {
-            Show::prettyJSON($names[$type]);
+        $realTypes = [
+            'sig'  => 'singleton',
+            'pro'  => 'prototype',
+            'req'  => 'request',
+            'sess' => 'session',
+            'def'  => 'definition',
+        ];
 
-            return;
+        if (!isset($realTypes[$type])) {
+            throw new ConsoleErrorException('invalid bean type: ' . $type);
+        }
+
+        $realType = $realTypes[$type];
+        $include  = (string)$input->getSameOpt(['include', 'c']);
+        $exclude  = (string)$input->getSameOpt(['exclude', 'e']);
+
+        $output->title('application beans');
+
+        if (isset($names[$realType])) {
+            $names = $names[$realType];
+
+            if ($include || $exclude) {
+                $filtered = [];
+
+                foreach ($names as $name) {
+                    if ($exclude && strpos($name, $exclude) !== false) {
+                        continue;
+                    }
+
+                    if ($include) {
+                        if (strpos($name, $include) !== false) {
+                            $filtered[] = $name;
+                        }
+                    } else {
+                        $filtered[] = $name;
+                    }
+                }
+
+                Show::prettyJSON($filtered);
+                return;
+            }
         }
 
         Show::prettyJSON($names);
     }
 
     /**
-     * Check current operating environment information
+     * display all registered http routes of the application
      *
-     * @CommandMapping()
+     * @CommandMapping("http-routes", alias="hroute,httproute,httproutes")
+     * @CommandOption("include", short="c", type="string", desc="must contains the string on route path")
+     * @CommandOption("exclude", short="e", type="string", desc="must exclude the string on route path")
+     * @CommandOption("no-devtool", type="bool", default="false", desc="exclude all devtool http routes")
+     *
+     * @param Input  $input
      * @param Output $output
      *
-     * @throws RuntimeException
      */
-    public function check(Output $output): void
+    public function httpRoutes(Input $input, Output $output): void
     {
-        // Env check
-        [$code, $return,] = Sys::run('php --ri swoole');
-        $asyncRdsEnabled = $code === 0 ? strpos($return, 'async_redis') : false;
+        /** @var Router $router */
+        $router = Swoft::getBean('httpRouter');
 
-        $swoVer = SWOOLE_VERSION;
-        $tipMsg = 'Please disabled it, otherwise swoole will be affected!';
-        $extOpt = [
-            'yes' => 'No',
-            'no'  => 'Yes',
-        ];
+        $output->title('HTTP Routes');
 
-        $list = [
-            "<bold>Runtime environment check</bold>\n",
-            'PHP version is greater than 7.1?'    => self::wrap(PHP_VERSION_ID > 70100, 'current is ' . PHP_VERSION),
-            'Swoole extension is installed?'      => self::wrap(extension_loaded('swoole')),
-            'Swoole version is greater than 4.3?' => self::wrap(version_compare($swoVer, '4.3.0', '>='), 'current is ' . $swoVer),
-            'Swoole async redis is enabled?'      => self::wrap($asyncRdsEnabled),
-            'Swoole coroutine is enabled?'        => self::wrap(class_exists(Coroutine::class, false)),
-            "\n<bold>Extensions that conflict with 'swoole'</bold>\n",
-            // ' extensions'                             => 'installed',
-            ' - zend'                             => self::wrap(!extension_loaded('zend'), $tipMsg, true, $extOpt),
-            ' - xdebug'                           => self::wrap(!extension_loaded('xdebug'), $tipMsg, true, $extOpt),
-            ' - xhprof'                           => self::wrap(!extension_loaded('xhprof'), $tipMsg, true, $extOpt),
-            ' - blackfire'                        => self::wrap(!extension_loaded('blackfire'), $tipMsg, true, $extOpt),
-        ];
+        $include  = (string)$input->getSameOpt(['include', 'c']);
+        $exclude  = (string)$input->getSameOpt(['exclude', 'e']);
+        $filterDt = $input->getBoolOpt('no-devtool');
 
-        $buffer = [];
-        $pass   = $total = 0;
+        if ($filterDt || $include || $exclude) {
+            $filter = function (string $path) use ($filterDt, $include, $exclude) {
+                if ($exclude) {
+                    return strpos($path, $exclude) === false;
+                }
 
-        foreach ($list as $question => $value) {
-            if (is_int($question)) {
-                $buffer[] = $value;
-                continue;
-            }
+                if ($include) {
+                    return strpos($path, $exclude) !== false;
+                }
 
-            $total++;
+                if ($filterDt) {
+                    return strpos($path, DevTool::ROUTE_PREFIX) === false;
+                }
 
-            if ($value[0]) {
-                $pass++;
-            }
+                return true;
+            };
 
-            $question = str_pad($question, 45);
-            $buffer[] = sprintf('  <comment>%s</comment> %s', $question, $value[1]);
+            $output->writeln($router->toString($filter));
+            return;
         }
 
-        $buffer[] = "\nCheck total: <bold>$total</bold>, Through the check: <success>$pass</success>";
-
-        $output->writeln($buffer);
+        // Print all routes
+        $output->writeln($router->toString());
     }
 
     /**
-     * @param bool|mixed  $condition
-     * @param string|null $msg
-     * @param bool        $showOnFalse
+     * display all registered tcp routes of the application
      *
-     * @param array       $opts
+     * @CommandMapping("tcp-routes", alias="tcproute,tcproutes")
      *
-     * @return array
+     * @param Input  $input
+     * @param Output $output
      */
-    public static function wrap($condition, string $msg = null, $showOnFalse = false, array $opts = []): array
+    public function tcpRoutes(Input $input, Output $output): void
     {
-        $desc = '';
-        $opts = array_merge([
-            'yes' => 'Yes',
-            'no'  => 'No',
-        ], $opts);
+        /** @var \Swoft\Tcp\Server\Router\Router $router */
+        $router = Swoft::getBean('tcpRouter');
 
-        $result = $condition ? "<success>{$opts['yes']}</success>" : "<red>{$opts['yes']}</red>";
-
-        if ($msg) {
-            if ($showOnFalse) {
-                $desc = !$condition ? " ($msg)" : '';
-            } else {
-                $desc = " ($msg)";
-            }
+        $data = [];
+        foreach ($router->getRoutes() as $route) {
+            $data[] = [
+                $route['command'],
+                implode('@', $route['handler']),
+            ];
         }
 
-        return [(bool)$condition, $result . $desc];
+        $output->table($data, 'TCP Routes', [
+            'columns' => ['Command Name', 'Route Handler']
+        ]);
     }
 }

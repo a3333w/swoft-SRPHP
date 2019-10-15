@@ -1,7 +1,31 @@
-Version 4.2.3-dev
+Version 4.2.5-dev
 -----------------
 
 Nothing yet.
+
+Version 4.2.4 (2019-09-01)
+--------------------------
+
+### Added
+
+* Added getProperties(), getConstants() and getTraitUses() to ClassLike. (#629, #630)
+
+### Fixed
+
+* Fixed flexible heredoc emulation to check for digits after the end label. This synchronizes
+  behavior with the upcoming PHP 7.3.10 release.
+
+Version 4.2.3 (2019-08-12)
+--------------------------
+
+### Added
+
+* [PHP 7.4] Add support for numeric literal separators. (#615)
+
+### Fixed
+
+* Fixed resolution of return types for arrow functions. (#613)
+* Fixed compatibility with PHP 7.4.
 
 Version 4.2.2 (2019-05-25)
 --------------------------

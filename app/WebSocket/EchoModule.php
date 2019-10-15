@@ -1,8 +1,17 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace App\WebSocket;
 
 use Swoft\Http\Message\Request;
+use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnMessage;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnOpen;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
@@ -13,7 +22,7 @@ use function server;
 /**
  * Class EchoModule
  *
- * @WsModule()
+ * @WsModule("echo")
  */
 class EchoModule
 {
@@ -24,7 +33,7 @@ class EchoModule
      */
     public function onOpen(Request $request, int $fd): void
     {
-        server()->push($request->getFd(), "Opened, welcome!(FD: $fd)");
+        Session::mustGet()->push("Opened, welcome #{$fd}!");
     }
 
     /**

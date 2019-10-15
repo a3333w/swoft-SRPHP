@@ -1,10 +1,8 @@
 #!/usr/bin/env php
-<?php declare(strict_types=1);
+<?php
 
 // Bootstrap
 require_once __DIR__ . '/bootstrap.php';
-
-\Swoole\Runtime::enableCoroutine();
 
 Swoole\Coroutine::set([
     'max_coroutine' => 300000,

@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace App\WebSocket\Chat;
 
@@ -27,10 +35,10 @@ class HomeController
     /**
      * Message command is: 'home.echo'
      *
-     * @param $data
+     * @param string $data
      * @MessageMapping()
      */
-    public function echo($data): void
+    public function echo(string $data): void
     {
         Session::mustGet()->push('(home.echo)Recv: ' . $data);
     }
@@ -38,12 +46,12 @@ class HomeController
     /**
      * Message command is: 'home.ar'
      *
-     * @param $data
+     * @param string $data
      * @MessageMapping("ar")
      *
      * @return string
      */
-    public function autoReply($data): string
+    public function autoReply(string $data): string
     {
         return '(home.ar)Recv: ' . $data;
     }

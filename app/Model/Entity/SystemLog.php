@@ -36,28 +36,12 @@ class SystemLog extends Model
     private $uid;
 
     /**
-     * 操作员名称
-     *
-     * @Column()
-     * @var string|null
-     */
-    private $uname;
-
-    /**
      * 菜单标题
      *
      * @Column()
      * @var string|null
      */
     private $title;
-
-    /**
-     * 模块
-     *
-     * @Column()
-     * @var string|null
-     */
-    private $module;
 
     /**
      * 发生动作的url
@@ -79,7 +63,7 @@ class SystemLog extends Model
      * 发生动作
      *
      * @Column()
-     * @var string
+     * @var string|null
      */
     private $remark;
 
@@ -87,7 +71,7 @@ class SystemLog extends Model
      * 动作计数
      *
      * @Column()
-     * @var int
+     * @var int|null
      */
     private $count;
 
@@ -147,34 +131,12 @@ class SystemLog extends Model
     }
 
     /**
-     * @param string|null $uname
-     * @return self
-     */
-    public function setUname(?string $uname): self
-    {
-        $this->uname = $uname;
-
-        return $this;
-    }
-
-    /**
      * @param string|null $title
      * @return self
      */
     public function setTitle(?string $title): self
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    /**
-     * @param string|null $module
-     * @return self
-     */
-    public function setModule(?string $module): self
-    {
-        $this->module = $module;
 
         return $this;
     }
@@ -202,10 +164,10 @@ class SystemLog extends Model
     }
 
     /**
-     * @param string $remark
+     * @param string|null $remark
      * @return self
      */
-    public function setRemark(string $remark): self
+    public function setRemark(?string $remark): self
     {
         $this->remark = $remark;
 
@@ -213,10 +175,10 @@ class SystemLog extends Model
     }
 
     /**
-     * @param int $count
+     * @param int|null $count
      * @return self
      */
-    public function setCount(int $count): self
+    public function setCount(?int $count): self
     {
         $this->count = $count;
 
@@ -286,25 +248,9 @@ class SystemLog extends Model
     /**
      * @return string|null
      */
-    public function getUname(): ?string
-    {
-        return $this->uname;
-    }
-
-    /**
-     * @return string|null
-     */
     public function getTitle(): ?string
     {
         return $this->title;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getModule(): ?string
-    {
-        return $this->module;
     }
 
     /**
@@ -324,17 +270,17 @@ class SystemLog extends Model
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getRemark(): string
+    public function getRemark(): ?string
     {
         return $this->remark;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getCount(): int
+    public function getCount(): ?int
     {
         return $this->count;
     }

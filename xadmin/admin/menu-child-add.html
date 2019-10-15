@@ -12,6 +12,7 @@
     <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/xadmin.js"></script>
     <script src="./js/global.js"></script>
+    <script src="./js/config.js"></script>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
     <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -115,7 +116,7 @@
         })();
 
         //获得所有模块
-        request.ajax('http://swoft.lkvip.com:8306/admin/system/module/getmoduleconfig', 'get', 'json', {
+        request.ajax(requestUri+'/admin/system/module/getmoduleconfig', 'get', 'json', {
             'token': adminToken,
         }, function (req) {
             if(req.code == 1000){
@@ -135,7 +136,7 @@
         form.on('submit(add)',
             function(data) {
                 //发异步，把数据提交给php
-                request.ajax('http://swoft.lkvip.com:8306/admin/system/menu/createchild', 'get', 'json', {
+                request.ajax(requestUri+'/admin/system/menu/createchild', 'get', 'json', {
                     'token': adminToken,
                     'data' : data.field,
                     'id' : $_GET['id']

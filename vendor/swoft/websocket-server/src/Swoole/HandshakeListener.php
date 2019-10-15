@@ -2,25 +2,25 @@
 
 namespace Swoft\WebSocket\Server\Swoole;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
-use Swoft\Co;
 use Swoft\Context\Context;
 use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Http\Message\Response as Psr7Response;
-use Swoft\Server\Swoole\HandshakeInterface;
+use Swoft\Server\Contract\HandshakeInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Context\WsHandshakeContext;
+use Swoft\WebSocket\Server\Context\WsOpenContext;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Helper\WsHelper;
 use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsErrorDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
+use Swoole\Coroutine;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Throwable;
@@ -30,11 +30,16 @@ use function server;
  * Class HandshakeListener
  *
  * @since 2.0
- *
  * @Bean()
  */
 class HandshakeListener implements HandshakeInterface
 {
+    /**
+     * @Inject("wsDispatcher")
+     * @var WsDispatcher
+     */
+    private $wsDispatcher;
+
     /**
      * Ws Handshake event
      *
@@ -42,8 +47,6 @@ class HandshakeListener implements HandshakeInterface
      * @param Response $response
      *
      * @return bool
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws Throwable
      */
     public function onHandshake(Request $request, Response $response): bool
@@ -63,30 +66,26 @@ class HandshakeListener implements HandshakeInterface
         }
 
         // Initialize psr7 Request and Response
-        $psr7Req = Psr7Request::new($request);
-        $psr7Res = Psr7Response::new($response);
+        $psr7Req  = Psr7Request::new($request);
+        $psr7Res  = Psr7Response::new($response);
+        $wsServer = Swoft::getBean('wsServer');
 
         // Initialize connection session and context
         $ctx  = WsHandshakeContext::new($psr7Req, $psr7Res);
-        $conn = Connection::new($fd, $psr7Req, $psr7Res);
+        $conn = Connection::new($wsServer, $psr7Req, $psr7Res);
 
-        // Bind connection
+        // Bind connection and bind cid => sid(fd)
         Session::set($sid, $conn);
         // Storage context
         Context::set($ctx);
-        // Bind cid => sid(fd)
-        Session::bindCo($sid);
 
         try {
             Swoft::trigger(WsServerEvent::HANDSHAKE_BEFORE, $fd, $request, $response);
 
-            /** @var WsDispatcher $dispatcher */
-            $dispatcher = BeanFactory::getSingleton('wsDispatcher');
-
             /** @var Psr7Response $psr7Res */
-            [$status, $psr7Res] = $dispatcher->handshake($psr7Req, $psr7Res);
+            [$status, $psr7Res] = $this->wsDispatcher->handshake($psr7Req, $psr7Res);
             if (true !== $status) {
-                server()->log("Handshake: conn#$fd handshake check failed");
+                $wsServer->log("Handshake: conn#$fd handshake check failed");
                 $psr7Res->quickSend();
 
                 // NOTICE: Rejecting a handshake still triggers a close event.
@@ -95,7 +94,6 @@ class HandshakeListener implements HandshakeInterface
 
             // Config response
             $psr7Res = $psr7Res->withStatus(101)->withHeaders(WsHelper::handshakeHeaders($secKey));
-
             if ($wsProtocol = $request->header['sec-websocket-protocol'] ?? '') {
                 $psr7Res = $psr7Res->withHeader('Sec-WebSocket-Protocol', $wsProtocol);
             }
@@ -105,11 +103,14 @@ class HandshakeListener implements HandshakeInterface
             $conn->setHandshake(true);
             $psr7Res->quickSend();
 
-            server()->log("Handshake: conn#{$fd} handshake successful! meta:", $meta, 'debug');
+            $wsServer->log("Handshake: conn#{$fd} handshake successful! meta:", $meta, 'debug');
             Swoft::trigger(WsServerEvent::HANDSHAKE_SUCCESS, $fd, $request, $response);
 
             // Handshaking successful, Manually triggering the open event
-            Co::create(function () use ($psr7Req, $fd) {
+            // NOTICE:
+            //  Cannot use \Swoft\Co::create().
+            //  Because this will use the same top-level coroutine ID, if there is a first unbind, it may lead to session loss.
+            Coroutine::create(function () use ($psr7Req, $fd) {
                 $this->onOpen($psr7Req, $fd);
             });
         } catch (Throwable $e) {
@@ -118,7 +119,6 @@ class HandshakeListener implements HandshakeInterface
             /** @var WsErrorDispatcher $errDispatcher */
             $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
 
-            // Handle handshake error
             $psr7Res = $errDispatcher->handshakeError($e, $psr7Res);
             $psr7Res->quickSend();
         } finally {
@@ -143,6 +143,9 @@ class HandshakeListener implements HandshakeInterface
      */
     public function onOpen(Psr7Request $request, int $fd): void
     {
+        $ctx = WsOpenContext::new($request);
+        // Storage context
+        Context::set($ctx);
         // Bind cid => sid(fd)
         Session::bindCo((string)$fd);
 
@@ -150,6 +153,8 @@ class HandshakeListener implements HandshakeInterface
         server()->log("Open: conn#{$fd} has been opened", [], 'debug');
 
         try {
+            Swoft::trigger(WsServerEvent::OPEN_BEFORE, $fd, $server, $request);
+
             /** @var Connection $conn */
             $conn = Session::mustGet();
             $info = $conn->getModuleInfo();
@@ -172,6 +177,12 @@ class HandshakeListener implements HandshakeInterface
             $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
             $errDispatcher->openError($e, $request);
         } finally {
+            // Defer
+            Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+
+            // Destroy Coroutine
+            Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
+
             // Unbind cid => sid(fd)
             Session::unbindCo();
         }

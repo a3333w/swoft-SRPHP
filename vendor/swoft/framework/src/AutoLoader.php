@@ -53,28 +53,20 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
             ],
             'lineFormatter'      => [
                 'class'      => LineFormatter::class,
-                'format'     => '%datetime% [%level_name%] [%channel%] [%event%] [tid:%tid%] [cid:%cid%] [traceid:%traceid%] [spanid:%spanid%] [parentid:%parentid%] %messages%',
+                'format'     => '%datetime% [%level_name%] [%channel%] [%event%] [tid:%tid%] [cid:%cid%] [traceid:%traceid%] [spanid:%spanid%] [parentid:%parentid%] %context% %messages%',
                 'dateFormat' => 'Y-m-d H:i:s',
             ],
             'noticeHandler'      => [
                 'class'     => FileHandler::class,
                 'logFile'   => '@runtime/logs/notice.log',
                 'formatter' => bean('lineFormatter'),
-                'levels'    => [
-                    Logger::NOTICE,
-                    Logger::INFO,
-                    Logger::DEBUG,
-                    Logger::TRACE,
-                ],
+                'levels'    => 'notice,info,debug,trace',
             ],
             'applicationHandler' => [
                 'class'     => FileHandler::class,
                 'logFile'   => '@runtime/logs/error.log',
                 'formatter' => bean('lineFormatter'),
-                'levels'    => [
-                    Logger::ERROR,
-                    Logger::WARNING,
-                ],
+                'levels'    => 'error,warning',
             ],
             'logger'             => [
                 'class'        => Logger::class,

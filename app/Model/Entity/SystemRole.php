@@ -55,7 +55,7 @@ class SystemRole extends Model
      * 状态
      *
      * @Column()
-     * @var int
+     * @var int|null
      */
     private $status;
 
@@ -129,10 +129,10 @@ class SystemRole extends Model
     }
 
     /**
-     * @param int $status
+     * @param int|null $status
      * @return self
      */
-    public function setStatus(int $status): self
+    public function setStatus(?int $status): self
     {
         $this->status = $status;
 
@@ -205,9 +205,9 @@ class SystemRole extends Model
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getStatus(): int
+    public function getStatus(): ?int
     {
         return $this->status;
     }

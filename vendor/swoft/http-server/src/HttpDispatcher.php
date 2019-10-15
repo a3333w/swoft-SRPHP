@@ -2,20 +2,21 @@
 
 namespace Swoft\Http\Server;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
-use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
-use Swoft\Dispatcher;
+use Swoft\Concern\AbstractDispatcher;
+use Swoft\Context\Context;
+use Swoft\Exception\SwoftException;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Formatter\AcceptResponseFormatter;
 use Swoft\Http\Server\Middleware\DefaultMiddleware;
 use Swoft\Http\Server\Middleware\UserMiddleware;
-use Swoft\Http\Server\Middleware\ValidatorMiddleware;
 use Swoft\Http\Server\Router\Router;
+use Swoft\Log\Logger;
+use Swoft\Server\SwooleEvent;
+use Swoft\SwoftEvent;
 use Throwable;
 
 /**
@@ -24,7 +25,7 @@ use Throwable;
  * @Bean("httpDispatcher")
  * @since 2.0
  */
-class HttpDispatcher extends Dispatcher
+class HttpDispatcher extends AbstractDispatcher
 {
     /**
      * Default middleware to handler request
@@ -32,13 +33,6 @@ class HttpDispatcher extends Dispatcher
      * @var string
      */
     protected $defaultMiddleware = DefaultMiddleware::class;
-
-    /**
-     * 1 pre-match before run middleware
-     * 2 normal match on UserMiddleware
-     * @var int
-     */
-    // private $routeMatchStrategy = 2;
 
     /**
      * Accept formatter
@@ -49,12 +43,18 @@ class HttpDispatcher extends Dispatcher
     protected $acceptFormatter;
 
     /**
+     * @Inject("logger")
+     *
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
      * Dispatch http request
      *
      * @param mixed ...$params
      *
-     * @throws ReflectionException
-     * @throws ContainerException
+     * @throws SwoftException
      */
     public function dispatch(...$params): void
     {
@@ -65,10 +65,13 @@ class HttpDispatcher extends Dispatcher
         [$request, $response] = $params;
 
         /* @var RequestHandler $requestHandler */
-        $requestHandler = BeanFactory::getBean(RequestHandler::class);
-        $requestHandler->initialize($this->requestMiddleware(), $this->defaultMiddleware);
+        $requestHandler = Swoft::getBean(RequestHandler::class);
+        $requestHandler->initialize($this->requestMiddlewares, $this->defaultMiddleware);
 
         try {
+            // Before request
+            $this->beforeRequest($request, $response);
+
             // Trigger before handle event
             Swoft::trigger(HttpServerEvent::BEFORE_REQUEST, null, $request, $response);
 
@@ -77,25 +80,20 @@ class HttpDispatcher extends Dispatcher
             $response = $requestHandler->handle($request);
         } catch (Throwable $e) {
             /** @var HttpErrorDispatcher $errDispatcher */
-            $errDispatcher = BeanFactory::getSingleton(HttpErrorDispatcher::class);
+            $errDispatcher = Swoft::getSingleton(HttpErrorDispatcher::class);
 
             // Handle request error
             $response = $errDispatcher->run($e, $response);
-
-            // Format response
-            $response = $this->acceptFormatter->format($response);
         }
+
+        // Format response content type
+        $response = $this->acceptFormatter->format($response);
 
         // Trigger after request
         Swoft::trigger(HttpServerEvent::AFTER_REQUEST, null, $response);
-    }
 
-    /**
-     * @return array
-     */
-    public function preMiddleware(): array
-    {
-        return [];
+        // After request
+        $this->afterRequest($response);
     }
 
     /**
@@ -104,16 +102,51 @@ class HttpDispatcher extends Dispatcher
     public function afterMiddleware(): array
     {
         return [
-            UserMiddleware::class,
-            ValidatorMiddleware::class
+            UserMiddleware::class
         ];
+    }
+
+    /**
+     * @param Request  $request
+     * @param Response $response
+     */
+    private function beforeRequest(Request $request, Response $response): void
+    {
+        $httpContext = HttpContext::new($request, $response);
+
+        // Add log data
+        if ($this->logger->isEnable()) {
+            $data = [
+                'event'       => SwooleEvent::REQUEST,
+                'uri'         => $request->getRequestTarget(),
+                'requestTime' => $request->getRequestTime(),
+            ];
+
+            $httpContext->setMulti($data);
+        }
+
+        Context::set($httpContext);
+    }
+
+    /**
+     * @param Response $response
+     */
+    private function afterRequest(Response $response): void
+    {
+        $response->send();
+
+        // Defer
+        Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+
+        // Destroy
+        Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
     }
 
     /**
      * @param Request $request
      *
      * @return Request
-     * @throws ContainerException
+     * @throws SwoftException
      */
     private function matchRouter(Request $request): Request
     {
@@ -122,14 +155,11 @@ class HttpDispatcher extends Dispatcher
         $uriPath = $request->getUriPath();
 
         /** @var Router $router */
-        $router    = BeanFactory::getSingleton('httpRouter');
-        $routeData = $router->match($uriPath, $method);
+        $router = Swoft::getSingleton('httpRouter');
+        $result = $router->match($uriPath, $method);
 
-        // Save matched route data to context
-        context()->set(Request::ROUTER_ATTRIBUTE, $routeData);
-
-        // Set router
-        $request = $request->withAttribute(Request::ROUTER_ATTRIBUTE, $routeData);
+        // Save matched route data to request
+        $request = $request->withAttribute(Request::ROUTER_ATTRIBUTE, $result);
         context()->setRequest($request);
 
         return $request;

@@ -2,14 +2,11 @@
 
 namespace Swoft\Http\Server\Middleware;
 
-use function explode;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Server\Contract\MiddlewareInterface;
 use Swoft\Http\Server\Router\Route;
@@ -17,6 +14,7 @@ use Swoft\Http\Server\Router\Router;
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\ValidateRegister;
 use Swoft\Validator\Validator;
+use function explode;
 
 /**
  * Class ValidatorMiddleware
@@ -32,15 +30,12 @@ class ValidatorMiddleware implements MiddlewareInterface
      * @param RequestHandlerInterface $handler
      *
      * @return ResponseInterface
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws ValidatorException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         /* @var Route $route */
         [$status, , $route] = $request->getAttribute(Request::ROUTER_ATTRIBUTE);
-
         if ($status !== Router::FOUND) {
             return $handler->handle($request);
         }
@@ -61,7 +56,6 @@ class ValidatorMiddleware implements MiddlewareInterface
         // ParsedBody is empty string
         $parsedBody    = $data = empty($data) ? [] : $data;
         $notParsedBody = !is_array($data);
-
         if ($notParsedBody) {
             $parsedBody = [];
         }
@@ -75,6 +69,7 @@ class ValidatorMiddleware implements MiddlewareInterface
         if ($notParsedBody) {
             $parsedBody = $data;
         }
+
         $request = $request->withParsedBody($parsedBody)->withParsedQuery($query);
 
         return $handler->handle($request);

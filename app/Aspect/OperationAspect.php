@@ -26,7 +26,7 @@ use Swoft\Db\DB;
  *
  * @Aspect(order=2)
  * @PointBean(
- *     include={"menu","role","module","log","information","configrelevant","administrators"}
+ *     include={"menu","role","module","information","configrelevant","administrators"}
  * )
  */
 class OperationAspect

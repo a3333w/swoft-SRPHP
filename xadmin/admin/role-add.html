@@ -12,6 +12,7 @@
     <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/xadmin.js"></script>
       <script src="./js/global.js"></script>
+      <script src="./js/config.js"></script>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
       <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -72,7 +73,7 @@
             var adminToken = localStorage.getItem("adminToken");
             var tree = layui.tree;
 
-            request.ajax('http://swoft.lkvip.com:8306/admin/system/menu/getmenutreerole', 'get', 'json', {
+            request.ajax(requestUri+'/admin/system/menu/getmenutreerole', 'get', 'json', {
                 'token': adminToken
             }, function (req) {
                 if(req.code == 1000){
@@ -94,7 +95,7 @@
             console.log(data.field);
             //发异步，把数据提交给php
 
-              request.ajax('http://swoft.lkvip.com:8306/admin/system/role/createrole', 'get', 'json', {
+              request.ajax(requestUri+'/admin/system/role/createrole', 'get', 'json', {
                   'token': adminToken,
                   'data' : data.field
               }, function (req) {

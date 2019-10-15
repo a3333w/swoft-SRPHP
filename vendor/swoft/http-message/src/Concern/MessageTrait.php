@@ -2,18 +2,16 @@
 
 namespace Swoft\Http\Message\Concern;
 
+use InvalidArgumentException;
+use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\StreamInterface;
+use Swoft\Http\Message\Stream\Stream;
 use function array_map;
 use function array_merge;
 use function bean;
 use function implode;
-use InvalidArgumentException;
 use function is_array;
-use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\StreamInterface;
-use ReflectionException;
 use function strtolower;
-use Swoft\Bean\Exception\ContainerException;
-use Swoft\Http\Message\Stream\Stream;
 use function trim;
 
 /**
@@ -178,6 +176,21 @@ trait MessageTrait
     }
 
     /**
+     * Get all headerLines
+     *
+     * @return array
+     */
+    public function getHeaderLines(): array
+    {
+        $headers = [];
+        foreach ($this->getHeaders() as $name => $header) {
+            $headers[$name] = implode(', ', $header);
+        }
+
+        return $headers;
+    }
+
+    /**
      * Return an instance with the provided value replacing the specified header.
      *
      * While header names are case-insensitive, the casing of the header will
@@ -214,13 +227,13 @@ trait MessageTrait
     }
 
     /**
-     * @see MessageInterface::withAddedHeader()
-     *
      * @param string          $name  Case-insensitive header field name to add.
      * @param string|string[] $value Header value(s).
      *
      * @return static
      * @throws InvalidArgumentException for invalid header names or values.
+     * @see MessageInterface::withAddedHeader()
+     *
      */
     public function withAddedHeader($name, $value)
     {
@@ -302,8 +315,6 @@ trait MessageTrait
      * Gets the body of the message.
      *
      * @return StreamInterface Returns the body as a stream.
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function getBody(): StreamInterface
     {

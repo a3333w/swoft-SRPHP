@@ -4,7 +4,6 @@
 namespace Swoft\Db\Query;
 
 use function is_array;
-use function ceil;
 use Closure;
 use DateTimeInterface;
 use Generator;
@@ -28,9 +27,10 @@ use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Grammar\MySqlGrammar;
 use Swoft\Db\Query\Processor\MySqlProcessor;
 use Swoft\Db\Query\Processor\Processor;
-use Swoft\Stdlib\Collection;
+use Swoft\Db\Eloquent\Collection;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Helper\Arr;
+use Swoft\Stdlib\Helper\ArrayHelper;
 use Swoft\Stdlib\Helper\Str;
 
 /**
@@ -261,9 +261,7 @@ class Builder implements PrototypeInterface
      * @param mixed ...$params
      *
      * @return PrototypeInterface|Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public static function new(...$params)
     {
@@ -332,8 +330,6 @@ class Builder implements PrototypeInterface
      * @param array  $bindings
      *
      * @return Builder
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function selectRaw(string $expression, array $bindings = []): self
     {
@@ -414,6 +410,8 @@ class Builder implements PrototypeInterface
      * @param mixed $query
      *
      * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function parseSub($query): array
     {
@@ -476,8 +474,6 @@ class Builder implements PrototypeInterface
      * @param bool              $where
      *
      * @return static
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function join(
         $table,
@@ -524,8 +520,6 @@ class Builder implements PrototypeInterface
      * @param string         $type
      *
      * @return static
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function joinWhere(string $table, $first, string $operator, string $second, string $type = 'inner'): self
     {
@@ -576,8 +570,6 @@ class Builder implements PrototypeInterface
      * @param string|null    $second
      *
      * @return static
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function leftJoin(string $table, $first, string $operator = null, string $second = null): self
     {
@@ -593,8 +585,6 @@ class Builder implements PrototypeInterface
      * @param string $second
      *
      * @return static
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function leftJoinWhere(string $table, string $first, string $operator, string $second): self
     {
@@ -606,7 +596,7 @@ class Builder implements PrototypeInterface
      *
      * @param Closure|static|string $query
      * @param string                $as
-     * @param string                $first
+     * @param Closure|string        $first
      * @param string|null           $operator
      * @param string|null           $second
      *
@@ -615,7 +605,7 @@ class Builder implements PrototypeInterface
      * @throws DbException
      * @throws ReflectionException
      */
-    public function leftJoinSub($query, string $as, string $first, string $operator = null, string $second = null): self
+    public function leftJoinSub($query, string $as, $first, string $operator = null, string $second = null): self
     {
         return $this->joinSub($query, $as, $first, $operator, $second, 'left');
     }
@@ -629,8 +619,6 @@ class Builder implements PrototypeInterface
      * @param string|null    $second
      *
      * @return static
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function rightJoin(string $table, $first, string $operator = null, string $second = null): self
     {
@@ -646,8 +634,6 @@ class Builder implements PrototypeInterface
      * @param string $second
      *
      * @return static
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function rightJoinWhere(string $table, string $first, string $operator, string $second): self
     {
@@ -659,7 +645,7 @@ class Builder implements PrototypeInterface
      *
      * @param Closure|static|string $query
      * @param string                $as
-     * @param string                $first
+     * @param Closure|string        $first
      * @param string|null           $operator
      * @param string|null           $second
      *
@@ -668,13 +654,8 @@ class Builder implements PrototypeInterface
      * @throws DbException
      * @throws ReflectionException
      */
-    public function rightJoinSub(
-        $query,
-        string $as,
-        string $first,
-        string $operator = null,
-        string $second = null
-    ): self {
+    public function rightJoinSub($query, string $as, $first, string $operator = null, string $second = null): self
+    {
         return $this->joinSub($query, $as, $first, $operator, $second, 'right');
     }
 
@@ -687,8 +668,6 @@ class Builder implements PrototypeInterface
      * @param string|null         $second
      *
      * @return static
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function crossJoin(string $table, $first = null, string $operator = null, string $second = null): self
     {
@@ -727,9 +706,7 @@ class Builder implements PrototypeInterface
      * @param string               $boolean
      *
      * @return $this
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function where($column, $operator = null, $value = null, string $boolean = 'and'): self
     {
@@ -769,10 +746,19 @@ class Builder implements PrototypeInterface
         }
 
         // If the value is "null", we will just assume the developer wants to add a
-        // where null clause to the query. So, we will allow a short-cut here to
+        // where null clause to the query. so, we will allow a short-cut here to
         // that method for convenience so the developer doesn't have to check.
         if (is_null($value)) {
             return $this->whereNull($column, $boolean, $operator !== '=');
+        }
+
+        // If the value is array, we will auto convert "wherein"
+        if (is_array($value) && $boolean === 'and') {
+            if (count($value) > 1) {
+                return $this->whereIn($column, $value, $boolean, $operator !== '=');
+            }
+            // If item only one, not convert "wherein"
+            $value = current($value);
         }
 
         // If the column is making a JSON reference we'll check to see if the value
@@ -806,16 +792,25 @@ class Builder implements PrototypeInterface
      * @param string $method
      *
      * @return $this
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
-    protected function addArrayOfWheres($column, $boolean, $method = 'where'): self
+    protected function addArrayOfWheres(array $column, string $boolean, string $method = 'where'): self
     {
         return $this->whereNested(function ($query) use ($column, $method, $boolean) {
             foreach ($column as $key => $value) {
                 if (is_numeric($key) && is_array($value)) {
-                    $query->{$method}(...array_values($value));
+                    $value = array_values($value);
+
+                    if (is_string($value[0]) && stripos($value[0], $method) !== false
+                        && method_exists($this, $value[0])) {
+                        $thisMethod = array_shift($value);
+
+                        $query->{$thisMethod}(...$value);
+
+                        continue;
+                    }
+
+                    $query->{$method}(...$value);
                 } else {
                     $query->{$method}($key, '=', $value, $boolean);
                 }
@@ -846,9 +841,9 @@ class Builder implements PrototypeInterface
     }
 
     /**
-         * Determine if the given operator and value combination is legal.
-         *
-         * Prevents using Null values with invalid operators.
+     * Determine if the given operator and value combination is legal.
+     *
+     * Prevents using Null values with invalid operators.
      *
      * @param string $operator
      * @param mixed  $value
@@ -882,9 +877,7 @@ class Builder implements PrototypeInterface
      * @param mixed                $value
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function orWhere($column, $operator = null, $value = null): self
     {
@@ -904,9 +897,7 @@ class Builder implements PrototypeInterface
      * @param string|null  $boolean
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function whereColumn($first, string $operator = null, string $second = null, string $boolean = 'and'): self
     {
@@ -944,9 +935,7 @@ class Builder implements PrototypeInterface
      * @param string|null  $second
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function orWhereColumn($first, string $operator = null, string $second = null): self
     {
@@ -993,9 +982,7 @@ class Builder implements PrototypeInterface
      * @param bool   $not
      *
      * @return $this
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function whereIn(string $column, $values, string $boolean = 'and', bool $not = false): self
     {
@@ -1045,9 +1032,7 @@ class Builder implements PrototypeInterface
      * @param mixed  $values
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function orWhereIn(string $column, $values): self
     {
@@ -1062,9 +1047,7 @@ class Builder implements PrototypeInterface
      * @param string $boolean
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function whereNotIn(string $column, $values, string $boolean = 'and'): self
     {
@@ -1078,9 +1061,7 @@ class Builder implements PrototypeInterface
      * @param mixed  $values
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function orWhereNotIn(string $column, $values): self
     {
@@ -1096,9 +1077,7 @@ class Builder implements PrototypeInterface
      * @param bool    $not
      *
      * @return $this
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function whereInSub(string $column, Closure $callback, string $boolean, bool $not): self
     {
@@ -1533,9 +1512,7 @@ class Builder implements PrototypeInterface
      * @param string  $boolean
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function whereNested(Closure $callback, string $boolean = 'and'): self
     {
@@ -1548,9 +1525,7 @@ class Builder implements PrototypeInterface
      * Create a new query instance for nested where condition.
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function forNestedWhere(): self
     {
@@ -1587,9 +1562,7 @@ class Builder implements PrototypeInterface
      * @param string  $boolean
      *
      * @return $this
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function whereSub(string $column, string $operator, Closure $callback, string $boolean): self
     {
@@ -1617,9 +1590,7 @@ class Builder implements PrototypeInterface
      * @param bool    $not
      *
      * @return $this
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function whereExists(Closure $callback, string $boolean = 'and', bool $not = false): self
     {
@@ -1640,9 +1611,7 @@ class Builder implements PrototypeInterface
      * @param bool    $not
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function orWhereExists(Closure $callback, bool $not = false): self
     {
@@ -1656,9 +1625,7 @@ class Builder implements PrototypeInterface
      * @param string  $boolean
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function whereNotExists(Closure $callback, string $boolean = 'and'): self
     {
@@ -1671,9 +1638,7 @@ class Builder implements PrototypeInterface
      * @param Closure $callback
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function orWhereNotExists(Closure $callback): self
     {
@@ -1854,9 +1819,7 @@ class Builder implements PrototypeInterface
      * @param array  $parameters
      *
      * @return $this
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function dynamicWhere(string $method, array $parameters): self
     {
@@ -1903,9 +1866,7 @@ class Builder implements PrototypeInterface
      * @param int    $index
      *
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function addDynamic($segment, $connector, $parameters, $index): void
     {
@@ -2209,9 +2170,7 @@ class Builder implements PrototypeInterface
      * @param string   $column
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function forPageAfterId(int $perPage = 15, int $lastId = null, string $column = 'id'): self
     {
@@ -2221,8 +2180,28 @@ class Builder implements PrototypeInterface
             $this->where($column, '>', $lastId);
         }
 
-        return $this->orderBy($column, 'asc')
-            ->take($perPage);
+        return $this->orderBy($column, 'asc')->take($perPage);
+    }
+
+    /**
+     * Constrain the query to the next "page" of results before a given ID.
+     *
+     * @param int      $perPage
+     * @param int|null $lastId
+     * @param string   $column
+     *
+     * @return static
+     * @throws DbException
+     */
+    public function forPageBeforeId(int $perPage = 15, int $lastId = null, string $column = 'id'): self
+    {
+        $this->orders = $this->removeExistingOrdersFor($column);
+
+        if (!is_null($lastId)) {
+            $this->where($column, '<', $lastId);
+        }
+
+        return $this->orderBy($column, 'desc')->take($perPage);
     }
 
     /**
@@ -2248,9 +2227,7 @@ class Builder implements PrototypeInterface
      * @param bool           $all
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function union($query, bool $all = false): self
     {
@@ -2271,9 +2248,7 @@ class Builder implements PrototypeInterface
      * @param static|Closure $query
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function unionAll($query): self
     {
@@ -2322,6 +2297,8 @@ class Builder implements PrototypeInterface
      * Get the SQL representation of the query.
      *
      * @return string
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function toSql(): string
     {
@@ -2335,9 +2312,7 @@ class Builder implements PrototypeInterface
      * @param array  $columns
      *
      * @return null|object|Model|Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function find(string $id, array $columns = ['*'])
     {
@@ -2350,9 +2325,7 @@ class Builder implements PrototypeInterface
      * @param string $column
      *
      * @return mixed
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function value(string $column)
     {
@@ -2374,7 +2347,7 @@ class Builder implements PrototypeInterface
             return $this->processor->processSelect($this, $this->runSelect());
         });
 
-        return new Collection($result);
+        return Collection::make($result);
     }
 
     /**
@@ -2388,32 +2361,6 @@ class Builder implements PrototypeInterface
     protected function runSelect(): array
     {
         return $this->getConnection()->select($this->toSql(), $this->getBindings(), !$this->useWritePdo);
-    }
-
-    /**
-     * Paginate the given query into a simple paginator.
-     *
-     * @param int   $page
-     * @param int   $perPage
-     * @param array $columns
-     *
-     * @return array
-     */
-    public function paginate(int $page = 1, int $perPage = 15, array $columns = ['*']): array
-    {
-        $list = [];
-        // Run a pagination count query
-        if ($count = $this->getCountForPagination()) {
-            // Get paginate records
-            $list = $this->forPage($page, $perPage)->get($columns)->toArray();
-        }
-        return [
-            'count'     => $count,
-            'list'      => $list,
-            'page'      => $page,
-            'perPage'   => $perPage,
-            'pageCount' => ceil($count / $perPage)
-        ];
     }
 
     /**
@@ -2499,9 +2446,7 @@ class Builder implements PrototypeInterface
      * @param string|null $alias
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function chunkById(int $count, callable $callback, $column = 'id', string $alias = null): bool
     {
@@ -2578,7 +2523,7 @@ class Builder implements PrototypeInterface
         );
 
         if (empty($queryResult)) {
-            return new Collection();
+            return Collection::make();
         }
 
         // If the columns are qualified with a table or have an alias, we cannot use
@@ -2632,7 +2577,7 @@ class Builder implements PrototypeInterface
             }
         }
 
-        return new Collection($results);
+        return Collection::make($results);
     }
 
     /**
@@ -2658,7 +2603,7 @@ class Builder implements PrototypeInterface
             }
         }
 
-        return new Collection($results);
+        return Collection::make($results);
     }
 
     /**
@@ -2803,12 +2748,7 @@ class Builder implements PrototypeInterface
             ->get($columns);
 
         if (!$results->isEmpty()) {
-            $aggregate = array_change_key_case((array)$results[0])['aggregate'];
-
-            if (is_string($aggregate)) {
-                $aggregate = (int)$aggregate;
-            }
-            return $aggregate;
+            return array_change_key_case((array)$results[0])['aggregate'];
         }
 
         return 0;
@@ -2934,6 +2874,27 @@ class Builder implements PrototypeInterface
     }
 
     /**
+     * Batch update records
+     *
+     * @param array  $values
+     * @param string $primary
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function batchUpdateByIds(array $values, string $primary = 'id')
+    {
+        $affectedRows = $this->getConnection()->update(
+            $this->grammar->compileBatchUpdateByIds($this, $values, $primary),
+            []
+        );
+
+        return $affectedRows;
+    }
+
+    /**
      * Insert a new record and get the value of the primary key.
      *
      * @param array       $values
@@ -2998,21 +2959,23 @@ class Builder implements PrototypeInterface
      *
      * @param array $attributes
      * @param array $values
+     * @param array $counters
      *
      * @return bool
      * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
      */
-    public function updateOrInsert(array $attributes, array $values = [])
+    public function updateOrInsert(array $attributes, array $values = [], array $counters = [])
     {
         if (!$this->where($attributes)->exists()) {
-            return $this->insert(array_merge($attributes, $values));
+            return $this->insert(array_merge($attributes, $values, $counters));
         }
 
         if (empty($values)) {
             return true;
         }
+        $values = array_merge($values, $this->warpCounters($counters));
         return (bool)$this->take(1)->update($values);
     }
 
@@ -3067,6 +3030,124 @@ class Builder implements PrototypeInterface
     }
 
     /**
+     * Updates the whole table using the provided counter changes and conditions.
+     *
+     * For example, to increment all customers' age by 1,
+     *
+     * ```php
+     * Customer::updateAllCounters([], ['age' => 1]);
+     * ```
+     *
+     * Note that this method will not trigger any events.
+     *
+     * @param array $where
+     * @param array $counters
+     * @param array $extra
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCounters(array $where, array $counters, array $extra = []): int
+    {
+        $counters = $this->warpCounters($counters);
+
+        if (!empty($where)) {
+            $this->where($where);
+        }
+
+        return $this->update($counters + $extra);
+    }
+
+    /**
+     * Convert counters
+     *
+     * @param array $counters
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public function warpCounters(array $counters): array
+    {
+        // Convert counters to expression
+        foreach ($counters as $column => $value) {
+            if (!$value instanceof Expression) {
+                $wrapped = $this->grammar->wrap($column);
+
+                $counters[$column] = $this->raw("$wrapped + $value");
+            }
+        }
+
+        return $counters;
+    }
+
+    /**
+     * Update counters by primary key
+     *
+     * @param array  $ids
+     * @param array  $counters
+     * @param array  $extra
+     * @param string $primary
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCountersById(
+        array $ids,
+        array $counters,
+        array $extra = [],
+        string $primary = 'id'
+    ): int {
+        if (empty($ids)) {
+            return 0;
+        }
+
+        if (count($ids) === 1) {
+            $ids = current($ids);
+        }
+
+        return $this->updateAllCounters(
+            [$primary => $ids],
+            $counters,
+            $extra
+        );
+    }
+
+    /**
+     * Update counters by `$attributes` Adopt Primary
+     *
+     * @param array  $attributes
+     * @param array  $counters
+     * @param array  $extra
+     * @param string $primary
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCountersAdoptPrimary(
+        array $attributes,
+        array $counters,
+        array $extra = [],
+        string $primary = 'id'
+    ): int {
+
+        $ids = $this->where($attributes)->get([$primary])->pluck($primary)->toArray();
+
+        return $this->updateAllCountersById(
+            $ids,
+            $counters,
+            $extra,
+            $primary
+        );
+    }
+
+    /**
      * Delete a record from the database.
      *
      * @param mixed $id
@@ -3111,9 +3192,7 @@ class Builder implements PrototypeInterface
      * Get a new instance of the query builder.
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function newQuery(): self
     {
@@ -3124,9 +3203,7 @@ class Builder implements PrototypeInterface
      * Create a new query instance for a sub-query.
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function forSubQuery(): self
     {
@@ -3139,13 +3216,10 @@ class Builder implements PrototypeInterface
      * @param mixed $value
      *
      * @return Expression
-     * @throws ContainerException
-     * @throws DbException
-     * @throws ReflectionException
      */
-    public function raw($value)
+    public function raw($value): Expression
     {
-        return $this->getConnection()->raw($value);
+        return Expression::new($value);
     }
 
     /**
@@ -3250,7 +3324,7 @@ class Builder implements PrototypeInterface
         $connection = DB::connection($this->poolName);
 
         // Select db name
-        if(!empty($this->db)){
+        if (!empty($this->db)) {
             $connection->db($this->db);
         }
 
@@ -3328,9 +3402,7 @@ class Builder implements PrototypeInterface
      * @param Grammar|null   $grammar
      * @param Processor|null $processor
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function setQueryGrammarAndPostProcessor(Grammar $grammar = null, Processor $processor = null): void
     {
@@ -3352,9 +3424,7 @@ class Builder implements PrototypeInterface
      * @param string       $prefix
      * @param Grammar|null $grammar
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function setQueryGrammar(string $driver, string $prefix, Grammar $grammar = null): void
     {
@@ -3385,9 +3455,7 @@ class Builder implements PrototypeInterface
      * @param string         $driver
      * @param Processor|null $processor
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function setPostProcessor(string $driver, Processor $processor = null): void
     {

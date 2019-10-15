@@ -2,19 +2,10 @@
 
 namespace Swoft\Http\Message;
 
-use function array_merge;
-use function explode;
 use InvalidArgumentException;
-use function is_array;
-use function preg_replace;
 use Psr\Http\Message\StreamInterface;
-use ReflectionException;
-use function rtrim;
-use function strtoupper;
-use function substr;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Concern\InteractsWithInput;
 use Swoft\Http\Message\Contract\RequestParserInterface;
 use Swoft\Http\Message\Contract\ServerRequestInterface;
@@ -23,6 +14,12 @@ use Swoft\Http\Message\Stream\Stream;
 use Swoft\Http\Message\Uri\Uri;
 use Swoft\Stdlib\Helper\Str;
 use Swoole\Http\Request as CoRequest;
+use function explode;
+use function is_array;
+use function preg_replace;
+use function rtrim;
+use function strtoupper;
+use function substr;
 
 /**
  * Class Request - The PSR ServerRequestInterface implement
@@ -40,19 +37,19 @@ class Request extends PsrRequest implements ServerRequestInterface
     public const ROUTER_ATTRIBUTE = 'swoftRouterHandler';
 
     /**
-     * Html
+     * @deprecated please use ContentType::XML instead
+     */
+    public const CONTENT_XML = 'text/xml';
+
+    /**
+     * @deprecated please use ContentType::HTML instead
      */
     public const CONTENT_HTML = 'text/html';
 
     /**
-     * Json
+     * @deprecated please use ContentType::JSON instead
      */
     public const CONTENT_JSON = 'application/json';
-
-    /**
-     * Xml
-     */
-    public const CONTENT_XML = 'application/xml';
 
     /**
      * Method key
@@ -134,41 +131,47 @@ class Request extends PsrRequest implements ServerRequestInterface
      * @param CoRequest $coRequest
      *
      * @return Request
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(CoRequest $coRequest): self
     {
         /** @var Request $self */
         $self = BeanFactory::getBean('httpRequest');
 
-        $serverParams = array_merge(self::DEFAULT_SERVER, $coRequest->server);
+        // Server params
+        $serverParams = $coRequest->server;
 
         // Set headers
         $self->initializeHeaders($headers = $coRequest->header ?: []);
 
-        $self->method        = $serverParams['request_method'];
+        $self->method        = $serverParams['request_method'] ?? '';
         $self->coRequest     = $coRequest;
         $self->queryParams   = $coRequest->get ?: [];
         $self->cookieParams  = $coRequest->cookie ?: [];
         $self->serverParams  = $serverParams;
-        $self->requestTarget = $serverParams['request_uri'];
+        $self->requestTarget = $serverParams['request_uri'] ?? '';
 
-        $parts = explode('?', $serverParams['request_uri'], 2);
-        // save
-        $self->uriPath  = $parts[0];
-        $self->uriQuery = $parts[1] ?? $serverParams['query_string'];
+        // Save
+        $self->uriPath  = $serverParams['request_uri'] ?? '';
+        $self->uriQuery = $serverParams['query_string'] ?? '';
+
+        if (strpos($self->uriPath, '?') !== false) {
+            // Split
+            $parts = explode('?', $self->uriPath, 2);
+
+            $self->uriPath  = $parts[0];
+            $self->uriQuery = $parts[1] ?? $self->uriQuery;
+        }
 
         /** @var Uri $uri */
         $self->uri = Uri::new('', [
             'host'        => $headers['host'] ?? '',
             'path'        => $self->uriPath,
             'query'       => $self->uriQuery,
-            'https'       => $serverParams['https'],
-            'http_host'   => $serverParams['http_host'],
-            'server_name' => $serverParams['server_name'],
-            'server_addr' => $serverParams['server_addr'],
-            'server_port' => $serverParams['server_port'],
+            'https'       => $serverParams['https'] ?? '',
+            'http_host'   => $serverParams['http_host'] ?? '',
+            'server_name' => $serverParams['server_name'] ?? '',
+            'server_addr' => $serverParams['server_addr'] ?? '',
+            'server_port' => $serverParams['server_port'] ?? '',
         ]);
 
         // Update host by Uri info
@@ -580,8 +583,6 @@ class Request extends PsrRequest implements ServerRequestInterface
 
     /**
      * @return StreamInterface
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function getBody(): StreamInterface
     {
@@ -613,7 +614,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function getRequestTime(): float
     {
-        return (float)$this->serverParams['request_time_float'];
+        return (float)($this->serverParams['request_time_float'] ?? 0);
     }
 
     /**
@@ -623,8 +624,11 @@ class Request extends PsrRequest implements ServerRequestInterface
     public function getProtocolVersion(): string
     {
         if (!$this->protocol) {
-            // $self->protocol = \str_replace('HTTP/', '', $serverParams['server_protocol']);
-            $this->protocol = substr($this->serverParams['server_protocol'], 5); // faster
+            // Protocol
+            $protocol = $this->serverParams['server_protocol'] ?? 'HTTP/1.1';
+
+            // Parse
+            $this->protocol = substr($protocol, 5);
         }
 
         return $this->protocol;
@@ -651,5 +655,22 @@ class Request extends PsrRequest implements ServerRequestInterface
         }
 
         return $content;
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return Request
+     */
+    public function setUriPath(string $path): Request
+    {
+        $this->uriPath = $path;
+
+        // Sync information
+        $this->serverParams['request_uri'] = $path . ($this->uriQuery ? '?' . $this->uriQuery : '');
+
+        $this->uri = $this->uri->withPath($path);
+
+        return $this;
     }
 }

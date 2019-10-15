@@ -44,6 +44,14 @@ class SystemMenu extends Model
     private $pid;
 
     /**
+     * 是否系统菜单 1是 0否
+     *
+     * @Column()
+     * @var int|null
+     */
+    private $system;
+
+    /**
      * 模块名称
      *
      * @Column()
@@ -60,14 +68,6 @@ class SystemMenu extends Model
     private $title;
 
     /**
-     * 菜单级别
-     *
-     * @Column()
-     * @var int
-     */
-    private $level;
-
-    /**
      * 菜单图标
      *
      * @Column()
@@ -76,20 +76,12 @@ class SystemMenu extends Model
     private $icon;
 
     /**
-     * 方法路由(模块/控制器/方法)
+     * 链接地址(模块/控制器/方法)菜单url
      *
      * @Column()
      * @var string|null
      */
     private $url;
-
-    /**
-     * 菜单连接 仅用于2级菜单的页面跳转
-     *
-     * @Column()
-     * @var string|null
-     */
-    private $hraf;
 
     /**
      * 扩展参数
@@ -111,7 +103,7 @@ class SystemMenu extends Model
      * 菜单是否显示 1是 0否
      *
      * @Column()
-     * @var int
+     * @var int|null
      */
     private $nav;
 
@@ -119,7 +111,7 @@ class SystemMenu extends Model
      * 状态 1显示 0 不显示
      *
      * @Column()
-     * @var int
+     * @var int|null
      */
     private $status;
 
@@ -182,6 +174,17 @@ class SystemMenu extends Model
     }
 
     /**
+     * @param int|null $system
+     * @return self
+     */
+    public function setSystem(?int $system): self
+    {
+        $this->system = $system;
+
+        return $this;
+    }
+
+    /**
      * @param string|null $module
      * @return self
      */
@@ -199,17 +202,6 @@ class SystemMenu extends Model
     public function setTitle(?string $title): self
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    /**
-     * @param int $level
-     * @return self
-     */
-    public function setLevel(int $level): self
-    {
-        $this->level = $level;
 
         return $this;
     }
@@ -237,17 +229,6 @@ class SystemMenu extends Model
     }
 
     /**
-     * @param string|null $hraf
-     * @return self
-     */
-    public function setHraf(?string $hraf): self
-    {
-        $this->hraf = $hraf;
-
-        return $this;
-    }
-
-    /**
      * @param string|null $param
      * @return self
      */
@@ -270,10 +251,10 @@ class SystemMenu extends Model
     }
 
     /**
-     * @param int $nav
+     * @param int|null $nav
      * @return self
      */
-    public function setNav(int $nav): self
+    public function setNav(?int $nav): self
     {
         $this->nav = $nav;
 
@@ -281,10 +262,10 @@ class SystemMenu extends Model
     }
 
     /**
-     * @param int $status
+     * @param int|null $status
      * @return self
      */
-    public function setStatus(int $status): self
+    public function setStatus(?int $status): self
     {
         $this->status = $status;
 
@@ -349,6 +330,14 @@ class SystemMenu extends Model
     }
 
     /**
+     * @return int|null
+     */
+    public function getSystem(): ?int
+    {
+        return $this->system;
+    }
+
+    /**
      * @return string|null
      */
     public function getModule(): ?string
@@ -362,14 +351,6 @@ class SystemMenu extends Model
     public function getTitle(): ?string
     {
         return $this->title;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLevel(): int
-    {
-        return $this->level;
     }
 
     /**
@@ -391,14 +372,6 @@ class SystemMenu extends Model
     /**
      * @return string|null
      */
-    public function getHraf(): ?string
-    {
-        return $this->hraf;
-    }
-
-    /**
-     * @return string|null
-     */
     public function getParam(): ?string
     {
         return $this->param;
@@ -413,17 +386,17 @@ class SystemMenu extends Model
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getNav(): int
+    public function getNav(): ?int
     {
         return $this->nav;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getStatus(): int
+    public function getStatus(): ?int
     {
         return $this->status;
     }

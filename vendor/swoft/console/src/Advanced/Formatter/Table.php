@@ -2,6 +2,10 @@
 
 namespace Swoft\Console\Advanced\Formatter;
 
+use Swoft\Console\Advanced\MessageFormatter;
+use Swoft\Console\Helper\Show;
+use Swoft\Stdlib\StrBuffer;
+use Toolkit\Cli\ColorTag;
 use function array_keys;
 use function array_merge;
 use function array_sum;
@@ -10,10 +14,6 @@ use function count;
 use function is_string;
 use function mb_strlen;
 use function str_pad;
-use Swoft\Console\Advanced\MessageFormatter;
-use Swoft\Console\Helper\Show;
-use Swoft\Stdlib\StrBuffer;
-use Toolkit\Cli\ColorTag;
 use function ucwords;
 
 /**
@@ -123,7 +123,7 @@ class Table extends MessageFormatter
                         $hasHead = true;
                     }
 
-                    $info['columnMaxWidth'][$index] = mb_strlen($name, 'UTF-8');
+                    $info['columnMaxWidth'][$index] = mb_strlen((string)$name, 'UTF-8');
                 }
             }
 
@@ -139,7 +139,7 @@ class Table extends MessageFormatter
                         $info['columnMaxWidth'][$colIndex] = $colWidth;
                     }
                 } else {
-                    $info['columnMaxWidth'][$colIndex] = mb_strlen($value, 'UTF-8');
+                    $info['columnMaxWidth'][$colIndex] = mb_strlen((string)$value, 'UTF-8');
                 }
 
                 $colIndex++;

@@ -1,25 +1,5 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : 蓝卡线上
- Source Server Type    : MySQL
- Source Server Version : 50616
- Source Host           : rm-2zeo1o8454uv23zjb.mysql.rds.aliyuncs.com:3306
- Source Schema         : swofttext
-
- Target Server Type    : MySQL
- Target Server Version : 50616
- File Encoding         : 65001
-
- Date: 23/09/2019 20:10:41
-*/
-
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
-
--- ----------------------------
--- Table structure for system_user
--- ----------------------------
 DROP TABLE IF EXISTS `system_user`;
 CREATE TABLE `system_user`  (
   `id` smallint(6) NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -40,13 +20,6 @@ CREATE TABLE `system_user`  (
   `dtime` timestamp(0) NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`username`) USING BTREE COMMENT '账号唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '【系统】管理员账号表' ROW_FORMAT = Compact;
-
--- ----------------------------
--- Records of system_user
--- ----------------------------
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '【系统】管理员账号表' ROW_FORMAT = Compact;
 INSERT INTO `system_user` VALUES (1, 1, 'admin', '21232f297a57a5a743894a0e4a801fc3', '星河长明', '', '', '', 0, 'default', 1, '', 0, '0000-00-00 00:00:00', '2019-09-16 10:10:57', '0000-00-00 00:00:00');
-INSERT INTO `system_user` VALUES (2, 2, 'ce1', 'e10adc3949ba59abbe56e057f20f883e', '', '18996416534', '329593870@qq.com', '', 0, 'default', 1, '', 0, '2019-09-17 15:28:54', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
-INSERT INTO `system_user` VALUES (3, 4, 'ce2', 'e10adc3949ba59abbe56e057f20f883e', '', '18996416534', '329593870@qq.com', '', 0, 'default', 1, '', 0, '2019-09-17 16:00:11', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
-
 SET FOREIGN_KEY_CHECKS = 1;

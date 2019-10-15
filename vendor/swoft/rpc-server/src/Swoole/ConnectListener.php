@@ -8,7 +8,7 @@ use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Server\ServiceServerEvent;
-use Swoft\Server\Swoole\ConnectInterface;
+use Swoft\Server\Contract\ConnectInterface;
 use Swoole\Server;
 
 /**
@@ -25,7 +25,6 @@ class ConnectListener implements ConnectInterface
      * @param int    $fd
      * @param int    $reactorId
      *
-     * @throws ContainerException
      */
     public function onConnect(Server $server, int $fd, int $reactorId): void
     {
@@ -33,7 +32,7 @@ class ConnectListener implements ConnectInterface
         Swoft::trigger(ServiceServerEvent::BEFORE_CONNECT,null, $server, $fd, $reactorId);
 
         // Connect event
-        Swoft::trigger(ServiceServerEvent::CONNECT );
+        Swoft::trigger(ServiceServerEvent::CONNECT);
 
         // After connect
         Swoft::trigger(ServiceServerEvent::AFTER_CONNECT);
