@@ -6,21 +6,22 @@ author:刘乔木
 email:329593870@qq.com
 For you with stars in your eyes。Every spring, summer, autumn and winter。
 
-更新日志：
-10月7日：版本1.0
+更新10月7日：版本1.0
 1、支持swoft2.0.2
 2、项目启动php swoftcli.phar run -c http:start
+
 配置:
 1、将bean.php中DB1,DB2账号密码变为自己的 
 2、将app\InstallDb中数据库文件数据入库 
 3、请将首页地址指向xadmin目录 
 4、配置好后输入php swoftcli.phar run -c http:start 
 
-
-10月16日：版本1.1
+10月16日更新：版本1.1
 1、支持一件安装(自动生成主要配置文件及数据库数据)
 2、完美支持swoft2.0.6
 3、php bin/swoft http:start 启动
+
+
 配置:
 1、clone文件至项目文件夹
 2、改.env中SWOFT_PATH为项目目录（例如：SWOFT_PATH=/data/swoft/swoft）
