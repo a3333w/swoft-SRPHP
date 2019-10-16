@@ -71,10 +71,7 @@
           var request = layui.request;
           var laypage = layui.laypage;
           var adminToken = localStorage.getItem("adminToken");
-
-
-
-          request.ajax('http://swoft.lkvip.com:8306/admin/system/role/getlist', 'get', 'json', {
+          request.ajax(requestUri+'/admin/system/role/getlist', 'get', 'json', {
               'token': adminToken,
               'limit' : 10,
               'curr': 1
@@ -124,7 +121,7 @@
 
                       //首次不执行
                       if(!first){
-                          request.ajax('http://swoft.lkvip.com:8306/admin/system/role/getlist', 'get', 'json', {
+                          request.ajax(requestUri+'/admin/system/role/getlist', 'get', 'json', {
                               'token': adminToken,
                               'curr':obj.curr,
                               'limit':obj.limit
@@ -182,14 +179,12 @@
                   var form = layui.form,
                       layer = layui.layer;
                   var request = layui.request;
-
                   var adminToken = localStorage.getItem("adminToken");
-
 
               if ($(obj).attr('title') == '停用') {
                   layer.confirm('确认要停用吗？', function (index) {
 
-                      request.ajax('http://swoft.lkvip.com:8306/admin/system/role/changestatus', 'get', 'json', {
+                      request.ajax(requestUri+'/admin/system/role/changestatus', 'get', 'json', {
                           'token': adminToken,
                           'id': id,
                           'status': 0
@@ -206,11 +201,9 @@
 
                       });
                   });
-
               } else {
-
                   layer.confirm('确认要启用吗？', function (index) {
-                      request.ajax('http://swoft.lkvip.com:8306/admin/system/role/changestatus', 'get', 'json', {
+                      request.ajax(requestUri+'/admin/system/role/changestatus', 'get', 'json', {
                           'token': adminToken,
                           'id': id,
                           'status': 1
@@ -225,10 +218,7 @@
                       });
                   });
               }
-
           });
-
-
       }
 
       /*用户-删除*/
@@ -240,11 +230,8 @@
                       var form = layui.form,
                           layer = layui.layer;
                       var request = layui.request;
-
                       var adminToken = localStorage.getItem("adminToken");
-
-
-                      request.ajax('http://swoft.lkvip.com:8306/admin/system/role/changestatus', 'get', 'json', {
+                      request.ajax(requestUri+'/admin/system/role/changestatus', 'get', 'json', {
                           'token': adminToken,
                           'id': id,
                           'status': 0
@@ -256,16 +243,9 @@
                       }, function (req) {
 
                       });
-
-
                   });
-
-
-
           });
       }
-
-
 
       function delAll (argument) {
 
