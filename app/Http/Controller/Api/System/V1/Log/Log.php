@@ -29,8 +29,7 @@ class Log
 {
     /**
      * 获取操作日志列表
-     * @RequestMapping(route="getlist",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="getlist",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */

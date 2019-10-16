@@ -17,6 +17,7 @@ use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
 use Swoft\Http\Server\Annotation\Mapping\RequestMethod;
 use Swoft\Http\Server\Annotation\Mapping\Middleware;
 use Swoft\Validator\Annotation\Mapping\Validate;
+use Swoft\Validator\Annotation\Mapping\ValidateType;
 
 
 /**
@@ -29,8 +30,7 @@ class Information
 {
     /**
      * 获得系统信息
-     * @RequestMapping(route="getsysteminformation",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping("getsysteminformation", method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */

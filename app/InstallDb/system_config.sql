@@ -20,7 +20,7 @@ CREATE TABLE `system_config`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `title`(`title`) USING BTREE COMMENT '标题唯一',
   UNIQUE INDEX `name`(`name`) USING BTREE COMMENT '标识唯一'
-) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '【系统】配置表' ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '【系统】配置表' ROW_FORMAT = Compact;
 INSERT INTO `system_config` VALUES (1, 1, 'base', '网站名称', 'website_name', '蓝卡管理', 'input', '', '', '', 1, 1, '2019-09-04 15:30:47', '2019-09-05 15:04:53', '0000-00-00 00:00:00');
 INSERT INTO `system_config` VALUES (2, 1, 'base', '网站域名', 'website_address', 'http://swoft.lkvip.com', 'input', '', '', '', 1, 1, '2019-09-04 17:39:34', '2019-09-05 11:55:18', '0000-00-00 00:00:00');
 INSERT INTO `system_config` VALUES (3, 1, 'base', '网站标题', 'website_title', '蓝卡新系统', 'input', '', '', '', 1, 1, '2019-09-04 17:43:41', '2019-09-05 11:56:01', '0000-00-00 00:00:00');
@@ -35,4 +35,5 @@ INSERT INTO `system_config` VALUES (11, 1, 'upload', '图片上传大小限制',
 INSERT INTO `system_config` VALUES (12, 1, 'upload', '允许图片上传格式', 'upload_image_ext', 'jpg,png,gif,jpeg,ico', 'input', '', '', '英文逗号(,)分割', 1, 1, '2019-09-05 15:43:23', '2019-09-05 15:49:49', '0000-00-00 00:00:00');
 INSERT INTO `system_config` VALUES (13, 1, 'databases', '备份目录', 'backup_path', './backup/database/', 'input', '', '', '数据库备份目录。以/结束', 1, 1, '2019-09-05 15:44:32', '2019-09-05 15:51:02', '0000-00-00 00:00:00');
 INSERT INTO `system_config` VALUES (14, 1, 'databases', '20971520', 'part_size', '20971520', 'input', '', '', '数据库分卷大小，以B 为单位。建议20M', 1, 1, '2019-09-05 15:45:42', '2019-09-05 15:51:02', '0000-00-00 00:00:00');
+INSERT INTO `system_config` VALUES (15, 0, 'order', '订单可用类型', 'order-type', '', 'select', '1-积分订单\n2-礼包订单\n3-微信订单', '', '用于订单分类', 1, 1, '2019-09-17 15:33:21', '2019-09-18 16:19:59', '0000-00-00 00:00:00');
 SET FOREIGN_KEY_CHECKS = 1;

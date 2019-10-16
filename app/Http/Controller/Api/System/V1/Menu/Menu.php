@@ -29,8 +29,7 @@ class Menu
 {
     /**
      * 创建顶级菜单
-     * @RequestMapping(route="createtop",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="createtop",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -47,8 +46,7 @@ class Menu
 
     /**
      * 创建子菜单
-     * @RequestMapping(route="createchild",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="createchild",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -65,8 +63,7 @@ class Menu
 
     /**
      * 获得单条菜单
-     * @RequestMapping(route="getmenu",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="getmenu",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -81,8 +78,7 @@ class Menu
 
     /**
      * 编辑菜单
-     * @RequestMapping(route="menuedit",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="menuedit",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -99,8 +95,7 @@ class Menu
 
     /**
      * 删除菜单
-     * @RequestMapping(route="deletemenu",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="deletemenu",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -121,8 +116,7 @@ class Menu
 
     /**
      * 获得菜单树
-     * @RequestMapping(route="getmenutree",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="getmenutree",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -137,8 +131,7 @@ class Menu
 
     /**
      * 权限分配获得菜单
-     * @RequestMapping(route="getmenutreerole",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="getmenutreerole",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -153,8 +146,7 @@ class Menu
 
     /**
      * 获得账户所属角色拥有权限的首页显示菜单
-     * @RequestMapping(route="getauthmenu",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="getauthmenu",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */

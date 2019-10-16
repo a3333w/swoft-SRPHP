@@ -29,8 +29,7 @@ class Administrators
 {
     /**
      * 管理员数据库生成
-     * @RequestMapping(route="create",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="create",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -47,8 +46,7 @@ class Administrators
 
     /**
      * 获取管理员列表
-     * @RequestMapping(route="getlist",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="getlist",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -64,8 +62,7 @@ class Administrators
 
     /**
      * 改变管理员状态
-     * @RequestMapping(route="changestatus",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="changestatus",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -80,8 +77,7 @@ class Administrators
 
     /**
      * 编辑时获得本条数据信息
-     * @RequestMapping(route="editfindadministrators",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="editfindadministrators",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -99,8 +95,7 @@ class Administrators
 
     /**
      * 编辑管理员信息
-     * @RequestMapping(route="editadministrators",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="editadministrators",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */

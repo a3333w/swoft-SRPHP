@@ -38,11 +38,12 @@ class MenuMiddleware implements MiddlewareInterface
             $bool = in_array($data['id'],json_decode($authArr));
             if($bool == false){
                 $json = ['code'=>0,'msg'=>'缺少权限'];
-                $response = Context::mustGet()->getResponse();
+                $response = Context()->getResponse();
                 return $response->withData($json);
             }
         }
 
+        var_dump('Menu');
         $response = $handler->handle($request);
         return $response;
     }

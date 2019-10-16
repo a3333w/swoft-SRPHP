@@ -29,8 +29,7 @@ class Role
 {
     /**
      * 角色数据库生成
-     * @RequestMapping(route="createrole",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="createrole",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -47,8 +46,7 @@ class Role
 
     /**
      * 获取角色列表
-     * @RequestMapping(route="getlist",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="getlist",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -63,8 +61,7 @@ class Role
 
     /**
      * 获取所有角色
-     * @RequestMapping(route="getrole",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="getrole",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -79,8 +76,7 @@ class Role
 
     /**
      * 改变角色状态
-     * @RequestMapping(route="changestatus",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="changestatus",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -95,8 +91,7 @@ class Role
 
     /**
      * 编辑时获得本条数据信息
-     * @RequestMapping(route="editfindrole",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="editfindrole",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -114,8 +109,7 @@ class Role
 
     /**
      * 编辑模块信息
-     * @RequestMapping(route="editrole",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="editrole",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */

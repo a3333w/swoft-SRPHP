@@ -53,9 +53,9 @@ return [
         ],
         /* @see HttpServer::$setting */
         'setting' => [
-            'task_worker_num'       => 12,
+            'task_worker_num'       => 1,
             'task_enable_coroutine' => true,
-            'worker_num'            => 6
+            'worker_num'            => 1
         ]
     ],
     'httpDispatcher'    => [
@@ -63,7 +63,7 @@ return [
         'middlewares'      => [
             \App\Http\Middleware\FavIconMiddleware::class,
             \App\Http\Middleware\VerifyMiddleware::class,
-//            \App\Http\Middleware\AuthMiddleware::class,
+            \App\Http\Middleware\AuthMiddleware::class,
             \App\Http\Middleware\MenuMiddleware::class,
             // \Swoft\Whoops\WhoopsMiddleware::class,
             // Allow use @View tag
@@ -76,9 +76,9 @@ return [
     ],
     'db'                => [
         'class'    => Database::class,
-        'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
+        'dsn'      => 'mysql:dbname=swoft;host=127.0.0.1',
         'username' => 'root',
-        'password' => 'swoft123456',
+        'password' => '123456',
     ],
     'db2'               => [
         'class'      => Database::class,

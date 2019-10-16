@@ -24,7 +24,7 @@ class LogData extends BaseData
 {
     /**
      * @Inject("LanKa.SCF.Log.LogDao")
-     * @var \App\Model\Lanka\System\Log\Dao\LogDao
+     * @var \App\Model\Lanka\System\Log\Dao\LogDao;
      */
     private $dao;
 

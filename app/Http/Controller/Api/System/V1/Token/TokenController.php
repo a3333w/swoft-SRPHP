@@ -29,7 +29,7 @@ use Swoole\Exception;
 class TokenController
 {
     /**
-     * 管理员用户和普通用户或许token
+     * 管理员用户和普通用户获取token
      * @RequestMapping(route="gettoken")
      * @param Response $response
      * @param Request $request
@@ -97,7 +97,7 @@ class TokenController
                 $modules = [];
             }
             $token = array(
-                'iss' => "http://swoft.lkvip.com",    //签发者
+                'iss' => "http://http://47.92.79.128",    //签发者
                 'aud' => $request->input()['role'],     //接收jwt的一方
                 'iat' => time(),                         //签发时间
                 'exp' => time() + $exp,                  //jwt的过期时间，过期时间必须要大于签发时间
@@ -139,7 +139,7 @@ class TokenController
                 ]
             )->getResult();
             $token = array(
-                'iss' => "http://swoft.lkvip.com",    //签发者
+                'iss' => "http://47.92.79.128",    //签发者
                 'aud' => $request->input()['role'],     //接收jwt的一方
                 'iat' => time(),                         //签发时间
                 'exp' => time() + $exp,                  //jwt的过期时间，过期时间必须要大于签发时间
@@ -163,10 +163,10 @@ class TokenController
         DB::commit();
         if(empty($user)){
             $json = ['code'=>0,'msg'=>'授权失败'];
-            $response = Context::mustGet()->getResponse();
+            $response = Context()->getResponse();
             return $response->withData($json);
         }
-        $response = Context::mustGet()->getResponse();
+        $response = Context()->getResponse();
         //3、将token码加入响应头返回用户端
         return $response->withHeader('token',$token)->withData(
             $message);

@@ -24,5 +24,10 @@ CREATE TABLE `system_module`  (
   UNIQUE INDEX `title`(`title`) USING BTREE COMMENT '模块标题',
   UNIQUE INDEX `name`(`name`) USING BTREE COMMENT '模块名称',
   UNIQUE INDEX `identifier`(`identifier`) USING BTREE COMMENT '模块标识'
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '【系统】 模块表' ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '【系统】 模块表' ROW_FORMAT = Compact;
+INSERT INTO `system_module` VALUES (1, 2, 'order', 'module.su.module', '订单', '订单模块', '苏克', '', '1.0.0', '', 50, 1, 0, '/var/www/swoft/config/order/', 'default', '2019-09-17 15:19:48', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
+INSERT INTO `system_module` VALUES (2, 2, 'goods', 'goods.su.module', '商品', '商品模块', '苏克', '', '1.0.0', '', 50, 1, 0, '/var/www/swoft/config/goods/', 'default', '2019-09-17 15:54:49', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
+INSERT INTO `system_module` VALUES (3, 2, 'cart', 'cart1', '购物车', '测试的模块', 'qjk', '', '1.0.0', '', 50, 0, 0, '/var/www/swoft/config/cart/', 'default', '2019-09-19 15:24:06', '2019-10-10 16:49:16', '2019-09-24 09:09:12');
+INSERT INTO `system_module` VALUES (7, 2, 'member', 'member.lk.moudle', '会员', '会员模块', 'lk', '', '1.0.0', '', 50, 1, 0, '/var/www/swoft/config/member/', 'default', '2019-09-24 18:13:43', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
+INSERT INTO `system_module` VALUES (8, 2, 'gsdgt', 'tse', 'tset', 'set', 'tset', '', 'sett', '', 50, 1, 0, '/var/www/swoft/config/gsdgt/', 'default', '2019-09-24 19:18:19', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
 SET FOREIGN_KEY_CHECKS = 1;

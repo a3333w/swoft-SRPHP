@@ -144,7 +144,7 @@ class BaseDao
      */
     public function create(array $param)
     {
-        return $this->entity::new()->fill($param)->save();
+        return $this->entity::new($param)->save();
     }
 
     /**

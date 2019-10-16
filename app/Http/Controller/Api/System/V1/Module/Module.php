@@ -29,8 +29,7 @@ class Module
 {
     /**
      * 模块数据库生成
-     * @RequestMapping(route="create",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="create",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -49,8 +48,7 @@ class Module
 
     /**
      * 获取模块列表
-     * @RequestMapping(route="getlist",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="getlist",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -65,8 +63,7 @@ class Module
 
     /**
      * 编辑时获得本条数据信息
-     * @RequestMapping(route="editfindmodule",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="editfindmodule",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -82,8 +79,7 @@ class Module
 
     /**
      * 编辑模块信息
-     * @RequestMapping(route="editmodule",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="editmodule",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -98,8 +94,7 @@ class Module
 
     /**
      * 删除模块
-     * @RequestMapping(route="deletemodule",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="deletemodule",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -114,8 +109,7 @@ class Module
 
     /**
      * 获得模块配置文件
-     * @RequestMapping(route="getmoduleconfig",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="getmoduleconfig",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */

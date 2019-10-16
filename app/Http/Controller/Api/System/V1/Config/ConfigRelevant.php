@@ -29,8 +29,7 @@ class ConfigRelevant
 {
     /**
      * 写入配置
-     * @RequestMapping(route="create",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="create",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -45,8 +44,7 @@ class ConfigRelevant
 
     /**
      * 获得配置管理分组
-     * @RequestMapping(route="getconfigtitle",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="getconfigtitle",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -63,8 +61,7 @@ class ConfigRelevant
 
     /**
      * 写入配置管理分组
-     * @RequestMapping(route="writeconfigtitle",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="writeconfigtitle",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -81,8 +78,7 @@ class ConfigRelevant
 
     /**
      * 获取分组配置
-     * @RequestMapping(route="getconfiglist",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="getconfiglist",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -99,8 +95,7 @@ class ConfigRelevant
 
     /**
      * 获取总共条数
-     * @RequestMapping(route="getconfigcount",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="getconfigcount",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -116,8 +111,7 @@ class ConfigRelevant
 
     /**
      * 获得配置列表
-     * @RequestMapping(route="getlist",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="getlist",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -131,8 +125,7 @@ class ConfigRelevant
 
     /**
      * 获得单个配置
-     * @RequestMapping(route="editfindconfig",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="editfindconfig",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -145,8 +138,7 @@ class ConfigRelevant
 
     /**
      * 修改单个配置
-     * @RequestMapping(route="editconfig",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="editconfig",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -161,8 +153,7 @@ class ConfigRelevant
 
     /**
      * 删除单个配置
-     * @RequestMapping(route="deleteconfig",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="deleteconfig",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
@@ -177,8 +168,7 @@ class ConfigRelevant
 
     /**
      * 系统配置批量修改
-     * @RequestMapping(route="systemconfigedit",method={RequestMethod::GET})
-     * @Validate(validator="TestValidator",type="get")
+     * @RequestMapping(route="systemconfigedit",method=RequestMethod::GET)
      * @param Response $response
      * @param Request $request
      */
