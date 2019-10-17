@@ -32,4 +32,4 @@ For you with stars in your eyes。Every spring, summer, autumn and winter。
 7、点击开始安装输入相关信息，点击提交(注意php版本、MySQL版本、swoole版本及各项服务是否打开)
 8、安装完成后 浏览器输入(地址:端口/admin)，账号admin 密码admin 进入控制台 结束
 
-演示地址：http://47.92.79.128/admin/  admin admin  
+演示地址：http://47.92.79.128  admin admin  
