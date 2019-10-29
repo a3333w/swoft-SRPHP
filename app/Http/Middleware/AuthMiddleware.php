@@ -81,8 +81,6 @@ class AuthMiddleware implements MiddlewareInterface
                 return $response->withData($json);
             }
         }
-
-        var_dump('Auth');
         $response = $handler->handle($request);
         return $response;
 
