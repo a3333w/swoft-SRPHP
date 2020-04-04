@@ -63,7 +63,7 @@ class OperationAspect
 //            DB::beginTransaction();
 //            //获取菜单
 //            $data = psf()->call(
-//                "LanKa.SCF.Menu.MenuData::getMenuByUrl",
+//                "Menu.MenuData::getMenuByUrl",
 //                [
 //                    $url, ['title','module']
 //                ]
@@ -84,21 +84,21 @@ class OperationAspect
 //            ];
 //            //判断是否已有此操作
 //            $log = psf()->call(
-//                "LanKa.SCF.Log.LogData::inLog",
+//                "Log.LogData::inLog",
 //                [
 //                    $logData
 //                ]
 //            )->getResult();
 //            if(empty($log)){
 //                psf()->call(
-//                    "LanKa.SCF.Log.LogData::create",
+//                    "Log.LogData::create",
 //                    [
 //                        $logData
 //                    ]
 //                )->getResult();
 //            }else{
 //                psf()->call(
-//                    "LanKa.SCF.Log.LogData::asc",
+//                    "Log.LogData::asc",
 //                    [
 //                        $logData,'count'
 //                    ]
