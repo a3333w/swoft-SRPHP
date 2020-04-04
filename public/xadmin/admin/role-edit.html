@@ -59,10 +59,6 @@
         </form>
     </div>
 </div>
-
-
-
-
 <script>
     layui.use(['form','layer','tree','request'], function(){
         $ = layui.jquery;
@@ -71,7 +67,6 @@
         var request = layui.request;
         var adminToken = localStorage.getItem("adminToken");
         var tree = layui.tree;
-
         //获得get参数
         var $_GET = (function(){
             var url = window.document.location.href.toString();
@@ -96,7 +91,6 @@
             if(req.code == 1000){
                 $('#name').val(req.data.res.name);
                 $('#intro').val(req.data.res.intro);
-                //渲染
                 var inst1 = tree.render({
                     elem: '#menu',  //绑定元素
                     showCheckbox:true
@@ -141,8 +135,6 @@
         });
     });
 </script>
-
-
 </body>
 
 </html>

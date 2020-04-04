@@ -12,6 +12,7 @@
     <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/xadmin.js"></script>
     <script src="./js/global.js"></script>
+    <script src="./js/config.js"></script>
     <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
     <!--[if lt IE 9]>
     <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -104,7 +105,6 @@
             ,layer = layui.layer;
         var request = layui.request;
         var adminToken = localStorage.getItem("adminToken");
-
         //获得get参数
         var $_GET = (function(){
             var url = window.document.location.href.toString();
@@ -123,11 +123,10 @@
         })();
 
         //获得所有角色
-        request.ajax('http://swoft.lkvip.com:8306/admin/system/administrators/editfindadministrators', 'get', 'json', {
+        request.ajax(requestUri + '/admin/system/administrators/editfindadministrators', 'get', 'json', {
             'token': adminToken,
             'id' : $_GET['id']
         }, function (req) {
-
             if(req.code == 1000){
                 var option = '';  // option进行拼接
                 $.each(req.data.menu,function(i,item){
@@ -136,13 +135,9 @@
                     }
                     option += "<option value='"+item.id+"'>"+item.name+"</option>";
                 });
-
                 $('#username').val(req.data.res.username);
                 $('#mobile').val(req.data.res.mobile);
                 $('#email').val(req.data.res.email);
-
-
-
                 $('#role_id').append(option);　　// 给select节点追加
                 form.render('select')
             }
@@ -169,7 +164,7 @@
                 console.log(data);
                 //发异步，把数据提交给php
                 //获得所有角色
-                request.ajax('http://swoft.lkvip.com:8306/admin/system/administrators/editadministrators', 'get', 'json', {
+                request.ajax(requestUri + '/admin/system/administrators/editadministrators', 'get', 'json', {
                     'token': adminToken,
                     'data':data.field,
                     'id' : $_GET['id']
@@ -181,7 +176,6 @@
                             function() {
                                 //关闭当前frame
                                 xadmin.close();
-
                                 // 可以对父窗口进行刷新
                                 xadmin.father_reload();
                             });

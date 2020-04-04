@@ -86,7 +86,6 @@
                       '                  <td>'+item.name+'</td>\n' +
                       '                  <td>'+item.intro+'</td>\n' +
                       '                  <td class="td-status">\n';
-
                   if(item.status == 1){
                       str+='<span class="layui-btn layui-btn-normal layui-btn-mini">已启用</span></td>';
                       str+= '                      <td class="td-manage">\n' +
@@ -97,7 +96,6 @@
                       str+= '                      <td class="td-manage">\n' +
                           '                      <a onclick="member_stop(this,\''+item.id+'\')" href="javascript:;"  title="启用">\n' +
                           '                      <i class="layui-icon">&#xe62f;</i>';
-                      //xe601
                   }
                   str+= '                  </a>\n' +
                       '                  <a title="编辑"  onclick="xadmin.open(\'编辑\',\'role-edit.html?id='+item.id+'\')" href="javascript:;">\n' +
@@ -110,7 +108,6 @@
                       '                  </tr>';
               });
               $('.list').html(str);
-
               //执行一个laypage实例
               laypage.render({
                   elem: 'page',
@@ -118,18 +115,15 @@
                   curr:1,
                   jump: function(obj, first){
                       //obj包含了当前分页的所有参数，比如：
-                      console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
-                      console.log(obj.limit); //得到每页显示的条数
-
+//                      console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+//                      console.log(obj.limit); //得到每页显示的条数
                       //首次不执行
                       if(!first){
                           request.ajax(requestUri+'/admin/system/role/getlist', 'get', 'json', {
                               'token': adminToken,
                               'curr':obj.curr,
                               'limit':obj.limit
-
                           }, function (req) {
-
                               var str = '';
                               $.each(req.data.list,function(i,item){
                                   str+='<tr>\n' +
@@ -160,18 +154,13 @@
                                       '                  </tr>';
                               });
                               $('.list').html(str);
-
                           },function (req) {
-
                           });
                       }
                   }
               });
-
           },function (req) {
-
           });
-
       });
 
        /*用户-停用*/
@@ -182,25 +171,19 @@
                       layer = layui.layer;
                   var request = layui.request;
                   var adminToken = localStorage.getItem("adminToken");
-
               if ($(obj).attr('title') == '停用') {
                   layer.confirm('确认要停用吗？', function (index) {
-
                       request.ajax(requestUri+'/admin/system/role/changestatus', 'get', 'json', {
                           'token': adminToken,
                           'id': id,
                           'status': 0
                       }, function (req) {
-
                           //发异步把用户状态进行更改
                           $(obj).attr('title', '启用');
                           $(obj).find('i').html('&#xe62f;');
-
                           $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
                           layer.msg('已停用!', {icon: 5, time: 1000});
-
                       }, function (req) {
-
                       });
                   });
               } else {
@@ -212,11 +195,9 @@
                       }, function (req) {
                           $(obj).attr('title', '停用');
                           $(obj).find('i').html('&#xe601;');
-
                           $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
                           layer.msg('已启用!', {icon: 5, time: 1000});
                       }, function (req) {
-
                       });
                   });
               }
@@ -238,21 +219,16 @@
                           'id': id,
                           'status': 0
                       }, function (req) {
-
                           $(obj).parents("tr").remove();
                           layer.msg('已删除!', {icon: 1, time: 1000});
-
                       }, function (req) {
-
                       });
                   });
           });
       }
 
       function delAll (argument) {
-
         var data = tableCheck.getData();
-  
         layer.confirm('确认要删除吗？'+data,function(index){
             //捉到所有被选中的，发异步进行删除
             layer.msg('删除成功', {icon: 1});

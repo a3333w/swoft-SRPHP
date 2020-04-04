@@ -57,14 +57,7 @@
             </form>
         </div>
     </div>
-
-
-
-
     <script>
-
-
-
         layui.use(['form','layer','tree','request'], function(){
             $ = layui.jquery;
           var form = layui.form
@@ -72,12 +65,10 @@
             var request = layui.request;
             var adminToken = localStorage.getItem("adminToken");
             var tree = layui.tree;
-
             request.ajax(requestUri+'/admin/system/menu/getmenutreerole', 'get', 'json', {
                 'token': adminToken
             }, function (req) {
                 if(req.code == 1000){
-
                     //渲染
                     var inst1 = tree.render({
                         elem: '#menu',  //绑定元素
@@ -87,30 +78,21 @@
                 }
             });
 
-
-
-
           //监听提交
           form.on('submit(add)', function(data){
-            console.log(data.field);
             //发异步，把数据提交给php
-
               request.ajax(requestUri+'/admin/system/role/createrole', 'get', 'json', {
                   'token': adminToken,
                   'data' : data.field
               }, function (req) {
                   if(req.data.status == 1){
-
                       layer.alert("增加成功", {icon: 6},function () {
                           // 获得frame索引
                           var index = parent.layer.getFrameIndex(window.name);
                           //关闭当前frame
                           parent.layer.close(index);
-
                       });
-
                   }
-
               },function (req) {
                   console.log(req);
                   layer.msg('不可添加');
@@ -118,9 +100,7 @@
             return false;
           });
 
-
         form.on('checkbox(father)', function(data){
-
             if(data.elem.checked){
                 $(data.elem).parent().siblings('td').find('input').prop("checked", true);
                 form.render(); 
@@ -129,8 +109,6 @@
                 form.render();  
             }
         });
-          
-          
         });
     </script>
 

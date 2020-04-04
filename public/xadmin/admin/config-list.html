@@ -69,7 +69,6 @@
         var request = layui.request;
         var laypage = layui.laypage;
         var adminToken = localStorage.getItem("adminToken");
-
         //获得get参数
         var $_GET = (function(){
             var url = window.document.location.href.toString();
@@ -102,9 +101,8 @@
                 curr:1,
                 jump: function(obj, first){
                     //obj包含了当前分页的所有参数，比如：
-                    console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
-                    console.log(obj.limit); //得到每页显示的条数
-
+//                    console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+//                    console.log(obj.limit); //得到每页显示的条数
                         request.ajax(requestUri+'/admin/system/config/getlist', 'get', 'json', {
                             'token': adminToken,
                             'curr':obj.curr,
@@ -139,9 +137,7 @@
                                 str+='</td></tr>';
                             });
                             $('.configlist').html(str);
-
                         },function (req) {
-
                         });
                 }
             });
@@ -158,10 +154,8 @@
                 });
                 str +='<button class=\"layui-btn\" onclick=\"xadmin.open(\'添加分组\',\'config-group-add.html\',800,600)\">';
                 str +=' <i class=\"layui-icon\"></i>添加分组</button></div>';
-
                 str +='<button class=\"layui-btn\" onclick=\"xadmin.open(\'添加配置\',\'config-add.html\',800,600)\">';
                 str +=' <i class=\"layui-icon\"></i>添加配置</button></div>';
-
                 $('.layui-card-header').html(str);
             }
         });
@@ -197,7 +191,6 @@ function member_del(obj, id) {
                         console.log(req);
                         layer.msg('删除失败');
                     });
-
                 });
         });
 }

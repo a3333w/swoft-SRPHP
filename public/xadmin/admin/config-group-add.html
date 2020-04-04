@@ -52,7 +52,6 @@
             $ = layui.jquery;
             var form = layui.form,
                 layer = layui.layer;
-
             var request = layui.request;
             var adminToken = localStorage.getItem("adminToken");
 
@@ -85,16 +84,14 @@
                                     xadmin.father_reload();
                                 });
                         }
-
                     },function (req) {
                         console.log(req);
                         layer.msg('不可添加');
                     });
-
                     return false;
                 });
-
-        });</script>
+        });
+</script>
 
 </body>
 

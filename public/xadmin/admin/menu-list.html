@@ -83,7 +83,6 @@
         $ = layui.jquery;
         var form = layui.form,
             layer = layui.layer;
-
         var request = layui.request;
         var adminToken = localStorage.getItem("adminToken");
 
@@ -103,7 +102,6 @@
                 return {};
             }
         })();
-
 
         request.ajax(requestUri+'/admin/system/menu/getmenutree', 'get', 'json', {
             'token': adminToken
@@ -132,12 +130,10 @@
                 }
             })
         },function (req) {
-
         });
     });
 
     function menuTree(arr) {
-
         var str = '';
         $.each(arr,function(i,item){
             var childNum = item.children.length;
@@ -148,9 +144,7 @@
             }else {
                 var num = (item.level - 1) * 4 + 1;
             }
-
             if ( childNum > 0 && item.level < 3){
-
                 str+='<tr cate-id=\''+item.id+'\' fid=\''+item.pid+'\'>';
                 str+='<td>';
                 str+='<input type=\"checkbox\" name=\"\" lay-skin=\"primary\">';
@@ -175,8 +169,6 @@
                 str+='<button class=\"layui-btn layui-btn-warm layui-btn-xs\"  onclick=\"xadmin.open(\'添加子菜单\',\'menu-child-add.html?id='+item.id+'\')\" ><i class=\"layui-icon\">&#xe642;</i>添加子菜单</button>';
                 str+='<button class=\"layui-btn-danger layui-btn layui-btn-xs\"  onclick=\"member_del(this,\''+item.id+'\')\" href=\"javascript:;\" ><i class=\"layui-icon\">&#xe640;</i>删除</button>';
                 str+='</td></tr>';
-
-
                 str+=menuTree(item.children);
             }else {
 
@@ -217,7 +209,6 @@
     function member_del(obj,id){
         layer.confirm('确认要删除吗？',function(index){
             //发异步删除数据
-
             layui.use([ 'form', 'layer','jquery','request'],
                 function() {
                     $ = layui.jquery;
@@ -225,10 +216,6 @@
                         layer = layui.layer;
                     var request = layui.request;
                     var adminToken = localStorage.getItem("adminToken");
-
-
-                    //监听提交
-
                             //发异步，把数据提交给php
                             request.ajax(requestUri+'/admin/system/menu/deletemenu', 'get', 'json', {
                                 'token': adminToken,
@@ -246,10 +233,7 @@
                                 layer.msg('不可删除');
                             });
                             return false;
-
                 });
-
-
         });
     }
 
@@ -261,7 +245,6 @@
             getCateId(id);
         });
     }
-
 </script>
 </body>
 </html>

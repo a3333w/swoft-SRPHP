@@ -12,6 +12,7 @@
         <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
         <script type="text/javascript" src="./js/xadmin.js"></script>
         <script src="./js/global.js"></script>
+        <script src="./js/config.js"></script>
         <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
         <!--[if lt IE 9]>
             <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
@@ -104,9 +105,8 @@
                     ,layer = layui.layer;
                 var request = layui.request;
                 var adminToken = localStorage.getItem("adminToken");
-
                 //获得所有角色
-                request.ajax('http://swoft.lkvip.com:8306/admin/system/role/getrole', 'get', 'json', {
+                request.ajax(requestUri + '/admin/system/role/getrole', 'get', 'json', {
                     'token': adminToken
                 }, function (req) {
                     if(req.code == 1000){
@@ -118,7 +118,6 @@
                         form.render('select')
                     }
                 });
-
                 //自定义验证规则
                 form.verify({
                     nikename: function(value) {
@@ -133,14 +132,13 @@
                         }
                     }
                 });
-
                 //监听提交
                 form.on('submit(add)',
                 function(data) {
                     console.log(data);
                     //发异步，把数据提交给php
                     //获得所有角色
-                    request.ajax('http://swoft.lkvip.com:8306/admin/system/administrators/create', 'get', 'json', {
+                    request.ajax(requestUri + '/admin/system/administrators/create', 'get', 'json', {
                         'token': adminToken,
                         'data':data.field
                     }, function (req) {
@@ -159,7 +157,6 @@
                     });
                     return false;
                 });
-
             });</script>
 
     </body>

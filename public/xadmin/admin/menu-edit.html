@@ -96,7 +96,6 @@
         $ = layui.jquery;
         var form = layui.form,
             layer = layui.layer;
-
         var request = layui.request;
         var adminToken = localStorage.getItem("adminToken");
 
@@ -160,7 +159,6 @@
                 });
             }
         },function () {
-
         });
 
         //监听提交
@@ -172,17 +170,17 @@
                     'data' : data.field,
                     'id' : $_GET['id']
                 }, function (req) {
-//                    if(req.data.status == 1){
-//                        layer.alert("修改成功", {
-//                                icon: 6
-//                            },
-//                            function() {
-//                                //关闭当前frame
-//                                xadmin.close();
-//                                // 可以对父窗口进行刷新
-//                                xadmin.father_reload();
-//                        });
-//                    }
+                    if(req.data.status == 1){
+                        layer.alert("修改成功", {
+                                icon: 6
+                            },
+                            function() {
+                                //关闭当前frame
+                                xadmin.close();
+                                // 可以对父窗口进行刷新
+                                xadmin.father_reload();
+                        });
+                    }
                 },function (req) {
                     layer.msg('不可修改');
                 });

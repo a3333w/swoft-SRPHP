@@ -53,7 +53,6 @@
                 layer = layui.layer;
             var request = layui.request;
             var adminToken = localStorage.getItem("adminToken");
-
             //获得get参数
             var $_GET = (function(){
                 var url = window.document.location.href.toString();
@@ -70,7 +69,6 @@
                     return {};
                 }
             })();
-
             //获取分组title
             request.ajax(requestUri+'/admin/system/config/getconfigtitle', 'get', 'json', {
                 'token': adminToken
@@ -83,7 +81,6 @@
                     $('.layui-card-header').html(str);
                 }
             });
-
             //获取分组title
             request.ajax(requestUri+'/admin/system/config/getlist', 'get', 'json', {
                 'token': adminToken,
@@ -171,7 +168,6 @@
                     return false;
                 });
         });
-
     //跳转配置list页面
     function configHref (e) {
         window.location.href=requesturi+'/admin/system.html?group='+e;
@@ -188,7 +184,6 @@
         }
         return temp;
     }
-
 </script>
 
 </html>

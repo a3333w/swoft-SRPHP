@@ -73,10 +73,8 @@
         $ = layui.jquery;
         var form = layui.form,
             layer = layui.layer;
-
         var request = layui.request;
         var adminToken = localStorage.getItem("adminToken");
-
         //获得所有模块
         request.ajax(requestUri+'/admin/system/module/getmoduleconfig', 'get', 'json', {
             'token': adminToken,

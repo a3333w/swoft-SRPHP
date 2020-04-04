@@ -68,7 +68,6 @@
 </div>
 </body>
 <script>
-
     layui.use(['laydate', 'form','request','laypage'],
         function(){
             var laydate = layui.laydate;
@@ -77,9 +76,6 @@
             var request = layui.request;
             var laypage = layui.laypage;
             var adminToken = localStorage.getItem("adminToken");
-
-
-
             request.ajax(requestUri+'/admin/system/log/getlist', 'get', 'json', {
                 'token': adminToken,
                 'limit' : 10,
@@ -108,19 +104,16 @@
                     count: num, //数据总数，从服务端得到
                     curr:1,
                     jump: function(obj, first){
-                        //obj包含了当前分页的所有参数，比如：
-                        console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
-                        console.log(obj.limit); //得到每页显示的条数
-
+//                        //obj包含了当前分页的所有参数，比如：
+//                        console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+//                        console.log(obj.limit); //得到每页显示的条数
                         //首次不执行
                         if(!first){
                             request.ajax(requestUri+'/admin/system/log/getlist', 'get', 'json', {
                                 'token': adminToken,
                                 'curr':obj.curr,
                                 'limit':obj.limit
-
                             }, function (req) {
-
                                 var str = '';
                                 $.each(req.data.list,function(i,item){
                                     str+='<tr>';
@@ -136,21 +129,13 @@
                                     str+='</tr>';
                                 });
                                 $('.list').html(str);
-
                             },function (req) {
-
                             });
                         }
                     }
                 });
-
             },function (req) {
-
             });
-
         });
-
-
-
 </script>
 </html>

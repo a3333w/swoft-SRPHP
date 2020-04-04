@@ -100,7 +100,6 @@
             $ = layui.jquery;
             var form = layui.form,
                 layer = layui.layer;
-
             var request = layui.request;
             var adminToken = localStorage.getItem("adminToken");
             //自定义验证规则
@@ -144,8 +143,6 @@
                 layer.msg('不可修改');
             });
 
-
-
             //监听提交
             form.on('submit(add)',
                 function(data) {
@@ -177,7 +174,8 @@
                     return false;
                 });
 
-        });</script>
+        });
+</script>
 
 </body>
 

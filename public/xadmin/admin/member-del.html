@@ -153,7 +153,6 @@
         });
       });
 
-
       /*用户-删除*/
       function member_del(obj,id){
           layer.confirm('确认要删除吗？',function(index){
@@ -163,12 +162,8 @@
           });
       }
 
-
-
       function delAll (argument) {
-
         var data = tableCheck.getData();
-  
         layer.confirm('确认要恢复吗？'+data,function(index){
             //捉到所有被选中的，发异步进行删除
             layer.msg('恢复成功', {icon: 1});

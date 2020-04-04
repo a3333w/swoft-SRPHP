@@ -75,7 +75,6 @@
         var request = layui.request;
         var laypage = layui.laypage;
         var adminToken = localStorage.getItem("adminToken");
-
         request.ajax(requestUri+'/admin/system/module/getlist', 'get', 'json', {
             'token': adminToken,
             'limit' : 10,
@@ -107,11 +106,9 @@
                 str+=' <a title=\"删除\" onclick=\"member_del(this,\''+item.id+'\')\" href=\"javascript:;\">';
                 str+=' <i class=\"layui-icon\">&#xe640;</i></a>';
                 str+='</td></tr>';
-
             });
 
             $('.moduleList').html(str);
-
             //执行一个laypage实例
             laypage.render({
                 elem: 'page',
@@ -119,16 +116,14 @@
                 curr:1,
                 jump: function(obj, first){
                     //obj包含了当前分页的所有参数，比如：
-                    console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
-                    console.log(obj.limit); //得到每页显示的条数
-
+//                    console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+//                    console.log(obj.limit); //得到每页显示的条数
                     //首次不执行
                     if(!first){
                         request.ajax(requestUri+'/admin/system/module/getlist', 'get', 'json', {
                             'token': adminToken,
                             'curr':obj.curr,
                             'limit':obj.limit
-
                         }, function (req) {
                             var str = '';
                             $.each(req.data.list,function(i,item){
@@ -155,25 +150,16 @@
                                 str+=' <a title=\"删除\" onclick=\"member_del(this,\''+item.id+'\')\" href=\"javascript:;\">';
                                 str+=' <i class=\"layui-icon\">&#xe640;</i></a>';
                                 str+='</td></tr>';
-
                             });
-
                             $('.moduleList').html(str);
-
-
                         },function (req) {
-
                         });
                     }
                 }
             });
-
         },function (req) {
-
         });
     });
-
-
 
 /*用户-删除*/
 function member_del(obj, id) {
@@ -199,12 +185,9 @@ function member_del(obj, id) {
                         console.log(req);
                         layer.msg('删除失败');
                     });
-
-
                 })
         });
 }
-
 </script>
 
 </html>

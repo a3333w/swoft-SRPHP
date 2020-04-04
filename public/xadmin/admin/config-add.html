@@ -136,10 +136,8 @@
             $ = layui.jquery;
             var form = layui.form,
                 layer = layui.layer;
-
             var request = layui.request;
             var adminToken = localStorage.getItem("adminToken");
-
             //自定义验证规则
             form.verify({
                 status: [
@@ -147,7 +145,6 @@
                     ,'只能0或1' //提示信息
                 ]
             });
-
             //获取分组title
             request.ajax(requestUri+'/admin/system/config/getconfigtitle', 'get', 'json', {
                 'token': adminToken
@@ -161,13 +158,12 @@
                     form.render('select')
                 }
             });
-
             //监听提交
             form.on('submit(add)',
                 function(data) {
                     console.log(data);
                     //发异步，把数据提交给php
-                    request.ajax('http://swoft.lkvip.com:8306/admin/system/config/create', 'get', 'json', {
+                    request.ajax(requestUri + '/admin/system/config/create', 'get', 'json', {
                         'token': adminToken,
                         'data' : data.field
                     }, function (req) {
@@ -182,16 +178,13 @@
                                     xadmin.father_reload();
                                 });
                         }
-
                     },function (req) {
-                        console.log(req);
                         layer.msg('不可添加');
                     });
-
                     return false;
                 });
-
-        });</script>
+        });
+</script>
 
 </body>
 
