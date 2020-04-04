@@ -61,7 +61,6 @@ class TokenController
                     ]
                 ]
             )->getResult();
-
             $where = [
                 'id'=>$user['role_id']
             ];
@@ -79,7 +78,6 @@ class TokenController
                     ]
                 ]
             )->getResult();
-
             //获得角色权限对应的模块
             $userModule = psf()->call(
                 "Menu.MenuData::getMenuByid",
@@ -124,7 +122,6 @@ class TokenController
                 'roleAuth'     => $userAuth['auth'],
                 'firstModule' => $modules['0']
             ];
-
         }else{
             $user = psf()->call(
                 "Token.AdminData::user",
@@ -171,6 +168,4 @@ class TokenController
         return $response->withHeader('token',$token)->withData(
             $message);
     }
-
-
 }

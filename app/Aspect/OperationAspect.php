@@ -44,68 +44,68 @@ class OperationAspect
      */
     public function after()
     {
-//        $request = Context()->getRequest();
-//        $uri = $request->getServerParams()['request_uri'];   //获得请求url
-//        $uriSub = substr($uri,0,7);              //截取请求url
-//        $rule = '/^\/?\b(' . \config('jwt.systemUserUri') .')\b\/?/'; //正则规则 '/admin/'
-//        $grepAdministration = grep($rule, $uriSub,0,7);           //正则匹配 helper函数
-//        if($grepAdministration) {
-//            $url = mb_substr($uri, 7);
-//            $ip = $request->getServerParams()['remote_addr'];    //获取本机ip
-//            $input = $request->input();
-//            $inputArr = [];
-//            foreach ($input as $key => $value) {
-//                if ($key == 'token') {
-//                    continue;
-//                }
-//                $inputArr[] = $value;
-//            }
-//            DB::beginTransaction();
-//            //获取菜单
-//            $data = psf()->call(
-//                "Menu.MenuData::getMenuByUrl",
-//                [
-//                    $url, ['title','module']
-//                ]
-//            )->getResult();
-//            $token = getToken($request);
-//            $auth = JWT::decode($token, config('jwt.publicKey'), ['type' => \config('jwt.type')]);
-//            //获取用户名
-//            $RoleAdmin = $auth->data->nike;
-//            $RoleAdminId = $auth->data->id;
-//            $logData = [
-//                'title' => $data['title'],
-//                'module' => $data['module'],
-//                'uid' => $RoleAdminId,
-//                'url' => $url,
-//                'uname' => $RoleAdmin,
-//                'param' => json_encode($inputArr),
-//                'ip' => $ip
-//            ];
-//            //判断是否已有此操作
-//            $log = psf()->call(
-//                "Log.LogData::inLog",
-//                [
-//                    $logData
-//                ]
-//            )->getResult();
-//            if(empty($log)){
-//                psf()->call(
-//                    "Log.LogData::create",
-//                    [
-//                        $logData
-//                    ]
-//                )->getResult();
-//            }else{
-//                psf()->call(
-//                    "Log.LogData::asc",
-//                    [
-//                        $logData,'count'
-//                    ]
-//                )->getResult();
-//            }
-//            DB::commit();
-//        }
+        $request = Context()->getRequest();
+        $uri = $request->getServerParams()['request_uri'];   //获得请求url
+        $uriSub = substr($uri,0,7);              //截取请求url
+        $rule = '/^\/?\b(' . \config('jwt.systemUserUri') .')\b\/?/'; //正则规则 '/admin/'
+        $grepAdministration = grep($rule, $uriSub,0,7);           //正则匹配 helper函数
+        if($grepAdministration) {
+            $url = mb_substr($uri, 7);
+            $ip = $request->getServerParams()['remote_addr'];    //获取本机ip
+            $input = $request->input();
+            $inputArr = [];
+            foreach ($input as $key => $value) {
+                if ($key == 'token') {
+                    continue;
+                }
+                $inputArr[] = $value;
+            }
+            DB::beginTransaction();
+            //获取菜单
+            $data = psf()->call(
+                "Menu.MenuData::getMenuByUrl",
+                [
+                    $url, ['title','module']
+                ]
+            )->getResult();
+            $token = getToken($request);
+            $auth = JWT::decode($token, config('jwt.publicKey'), ['type' => \config('jwt.type')]);
+            //获取用户名
+            $RoleAdmin = $auth->data->nike;
+            $RoleAdminId = $auth->data->id;
+            $logData = [
+                'title' => $data['title'],
+                'module' => $data['module'],
+                'uid' => $RoleAdminId,
+                'url' => $url,
+                'uname' => $RoleAdmin,
+                'param' => json_encode($inputArr),
+                'ip' => $ip
+            ];
+            //判断是否已有此操作
+            $log = psf()->call(
+                "Log.LogData::inLog",
+                [
+                    $logData
+                ]
+            )->getResult();
+            if(empty($log)){
+                psf()->call(
+                    "Log.LogData::create",
+                    [
+                        $logData
+                    ]
+                )->getResult();
+            }else{
+                psf()->call(
+                    "Log.LogData::asc",
+                    [
+                        $logData,'count'
+                    ]
+                )->getResult();
+            }
+            DB::commit();
+        }
     }
 
 }
