@@ -42,7 +42,7 @@ class MenuLogic
         $data['module'] = 'system';
         //顶级菜单入库
         return psf()->call(
-            "LanKa.SCF.Menu.MenuData::create",
+            "Menu.MenuData::create",
             [
                 $data,
             ]
@@ -60,7 +60,7 @@ class MenuLogic
 
         //获得父类等级
         $fatherLevel =  psf()->call(
-            "LanKa.SCF.Menu.MenuData::getMenuByid",
+            "Menu.MenuData::getMenuByid",
             [
                 $id,['level'],true
             ]
@@ -75,7 +75,7 @@ class MenuLogic
             'nav' => $request->query('data')['nav'],
         ];
         $bool = psf()->call(
-            "LanKa.SCF.Menu.MenuData::create",
+            "Menu.MenuData::create",
             [
                 $data,
             ]
@@ -94,7 +94,7 @@ class MenuLogic
         $data = $request->query('data');
         $id = $request->query('id');
         return psf()->call(
-            "LanKa.SCF.Menu.MenuData::editMenu",
+            "Menu.MenuData::editMenu",
             [
                 $id,$data,
             ]
@@ -115,7 +115,7 @@ class MenuLogic
         ];
 
         $child = psf()->call(
-            "LanKa.SCF.Menu.MenuData::find",
+            "Menu.MenuData::find",
             [
                 $where,
             ]
@@ -125,7 +125,7 @@ class MenuLogic
         }
 
         return psf()->call(
-            "LanKa.SCF.Menu.MenuData::deleteMenu",
+            "Menu.MenuData::deleteMenu",
             [
                 $id,
             ]
@@ -159,7 +159,7 @@ class MenuLogic
             'id'=>$id
         ];
         return  psf()->call(
-            "LanKa.SCF.Menu.MenuData::find",
+            "Menu.MenuData::find",
             [
                 $data
             ]

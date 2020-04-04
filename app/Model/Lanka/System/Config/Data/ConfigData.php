@@ -17,13 +17,13 @@ use Swoft\Bean\Annotation\Mapping\Inject;
 /**
  * Class ModuleData
  * @since 2.0
- * @Bean(name="LanKa.SCF.Config.ConfigData",scope=Bean::PROTOTYPE)
+ * @Bean(name="Config.ConfigData",scope=Bean::PROTOTYPE)
  *
  */
 class ConfigData extends BaseData
 {
     /**
-     * @Inject("LanKa.SCF.Config.ConfigDao")
+     * @Inject("Config.ConfigDao")
      * @var \App\Model\Lanka\System\Config\Dao\ConfigDao
      */
     private $dao;

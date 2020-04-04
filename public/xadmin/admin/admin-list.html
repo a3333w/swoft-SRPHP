@@ -11,6 +11,7 @@
         <script src="./lib/layui/layui.js" charset="utf-8"></script>
         <script type="text/javascript" src="./js/xadmin.js"></script>
         <script src="./js/global.js"></script>
+        <script src="./js/config.js"></script>
         <!--[if lt IE 9]>
           <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
           <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
@@ -69,7 +70,8 @@
         </div> 
     </body>
     <script>
-      layui.use(['laydate','form', 'layer','request','laypage'], function(){
+      layui.use(['laydate','form', 'layer','request','laypage'],
+          function(){
           $ = layui.jquery;
           var form = layui.form
               ,layer = layui.layer;
@@ -77,10 +79,7 @@
           var request = layui.request;
           var adminToken = localStorage.getItem("adminToken");
           var laydate = layui.laydate;
-
-
-
-          request.ajax('http://swoft.lkvip.com:8306/admin/system/administrators/getlist', 'get', 'json', {
+          request.ajax(requestUri + '/admin/system/administrators/getlist', 'get', 'json', {
               'token': adminToken,
               'limit' : 10,
               'curr': 1
@@ -135,7 +134,7 @@
 
                       //首次不执行
                       if(!first){
-                          request.ajax('http://swoft.lkvip.com:8306/admin/system/administrators/getlist', 'get', 'json', {
+                          request.ajax(requestUri + '/admin/system/administrators/getlist', 'get', 'json', {
                               'token': adminToken,
                               'curr':obj.curr,
                               'limit':obj.limit
@@ -190,15 +189,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
         
         //执行一个laydate实例
         laydate.render({
@@ -225,7 +215,7 @@
                   if ($(obj).attr('title') == '停用') {
                       layer.confirm('确认要停用吗？', function (index) {
 
-                          request.ajax('http://swoft.lkvip.com:8306/admin/system/administrators/changestatus', 'get', 'json', {
+                          request.ajax(requestUri + '/admin/system/administrators/changestatus', 'get', 'json', {
                               'token': adminToken,
                               'id': id,
                               'status': 0
@@ -246,7 +236,7 @@
                   } else {
 
                       layer.confirm('确认要启用吗？', function (index) {
-                          request.ajax('http://swoft.lkvip.com:8306/admin/system/administrators/changestatus', 'get', 'json', {
+                          request.ajax(requestUri + '/admin/system/administrators/changestatus', 'get', 'json', {
                               'token': adminToken,
                               'id': id,
                               'status': 1
@@ -278,7 +268,7 @@
                       var adminToken = localStorage.getItem("adminToken");
 
 
-                      request.ajax('http://swoft.lkvip.com:8306/admin/system/administrators/changestatus', 'get', 'json', {
+                      request.ajax(requestUri + '/admin/system/administrators/changestatus', 'get', 'json', {
                           'token': adminToken,
                           'id': id,
                           'status': 0

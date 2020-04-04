@@ -13,7 +13,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 
 /**
  * Class AdminDao
- * @Bean(name="LanKa.SCF.Token.AdminDao",scope=Bean::PROTOTYPE)
+ * @Bean(name="Token.AdminDao",scope=Bean::PROTOTYPE)
  */
 class AdminDao extends BaseDao
 {

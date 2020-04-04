@@ -15,7 +15,7 @@ use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
  * Class ModuleDao
- * @Bean(name="LanKa.SCF.Role.RoleDao",scope=Bean::PROTOTYPE)
+ * @Bean(name="Role.RoleDao",scope=Bean::PROTOTYPE)
  */
 class RoleDao extends BaseDao
 {

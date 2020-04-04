@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="61a29966-2aaf-4f56-9756-3ffa304b73fe" name="SRPHPlk" url="http://47.94.149.236">
-        <fileTransfer host="47.94.149.236" port="22" rootFolder="/home/liuqiaomu/swoft" accessType="SFTP">
+      <webServer id="61a29966-2aaf-4f56-9756-3ffa304b73fe" name="SRPHPlk" url="http://121.36.11.159">
+        <fileTransfer host="121.36.11.159" port="22" rootFolder="/home/swoft-SRPHP" accessType="SFTP">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" />
           </advancedOptions>

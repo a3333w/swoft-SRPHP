@@ -50,14 +50,14 @@ class LogLogic
 
         //获得日志列表
         $list = psf()->call(
-            "LanKa.SCF.Log.LogData::getLimit",
+            "Log.LogData::getLimit",
             [
                 $limit,$curr
             ]
         )->getResult();
         //获得一共多少条
         $count = psf()->call(
-            "LanKa.SCF.Log.LogData::getCount"
+            "Log.LogData::getCount"
         )->getResult();
         $data = [
             'list'=>$list,

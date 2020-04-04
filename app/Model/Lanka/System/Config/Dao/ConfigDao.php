@@ -17,7 +17,7 @@ use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
  * Class ModuleDao
- * @Bean(name="LanKa.SCF.Config.ConfigDao",scope=Bean::PROTOTYPE)
+ * @Bean(name="Config.ConfigDao",scope=Bean::PROTOTYPE)
  */
 class ConfigDao extends BaseDao
 {

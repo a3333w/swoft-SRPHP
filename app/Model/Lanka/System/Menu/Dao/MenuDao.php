@@ -16,7 +16,7 @@ use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
  * Class ModuleDao
- * @Bean(name="LanKa.SCF.Menu.MenuDao",scope=Bean::PROTOTYPE)
+ * @Bean(name="Menu.MenuDao",scope=Bean::PROTOTYPE)
  */
 class MenuDao extends BaseDao
 {

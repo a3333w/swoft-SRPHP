@@ -17,13 +17,13 @@ use Swoft\Bean\Annotation\Mapping\Inject;
 /**
  * Class RoleData
  * @since 2.0
- * @Bean(name="LanKa.SCF.Role.RoleData",scope=Bean::PROTOTYPE)
+ * @Bean(name="Role.RoleData",scope=Bean::PROTOTYPE)
  *
  */
 class RoleData extends BaseData
 {
     /**
-     * @Inject("LanKa.SCF.Role.RoleDao")
+     * @Inject("Role.RoleDao")
      * @var \App\Model\Lanka\System\Role\Dao\RoleDao
      */
     private $dao;

@@ -18,7 +18,7 @@ use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
  * Class LogDao
- * @Bean(name="LanKa.SCF.Log.LogDao",scope=Bean::PROTOTYPE)
+ * @Bean(name="Log.LogDao",scope=Bean::PROTOTYPE)
  */
 class LogDao extends BaseDao
 {

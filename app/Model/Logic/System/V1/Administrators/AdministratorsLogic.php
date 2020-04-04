@@ -48,7 +48,7 @@ class AdministratorsLogic
         $data = $request->query('data');
         $data['password'] = md5($data['password']);
         return psf()->call(
-            "LanKa.SCF.Administrators.AdministratorsData::create",
+            "Administrators.AdministratorsData::create",
             [
                 $data
             ]
@@ -70,14 +70,14 @@ class AdministratorsLogic
 
         //获得角色列表
         $list = psf()->call(
-            "LanKa.SCF.Administrators.AdministratorsData::getLimit",
+            "Administrators.AdministratorsData::getLimit",
             [
                 $limit,$curr
             ]
         )->getResult();
         //获得一共多少条
         $count = psf()->call(
-            "LanKa.SCF.Administrators.AdministratorsData::getCount"
+            "Administrators.AdministratorsData::getCount"
         )->getResult();
         $data = [
             'list'=>$list,
@@ -96,7 +96,7 @@ class AdministratorsLogic
         $where = [];
         //获得角色
         return  psf()->call(
-            "LanKa.SCF.Role.RoleData::getRole",
+            "Role.RoleData::getRole",
             [
                 $where
             ]
@@ -113,7 +113,7 @@ class AdministratorsLogic
         $id = $request->query('id');
         $status = $request->query('status');
         return  psf()->call(
-                "LanKa.SCF.Administrators.AdministratorsData::changeStatus",
+                "Administrators.AdministratorsData::changeStatus",
                 [
                     $id,$status
                 ]
@@ -132,7 +132,7 @@ class AdministratorsLogic
         $id  = $request->query()['id'];
         //获得一条数据
         $res = psf()->call(
-            "LanKa.SCF.Administrators.AdministratorsData::editFind",
+            "Administrators.AdministratorsData::editFind",
             [
                 $id
             ]
@@ -140,7 +140,7 @@ class AdministratorsLogic
         $where = [];
         //获得角色
         $data = psf()->call(
-            "LanKa.SCF.Role.RoleData::getRole",
+            "Role.RoleData::getRole",
             [
                 $where
             ]
@@ -166,7 +166,7 @@ class AdministratorsLogic
         unset($data['repassword']);
 
         return psf()->call(
-            "LanKa.SCF.Administrators.AdministratorsData::editAdministrators",
+            "Administrators.AdministratorsData::editAdministrators",
             [
                 $id,$data
             ]
@@ -192,7 +192,7 @@ class AdministratorsLogic
         //事务开始
         DB::beginTransaction();
         $data = psf()->call(
-            "LanKa.SCF.Module.ModuleData::find",
+            "Module.ModuleData::find",
             [
                 $where, $columns
             ]
@@ -200,7 +200,7 @@ class AdministratorsLogic
 
         //伪删除模块数据库数据
         $bool = psf()->call(
-            "LanKa.SCF.Module.ModuleData::deleteModule",
+            "Module.ModuleData::deleteModule",
             [
                 $id
             ]

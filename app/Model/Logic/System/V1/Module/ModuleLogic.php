@@ -60,7 +60,7 @@ class ModuleLogic
 
         //模块入库
         $boll = psf()->call(
-            "LanKa.SCF.Module.ModuleData::create",
+            "Module.ModuleData::create",
             [
                 $data,
             ]
@@ -117,14 +117,14 @@ class ModuleLogic
         
         //获得模块列表
         $list = psf()->call(
-            "LanKa.SCF.Module.ModuleData::getLimit",
+            "Module.ModuleData::getLimit",
             [
                 $limit,$curr
             ]
         )->getResult();
         //获得一共多少条
         $count = psf()->call(
-            "LanKa.SCF.Module.ModuleData::getCount"
+            "Module.ModuleData::getCount"
         )->getResult();
         $data = [
             'list'=>$list,
@@ -146,7 +146,7 @@ class ModuleLogic
         $id  = $request->query()['id'];  //当前页
         //获得一条模块数据
          return psf()->call(
-            "LanKa.SCF.Module.ModuleData::editFind",
+            "Module.ModuleData::editFind",
             [
                 $id
             ]
@@ -172,7 +172,7 @@ class ModuleLogic
         ];
         //编辑模块数据库数据
         $bool = psf()->call(
-            "LanKa.SCF.Module.ModuleData::editModule",
+            "Module.ModuleData::editModule",
             [
                 $id, $data
             ]
@@ -199,7 +199,7 @@ class ModuleLogic
         //事务开始
         DB::beginTransaction();
         $data = psf()->call(
-            "LanKa.SCF.Module.ModuleData::find",
+            "Module.ModuleData::find",
             [
                 $where, $columns
             ]
@@ -207,7 +207,7 @@ class ModuleLogic
 
         //伪删除模块数据库数据
         $bool = psf()->call(
-            "LanKa.SCF.Module.ModuleData::deleteModule",
+            "Module.ModuleData::deleteModule",
             [
                 $id
             ]

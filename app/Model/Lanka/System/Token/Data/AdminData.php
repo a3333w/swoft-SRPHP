@@ -17,13 +17,13 @@ use Swoft\Bean\Annotation\Mapping\Inject;
 /**
  * Class AdminData
  * @since 2.0
- * @Bean(name="LanKa.SCF.Token.AdminData",scope=Bean::PROTOTYPE)
+ * @Bean(name="Token.AdminData",scope=Bean::PROTOTYPE)
  *
  */
 class AdminData extends BaseData
 {
     /**
-     * @Inject("LanKa.SCF.Token.AdminDao")
+     * @Inject("Token.AdminDao")
      * @var \App\Model\Lanka\System\Token\Dao\AdminDao
      */
     private $dao;

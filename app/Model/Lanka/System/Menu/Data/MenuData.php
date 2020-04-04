@@ -17,13 +17,13 @@ use Swoft\Bean\Annotation\Mapping\Inject;
 /**
  * Class ModuleData
  * @since 2.0
- * @Bean(name="LanKa.SCF.Menu.MenuData",scope=Bean::PROTOTYPE)
+ * @Bean(name="Menu.MenuData",scope=Bean::PROTOTYPE)
  *
  */
 class MenuData extends BaseData
 {
     /**
-     * @Inject("LanKa.SCF.Menu.MenuDao")
+     * @Inject("Menu.MenuDao")
      * @var \App\Model\Lanka\System\Menu\Dao\MenuDao
      */
     private $dao;

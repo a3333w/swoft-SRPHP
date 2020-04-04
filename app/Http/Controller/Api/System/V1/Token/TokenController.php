@@ -48,7 +48,7 @@ class TokenController
         //if管理员角色 else 普通角色
         if($role == config('role')['Administration']){
             $user = psf()->call(
-                "LanKa.SCF.Token.AdminData::systemUser",
+                "Token.AdminData::systemUser",
                 [
                     $where,
                     [
@@ -67,7 +67,7 @@ class TokenController
             ];
             //获得角色权限
             $userAuth = psf()->call(
-                "LanKa.SCF.Role.RoleData::editFind",
+                "Role.RoleData::editFind",
                 [
                     $where,
                     [
@@ -82,7 +82,7 @@ class TokenController
 
             //获得角色权限对应的模块
             $userModule = psf()->call(
-                "LanKa.SCF.Menu.MenuData::getMenuByid",
+                "Menu.MenuData::getMenuByid",
                 [
                     json_decode($userAuth['auth']),['module'],true
                 ]
@@ -127,7 +127,7 @@ class TokenController
 
         }else{
             $user = psf()->call(
-                "LanKa.SCF.Token.AdminData::user",
+                "Token.AdminData::user",
                 [
                     $where,
                     [

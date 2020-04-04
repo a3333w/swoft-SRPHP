@@ -49,7 +49,7 @@ class ConfigRelevantLogic
         }
         //配置入库
         return psf()->call(
-            "LanKa.SCF.Config.ConfigData::create",
+            "Config.ConfigData::create",
             [
                 $data,
             ]
@@ -115,7 +115,7 @@ class ConfigRelevantLogic
 
         //获得模块列表
         return psf()->call(
-            "LanKa.SCF.Config.ConfigData::getLimit",
+            "Config.ConfigData::getLimit",
             [
                 $limit,$curr,$where
             ]
@@ -139,7 +139,7 @@ class ConfigRelevantLogic
             $where = null;
         }
         return psf()->call(
-            "LanKa.SCF.Config.ConfigData::getCount",
+            "Config.ConfigData::getCount",
             [
                 $where
             ]
@@ -177,7 +177,7 @@ class ConfigRelevantLogic
 
 
         return psf()->call(
-            "LanKa.SCF.Config.ConfigData::getlist",
+            "Config.ConfigData::getlist",
             [
                 $limit,$curr,$where
             ]
@@ -194,7 +194,7 @@ class ConfigRelevantLogic
     {
         $id =$request->query('id');
         return psf()->call(
-            "LanKa.SCF.Config.ConfigData::getConfig",
+            "Config.ConfigData::getConfig",
             [
                 $id
             ]
@@ -212,7 +212,7 @@ class ConfigRelevantLogic
         $id = $request->query('id');
         $data = $request->query('data');
         return psf()->call(
-            "LanKa.SCF.Config.ConfigData::editConfig",
+            "Config.ConfigData::editConfig",
             [
                 $id,$data
             ]
@@ -230,7 +230,7 @@ class ConfigRelevantLogic
     {
         $id = $request->query('id');
         return psf()->call(
-            "LanKa.SCF.Config.ConfigData::deleteConfig",
+            "Config.ConfigData::deleteConfig",
             [
                 $id
             ]
@@ -257,7 +257,7 @@ class ConfigRelevantLogic
             }
         }
         $bool = psf()->call(
-            "LanKa.SCF.Config.ConfigData::systemConfigEdit",
+            "Config.ConfigData::systemConfigEdit",
             [
                 $data
             ]

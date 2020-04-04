@@ -152,7 +152,8 @@ if(!function_exists('menuFirstPage')){
             $data = \Swoft\Db\DB::table('system_menu')
                 ->where([
                     'pid'=>$value['id'],
-                    'level' => 2
+                    'level' => 2,
+                    'status' => 1
                 ])
                 ->get();
             $data = \Swoft\Stdlib\Helper\ArrayHelper::toArray($data);

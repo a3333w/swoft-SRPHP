@@ -61,7 +61,7 @@ class RoleLogic
         $json = json_encode($arr);
         $arrAll['auth'] = $json;
         return psf()->call(
-            "LanKa.SCF.Role.RoleData::create",
+            "Role.RoleData::create",
             [
                 $arrAll
             ]
@@ -83,14 +83,14 @@ class RoleLogic
 
         //获得角色列表
         $list = psf()->call(
-            "LanKa.SCF.Role.RoleData::getLimit",
+            "Role.RoleData::getLimit",
             [
                 $limit,$curr
             ]
         )->getResult();
         //获得一共多少条
         $count = psf()->call(
-            "LanKa.SCF.Role.RoleData::getCount"
+            "Role.RoleData::getCount"
         )->getResult();
         $data = [
             'list'=>$list,
@@ -109,7 +109,7 @@ class RoleLogic
         $where = [];
         //获得角色
         return  psf()->call(
-            "LanKa.SCF.Role.RoleData::getRole",
+            "Role.RoleData::getRole",
             [
                 $where
             ]
@@ -126,7 +126,7 @@ class RoleLogic
         $id = $request->query('id');
         $status = $request->query('status');
         return  psf()->call(
-                "LanKa.SCF.Role.RoleData::changeStatus",
+                "Role.RoleData::changeStatus",
                 [
                     $id,$status
                 ]
@@ -145,7 +145,7 @@ class RoleLogic
         $id  = $request->query()['id'];
         //获得一条模块数据
         $res = psf()->call(
-            "LanKa.SCF.Role.RoleData::editFind",
+            "Role.RoleData::editFind",
             [
                 $id
             ]
@@ -188,7 +188,7 @@ class RoleLogic
         $json = json_encode($arr);
         $arrAll['auth'] = $json;
         return psf()->call(
-            "LanKa.SCF.Role.RoleData::editRole",
+            "Role.RoleData::editRole",
             [
                 $id,$arrAll
             ]
@@ -214,7 +214,7 @@ class RoleLogic
         //事务开始
         DB::beginTransaction();
         $data = psf()->call(
-            "LanKa.SCF.Module.ModuleData::find",
+            "Module.ModuleData::find",
             [
                 $where, $columns
             ]
@@ -222,7 +222,7 @@ class RoleLogic
 
         //伪删除模块数据库数据
         $bool = psf()->call(
-            "LanKa.SCF.Module.ModuleData::deleteModule",
+            "Module.ModuleData::deleteModule",
             [
                 $id
             ]
