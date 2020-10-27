@@ -3,9 +3,22 @@
 namespace PhpParser\Lexer\TokenEmulator;
 
 use PhpParser\Lexer\Emulative;
+use PhpParser\Parser\Tokens;
 
 final class CoaleseEqualTokenEmulator implements TokenEmulatorInterface
 {
+    const T_COALESCE_EQUAL = 1007;
+
+    public function getTokenId(): int
+    {
+        return self::T_COALESCE_EQUAL;
+    }
+
+    public function getParserTokenId(): int
+    {
+        return Tokens::T_COALESCE_EQUAL;
+    }
+
     public function isEmulationNeeded(string $code) : bool
     {
         // skip version where this is supported
@@ -25,7 +38,7 @@ final class CoaleseEqualTokenEmulator implements TokenEmulatorInterface
             if (isset($tokens[$i + 1])) {
                 if ($tokens[$i][0] === T_COALESCE && $tokens[$i + 1] === '=') {
                     array_splice($tokens, $i, 2, [
-                        [Emulative::T_COALESCE_EQUAL, '??=', $line]
+                        [self::T_COALESCE_EQUAL, '??=', $line]
                     ]);
                     $c--;
                     continue;

@@ -8,7 +8,6 @@ use Swoft\Proxy\Exception\ProxyException;
 use Swoft\Proxy\Proxy as BaseProxy;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 use Swoft\Rpc\Client\Proxy\Ast\ProxyVisitor;
-use Swoft\Stdlib\Helper\Str;
 
 class Proxy
 {
@@ -27,7 +26,7 @@ class Proxy
             );
         }
 
-        $proxyId   = sprintf('IGNORE_%s', Str::getUniqid());
+        $proxyId   = sprintf('IGNORE_%s', uniqid());
         $visitor   = new ProxyVisitor($proxyId);
         $className = BaseProxy::newClassName($className, $visitor);
         return $className;

@@ -41,9 +41,9 @@ class AnnotationReader implements Reader
      *
      * @var array
      */
-    private static $globalImports = [
+    private static $globalImports = array(
         'ignoreannotation' => 'Doctrine\Common\Annotations\Annotation\IgnoreAnnotation',
-    ];
+    );
 
     /**
      * A list with annotations that are not causing exceptions when not resolved to an annotation class.
@@ -52,7 +52,7 @@ class AnnotationReader implements Reader
      *
      * @var array
      */
-    private static $globalIgnoredNames = [
+    private static $globalIgnoredNames = array(
         // Annotation tags
         'Annotation' => true, 'Attribute' => true, 'Attributes' => true,
         /* Can we enable this? 'Enum' => true, */
@@ -101,13 +101,8 @@ class AnnotationReader implements Reader
         // PlantUML
         'startuml' => true, 'enduml' => true,
         // Symfony 3.3 Cache Adapter
-        'experimental' => true,
-        // Slevomat Coding Standard
-        'phpcsSuppress' => true,
-        // PHP CodeSniffer
-        'codingStandardsIgnoreStart' => true,
-        'codingStandardsIgnoreEnd' => true,
-    ];
+        'experimental' => true
+    );
 
     /**
      * A list with annotations that are not causing exceptions when not resolved to an annotation class.
@@ -116,7 +111,7 @@ class AnnotationReader implements Reader
      *
      * @var array
      */
-    private static $globalIgnoredNamespaces = [];
+    private static $globalIgnoredNamespaces = array();
 
     /**
      * Add a new annotation to the globally ignored annotation names with regard to exception handling.
@@ -164,14 +159,14 @@ class AnnotationReader implements Reader
      *
      * @var array
      */
-    private $imports = [];
+    private $imports = array();
 
     /**
      * In-memory cache mechanism to store ignored annotations per class.
      *
      * @var array
      */
-    private $ignoredAnnotationNames = [];
+    private $ignoredAnnotationNames = array();
 
     /**
      * Constructor.
@@ -192,6 +187,16 @@ class AnnotationReader implements Reader
             throw AnnotationException::optimizerPlusSaveComments();
         }
 
+        if (PHP_VERSION_ID < 70000) {
+            if (extension_loaded('Zend Optimizer+') && (ini_get('zend_optimizerplus.load_comments') === "0" || ini_get('opcache.load_comments') === "0")) {
+                throw AnnotationException::optimizerPlusLoadComments();
+            }
+
+            if (extension_loaded('Zend OPcache') && ini_get('opcache.load_comments') == 0) {
+                throw AnnotationException::optimizerPlusLoadComments();
+            }
+        }
+
         AnnotationRegistry::registerFile(__DIR__ . '/Annotation/IgnoreAnnotation.php');
 
         $this->parser = $parser ?: new DocParser();
@@ -200,7 +205,6 @@ class AnnotationReader implements Reader
 
         $this->preParser->setImports(self::$globalImports);
         $this->preParser->setIgnoreNotImportedAnnotations(true);
-        $this->preParser->setIgnoredAnnotationNames(self::$globalIgnoredNames);
 
         $this->phpParser = new PhpParser;
     }
@@ -347,8 +351,11 @@ class AnnotationReader implements Reader
     {
         $class = $method->getDeclaringClass();
         $classImports = $this->getClassImports($class);
+        if (!method_exists($class, 'getTraits')) {
+            return $classImports;
+        }
 
-        $traitImports = [];
+        $traitImports = array();
 
         foreach ($class->getTraits() as $trait) {
             if ($trait->hasMethod($method->getName())
@@ -372,8 +379,11 @@ class AnnotationReader implements Reader
     {
         $class = $property->getDeclaringClass();
         $classImports = $this->getClassImports($class);
+        if (!method_exists($class, 'getTraits')) {
+            return $classImports;
+        }
 
-        $traitImports = [];
+        $traitImports = array();
 
         foreach ($class->getTraits() as $trait) {
             if ($trait->hasProperty($property->getName())) {
@@ -407,7 +417,7 @@ class AnnotationReader implements Reader
         $this->imports[$name] = array_merge(
             self::$globalImports,
             $this->phpParser->parseClass($class),
-            ['__NAMESPACE__' => $class->getNamespaceName()]
+            array('__NAMESPACE__' => $class->getNamespaceName())
         );
 
         $this->ignoredAnnotationNames[$name] = $ignoredAnnotationNames;

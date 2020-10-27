@@ -12,7 +12,7 @@ use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Log\Helper\Log;
 use Swoft\Rpc\Server\ServiceConnectContext;
-use Swoft\Server\SwooleEvent;
+use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\Rpc\Server\ServiceServerEvent;
 
 /**
@@ -27,6 +27,8 @@ class BeforeConnectListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {

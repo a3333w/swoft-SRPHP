@@ -52,7 +52,6 @@ class PhpRedisConnector implements ConnectorInterface
         if (!empty($option['serializer'])) {
             $client->setOption(Redis::OPT_SERIALIZER, (string)$option['serializer']);
         }
-
         return $client;
     }
 
@@ -70,9 +69,8 @@ class PhpRedisConnector implements ConnectorInterface
         $readTimeout = $option['read_timeout'] ?? 0;
         $timeout     = $option['timeout'] ?? 0;
         $persistent  = $option['persistent'] ?? false;
-        $name        = $option['name'] ?? '';
 
-        $redisCluster = new RedisCluster($name, $servers, $timeout, $readTimeout, $persistent);
+        $redisCluster = new RedisCluster(null, $servers, $timeout, $readTimeout, $persistent);
         return $redisCluster;
     }
 

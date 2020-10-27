@@ -26,6 +26,8 @@ class MockRpcServer
      * @param string $v
      *
      * @return MockResponse
+     * @throws ReflectionException
+     * @throws ContainerException
      * @throws RpcException
      */
     public function call(
@@ -52,6 +54,8 @@ class MockRpcServer
      * @param MockResponse $response
      *
      * @return MockResponse
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     private function onReceive(MockRequest $request, MockResponse $response)
     {

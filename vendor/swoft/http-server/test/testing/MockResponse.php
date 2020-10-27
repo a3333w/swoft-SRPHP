@@ -1,8 +1,12 @@
 <?php declare(strict_types=1);
 
+
 namespace SwoftTest\Http\Server\Testing;
 
+use ReflectionException;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use SwoftTest\Http\Server\Testing\Concern\HttpResponseAssertTrait;
 use Swoole\Http\Response;
 
@@ -10,6 +14,8 @@ use Swoole\Http\Response;
  * Class MockResponse
  *
  * @since 2.0
+ *
+ * @Bean(scope=Bean::PROTOTYPE)
  */
 class MockResponse extends Response
 {
@@ -37,11 +43,12 @@ class MockResponse extends Response
 
     /**
      * @return MockResponse
+     * @throws ContainerException
+     * @throws ReflectionException
      */
-    public static function new(): self
+    public static function new()
     {
-        // return self::__instance();
-        return new self;
+        return self::__instance();
     }
 
     /**
@@ -75,7 +82,7 @@ class MockResponse extends Response
      * @param string $name
      * @param string $value
      * @param int|string $expires
-     * @param string|null $path
+     * @param string $path
      * @param string $domain
      * @param bool   $secure
      * @param bool   $httpOnly
@@ -89,7 +96,7 @@ class MockResponse extends Response
             $result .= '; domain=' . $domain;
         }
 
-        if ($path) {
+        if (isset($path)) {
             $result .= '; path=' . $path;
         }
 

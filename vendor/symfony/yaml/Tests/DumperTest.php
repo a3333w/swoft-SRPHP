@@ -14,7 +14,6 @@ namespace Symfony\Component\Yaml\Tests;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
-use Symfony\Component\Yaml\Tag\TaggedValue;
 use Symfony\Component\Yaml\Yaml;
 
 class DumperTest extends TestCase
@@ -38,14 +37,14 @@ class DumperTest extends TestCase
         ],
     ];
 
-    protected function setUp(): void
+    protected function setUp()
     {
         $this->parser = new Parser();
         $this->dumper = new Dumper();
         $this->path = __DIR__.'/Fixtures';
     }
 
-    protected function tearDown(): void
+    protected function tearDown()
     {
         $this->parser = null;
         $this->dumper = null;
@@ -192,9 +191,11 @@ EOF;
         $this->assertEquals('{ foo: null, bar: 1 }', $dump, '->dump() does not dump objects when disabled');
     }
 
+    /**
+     * @expectedException \Symfony\Component\Yaml\Exception\DumpException
+     */
     public function testObjectSupportDisabledWithExceptions()
     {
-        $this->expectException('Symfony\Component\Yaml\Exception\DumpException');
         $this->dumper->dump(['foo' => new A(), 'bar' => 1], 0, 0, Yaml::DUMP_EXCEPTION_ON_INVALID_TYPE);
     }
 
@@ -371,122 +372,6 @@ YAML;
         $this->assertSame($expected, $yaml);
     }
 
-    public function testDumpingTaggedValueSequenceRespectsInlineLevel()
-    {
-        $data = [
-            new TaggedValue('user', [
-                'username' => 'jane',
-            ]),
-            new TaggedValue('user', [
-                'username' => 'john',
-            ]),
-        ];
-
-        $yaml = $this->dumper->dump($data, 2);
-
-        $expected = <<<YAML
-- !user
-  username: jane
-- !user
-  username: john
-
-YAML;
-        $this->assertSame($expected, $yaml);
-    }
-
-    public function testDumpingTaggedValueSequenceWithInlinedTagValues()
-    {
-        $data = [
-            new TaggedValue('user', [
-                'username' => 'jane',
-            ]),
-            new TaggedValue('user', [
-                'username' => 'john',
-            ]),
-        ];
-
-        $yaml = $this->dumper->dump($data, 1);
-
-        $expected = <<<YAML
-- !user { username: jane }
-- !user { username: john }
-
-YAML;
-        $this->assertSame($expected, $yaml);
-    }
-
-    public function testDumpingTaggedValueMapRespectsInlineLevel()
-    {
-        $data = [
-            'user1' => new TaggedValue('user', [
-                'username' => 'jane',
-            ]),
-            'user2' => new TaggedValue('user', [
-                'username' => 'john',
-            ]),
-        ];
-
-        $yaml = $this->dumper->dump($data, 2);
-
-        $expected = <<<YAML
-user1: !user
-    username: jane
-user2: !user
-    username: john
-
-YAML;
-        $this->assertSame($expected, $yaml);
-    }
-
-    public function testDumpingTaggedValueMapWithInlinedTagValues()
-    {
-        $data = [
-            'user1' => new TaggedValue('user', [
-                'username' => 'jane',
-            ]),
-            'user2' => new TaggedValue('user', [
-                'username' => 'john',
-            ]),
-        ];
-
-        $yaml = $this->dumper->dump($data, 1);
-
-        $expected = <<<YAML
-user1: !user { username: jane }
-user2: !user { username: john }
-
-YAML;
-        $this->assertSame($expected, $yaml);
-    }
-
-    public function testDumpingNotInlinedScalarTaggedValue()
-    {
-        $data = [
-            'user1' => new TaggedValue('user', 'jane'),
-            'user2' => new TaggedValue('user', 'john'),
-        ];
-        $expected = <<<YAML
-user1: !user jane
-user2: !user john
-
-YAML;
-
-        $this->assertSame($expected, $this->dumper->dump($data, 2));
-    }
-
-    public function testDumpingNotInlinedNullTaggedValue()
-    {
-        $data = [
-            'foo' => new TaggedValue('bar', null),
-        ];
-        $expected = <<<YAML
-foo: !bar null
-
-YAML;
-
-        $this->assertSame($expected, $this->dumper->dump($data, 2));
-    }
-
     public function testDumpMultiLineStringAsScalarBlock()
     {
         $data = [
@@ -519,17 +404,21 @@ YAML;
         $this->assertSame("- \"a\\r\\nb\\nc\"\n", $this->dumper->dump(["a\r\nb\nc"], 2, 0, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK));
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage The indentation must be greater than zero
+     */
     public function testZeroIndentationThrowsException()
     {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('The indentation must be greater than zero');
         new Dumper(0);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage The indentation must be greater than zero
+     */
     public function testNegativeIndentationThrowsException()
     {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('The indentation must be greater than zero');
         new Dumper(-4);
     }
 }

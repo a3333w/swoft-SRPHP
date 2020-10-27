@@ -1,7 +1,5 @@
 <?php declare(strict_types=1);
 
-namespace SwoftTest\WebSocket\Server\Unit\Message;
-
 use PHPUnit\Framework\TestCase;
 use Swoft\WebSocket\Server\Message\MiddlewareChain;
 use Swoft\WebSocket\Server\Message\Request;
@@ -18,12 +16,12 @@ class MiddlewareChainTest extends TestCase
     public function testRun(): void
     {
         $coreMdl = new CoreMiddleware();
-
         $mc = MiddlewareChain::new($coreMdl);
+
         $mc->middle(new User1Middleware());
         $mc->add(new User2Middleware());
 
-        $req  = Request::new(new Frame());
+        $req = Request::new(new Frame());
         $resp = $mc->run($req);
 
         $this->assertSame(100, $resp->getSender());

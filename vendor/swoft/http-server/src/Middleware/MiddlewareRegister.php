@@ -4,8 +4,6 @@
 namespace Swoft\Http\Server\Middleware;
 
 use function array_unique;
-use Swoft\Http\Server\Exception\HttpServerException;
-use Swoft\Http\Server\Router\RouteRegister;
 
 /**
  * Class MiddlewareRegister
@@ -89,16 +87,10 @@ class MiddlewareRegister
 
     /**
      * Register handler middleware
-     * @throws HttpServerException
      */
     public static function register(): void
     {
         foreach (self::$middlewares as $className => $middlewares) {
-            // `@Controller` is undefined
-            if (!RouteRegister::hasRouteByClassName($className)) {
-                throw new HttpServerException(sprintf('`@Controller` is undefined on class(%s)', $className));
-            }
-
             $controllerMiddlewares = $middlewares['controller'] ?? [];
             $methodMiddlewares     = $middlewares['methods'] ?? [];
 

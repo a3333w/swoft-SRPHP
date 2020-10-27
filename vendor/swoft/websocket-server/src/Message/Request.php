@@ -2,8 +2,10 @@
 
 namespace Swoft\WebSocket\Server\Message;
 
-use Swoft;
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
 use Swoole\WebSocket\Frame;
 
@@ -11,28 +13,28 @@ use Swoole\WebSocket\Frame;
  * Class Request
  *
  * @since 2.0
+ *
  * @Bean(scope=Bean::PROTOTYPE)
  */
 class Request implements RequestInterface
 {
+    use PrototypeTrait;
+
     /**
      * @var Frame
      */
     private $frame;
 
     /**
-     * @var Message
-     */
-    private $message;
-
-    /**
      * @param Frame $frame
      *
      * @return Request
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(Frame $frame): self
     {
-        $self = Swoft::getBean(self::class);
+        $self = self::__instance();
 
         // Init properties
         $self->frame = $frame;
@@ -57,34 +59,10 @@ class Request implements RequestInterface
     }
 
     /**
-     * @return mixed
-     */
-    public function getRawData()
-    {
-        return $this->frame->data;
-    }
-
-    /**
      * @return Frame
      */
     public function getFrame(): Frame
     {
         return $this->frame;
-    }
-
-    /**
-     * @return Message
-     */
-    public function getMessage(): Message
-    {
-        return $this->message;
-    }
-
-    /**
-     * @param Message $message
-     */
-    public function setMessage(Message $message): void
-    {
-        $this->message = $message;
     }
 }

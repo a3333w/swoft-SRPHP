@@ -2,14 +2,13 @@
 
 namespace Swoft\Http\Server\Formatter;
 
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Exception\SwoftException;
-use Swoft\Http\Message\ContentType;
-use Swoft\Http\Message\Contract\ResponseFormatterInterface;
-use Swoft\Http\Message\Response;
 use function context;
 use function current;
 use function strpos;
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Http\Message\ContentType;
+use Swoft\Http\Message\Contract\ResponseFormatterInterface;
+use Swoft\Http\Message\Response;
 
 /**
  * Class AcceptResponseFormatter
@@ -34,48 +33,39 @@ class AcceptResponseFormatter implements ResponseFormatterInterface
     protected $formats = [];
 
     /**
-     * Whether to enable accept formatter
-     *
-     * @var bool
-     */
-    protected $enable = true;
-
-    /**
      * @param Response $response
      *
      * @return Response
-     * @throws SwoftException
      */
     public function format(Response $response): Response
     {
-        // Is not enable
-        if (!$this->enable) {
-            return $response;
-        }
-
         $request = context()->getRequest();
         $accepts = $request->getHeader('accept');
 
-        $responseContentType = $response->getHeaderLine(ContentType::KEY);
+        $responeContentType = $response->getHeaderLine(ContentType::KEY);
 
         // Format by user response content type
-        if ($responseContentType) {
-            $format = $this->getResponseFormat($responseContentType);
+        if (!empty($responeContentType)) {
+            $format = $this->getResponseFormat($responeContentType);
+            if (!empty($format)) {
+                $response->setFormat($format);
+            } else {
+                $response->setFormat('');
+            }
 
-            $response->setFormat($format);
             return $response;
         }
 
         // Fix empty bug
-        if (!$accepts) {
+        if (empty($accepts)) {
             return $response;
         }
 
         // Accept type to format, default is json
         $acceptType = current($accepts);
-
         $format = $this->getResponseFormat($acceptType);
-        if ($format) {
+
+        if (!empty($format)) {
             $response->setFormat($format);
         }
 

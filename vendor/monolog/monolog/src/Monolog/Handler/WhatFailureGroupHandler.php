@@ -52,9 +52,8 @@ class WhatFailureGroupHandler extends GroupHandler
             $processed = array();
             foreach ($records as $record) {
                 foreach ($this->processors as $processor) {
-                    $record = call_user_func($processor, $record);
+                    $processed[] = call_user_func($processor, $record);
                 }
-                $processed[] = $record;
             }
             $records = $processed;
         }

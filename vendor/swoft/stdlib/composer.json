@@ -1,14 +1,13 @@
 {
   "name": "swoft/stdlib",
   "type": "library",
-  "version": "v2.0.6",
   "keywords": [
     "php",
     "swoole",
     "helper",
     "swoft"
   ],
-    "description": "swoft stclib component",
+  "description": "micro-service framework base on swoole",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1.0"

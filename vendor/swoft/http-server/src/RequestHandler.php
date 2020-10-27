@@ -3,14 +3,15 @@
 
 namespace Swoft\Http\Server;
 
+use function array_splice;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Container;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Server\Contract\MiddlewareInterface;
 use Swoft\Http\Server\Exception\HttpServerException;
-use function array_splice;
 
 /**
  * Class RequestHandler
@@ -58,6 +59,7 @@ class RequestHandler implements RequestHandlerInterface
      * @param ServerRequestInterface $request
      *
      * @return ResponseInterface
+     * @throws ContainerException
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

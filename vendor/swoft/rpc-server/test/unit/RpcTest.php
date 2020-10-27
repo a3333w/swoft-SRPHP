@@ -13,6 +13,8 @@ use SwoftTest\Rpc\Server\Testing\Lib\DemoInterface;
 class RpcTest extends TestCase
 {
     /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function testGetList()
@@ -32,6 +34,8 @@ class RpcTest extends TestCase
     }
 
     /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function testGetInfo()
@@ -50,6 +54,8 @@ class RpcTest extends TestCase
     }
 
     /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function testGetDelete()
@@ -64,6 +70,8 @@ class RpcTest extends TestCase
     }
 
     /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function testCallErro()
@@ -75,15 +83,8 @@ class RpcTest extends TestCase
     }
 
     /**
-     * @throws \Swoft\Rpc\Exception\RpcException
-     */
-    public function testReturnNull()
-    {
-        $response = $this->mockRpcServer->call(DemoInterface::class, 'returnNull', []);
-        $response->assertEqualResult(null);
-    }
-
-    /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function testException(){

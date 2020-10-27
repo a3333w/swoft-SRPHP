@@ -12,14 +12,11 @@ use Swoft\WebSocket\Server\Helper\WsHelper;
  */
 class WsHelperTest extends TestCase
 {
-    public function testGenSign(): void
+    public function testFormatPath(): void
     {
-        $this->assertNotEmpty('/', WsHelper::genSign(''));
-        $this->assertNotEmpty('/', WsHelper::genSign('abc'));
-    }
-
-    public function testIsInvalidSecKey(): void
-    {
-        $this->assertTrue(WsHelper::isInvalidSecKey(''));
+        $this->assertSame('/', WsHelper::formatPath(''));
+        $this->assertSame('/a', WsHelper::formatPath('a'));
+        $this->assertSame('/a', WsHelper::formatPath('a/'));
+        $this->assertSame('/a', WsHelper::formatPath('/a/'));
     }
 }

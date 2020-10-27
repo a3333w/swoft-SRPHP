@@ -57,6 +57,8 @@ class JsonPacket extends AbstractPacket
      *
      * @return Protocol
      * @throws RpcException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function decode(string $string): Protocol
     {
@@ -100,19 +102,18 @@ class JsonPacket extends AbstractPacket
      * @param mixed  $result
      * @param int    $code
      * @param string $message
-     * @param mixed  $data
+     * @param Error  $data
      *
      * @return string
      */
     public function encodeResponse($result, int $code = null, string $message = '', $data = null): string
     {
-        //Fix bug: when type of $data is string ,it will throw Exception
-        $res['jsonrpc'] = self::VERSION;
+        $data['jsonrpc'] = self::VERSION;
 
         if ($code === null) {
-            $res['result'] = $result;
+            $data['result'] = $result;
 
-            $string = JsonHelper::encode($res, JSON_UNESCAPED_UNICODE);
+            $string = JsonHelper::encode($data, JSON_UNESCAPED_UNICODE);
             $string = $this->addPackageEof($string);
 
             return $string;
@@ -127,9 +128,9 @@ class JsonPacket extends AbstractPacket
             $error['data'] = $data;
         }
 
-        $res['error'] = $error;
+        $data['error'] = $error;
 
-        $string = JsonHelper::encode($res, JSON_UNESCAPED_UNICODE);
+        $string = JsonHelper::encode($data, JSON_UNESCAPED_UNICODE);
         $string = $this->addPackageEof($string);
 
         return $string;
@@ -139,14 +140,15 @@ class JsonPacket extends AbstractPacket
      * @param string $string
      *
      * @return Response
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function decodeResponse(string $string): Response
     {
-        $data = JsonHelper::decode($string, true);
+        $data   = JsonHelper::decode($string, true);
+        $result = $data['result'] ?? null;
 
-        // Fixed result = null bug, must to use array_key_exists
-        if (array_key_exists('result', $data)) {
-            $result = $data['result'];
+        if ($result !== null) {
             return Response::new($result, null);
         }
 
@@ -154,7 +156,8 @@ class JsonPacket extends AbstractPacket
         $message = $data['error']['message'] ?? '';
         $data    = $data['error']['data'] ?? null;
 
-        $error = Error::new((int)$code, (string)$message, $data);
+        $error = Error::new($code, $message, $data);
+
         return Response::new(null, $error);
     }
 }

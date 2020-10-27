@@ -12,6 +12,9 @@ use function getmyuid;
 use function implode;
 use function is_resource;
 use function ob_start;
+use function passthru;
+use function pclose;
+use function popen;
 use function preg_match;
 use function preg_replace;
 use function proc_close;
@@ -95,9 +98,10 @@ class SystemHelper extends EnvHelper
     /**
      * Method to execute a command in the sys
      * Uses :
-     * - system
-     * - exec
-     * - shell_exec
+     * 1. system
+     * 2. passthru
+     * 3. exec
+     * 4. shell_exec
      *
      * @param string      $command
      * @param bool        $returnStatus
@@ -117,6 +121,12 @@ class SystemHelper extends EnvHelper
         if (function_exists('system')) {
             ob_start();
             system($command, $exitStatus);
+            $output = ob_get_clean();
+
+            // passthru
+        } elseif (function_exists('passthru')) {
+            ob_start();
+            passthru($command, $exitStatus);
             $output = ob_get_clean();
 
             //exec
@@ -143,6 +153,30 @@ class SystemHelper extends EnvHelper
     }
 
     /**
+     * run a command in background
+     *
+     * @param string $cmd
+     */
+    public static function bgExec(string $cmd): void
+    {
+        self::execInBackground($cmd);
+    }
+
+    /**
+     * run a command in background
+     *
+     * @param string $cmd
+     */
+    public static function execInBackground(string $cmd): void
+    {
+        if (self::isWindows()) {
+            pclose(popen('start /B ' . $cmd, 'r'));
+        } else {
+            exec($cmd . ' > /dev/null &');
+        }
+    }
+
+    /**
      * Get unix user of current process.
      *
      * @return array
@@ -150,7 +184,6 @@ class SystemHelper extends EnvHelper
     public static function getCurrentUser(): array
     {
         if (function_exists('posix_getpwuid')) {
-            /** @noinspection PhpComposerExtensionStubsInspection */
             return posix_getpwuid(getmyuid());
         }
 

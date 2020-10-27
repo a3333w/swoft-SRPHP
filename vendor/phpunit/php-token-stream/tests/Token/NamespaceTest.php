@@ -12,6 +12,9 @@ use PHPUnit\Framework\TestCase;
 
 class PHP_Token_NamespaceTest extends TestCase
 {
+    /**
+     * @covers PHP_Token_NAMESPACE::getName
+     */
     public function testGetName()
     {
         $tokenStream = new PHP_Token_Stream(
@@ -27,7 +30,8 @@ class PHP_Token_NamespaceTest extends TestCase
 
     public function testGetStartLineWithUnscopedNamespace()
     {
-        foreach (new PHP_Token_Stream(TEST_FILES_PATH . 'classInNamespace.php') as $token) {
+        $tokenStream = new PHP_Token_Stream(TEST_FILES_PATH . 'classInNamespace.php');
+        foreach ($tokenStream as $token) {
             if ($token instanceof PHP_Token_NAMESPACE) {
                 $this->assertSame(2, $token->getLine());
             }
@@ -36,7 +40,8 @@ class PHP_Token_NamespaceTest extends TestCase
 
     public function testGetEndLineWithUnscopedNamespace()
     {
-        foreach (new PHP_Token_Stream(TEST_FILES_PATH . 'classInNamespace.php') as $token) {
+        $tokenStream = new PHP_Token_Stream(TEST_FILES_PATH . 'classInNamespace.php');
+        foreach ($tokenStream as $token) {
             if ($token instanceof PHP_Token_NAMESPACE) {
                 $this->assertSame(2, $token->getEndLine());
             }
@@ -44,7 +49,8 @@ class PHP_Token_NamespaceTest extends TestCase
     }
     public function testGetStartLineWithScopedNamespace()
     {
-        foreach (new PHP_Token_Stream(TEST_FILES_PATH . 'classInScopedNamespace.php') as $token) {
+        $tokenStream = new PHP_Token_Stream(TEST_FILES_PATH . 'classInScopedNamespace.php');
+        foreach ($tokenStream as $token) {
             if ($token instanceof PHP_Token_NAMESPACE) {
                 $this->assertSame(2, $token->getLine());
             }
@@ -53,7 +59,8 @@ class PHP_Token_NamespaceTest extends TestCase
 
     public function testGetEndLineWithScopedNamespace()
     {
-        foreach (new PHP_Token_Stream(TEST_FILES_PATH . 'classInScopedNamespace.php') as $token) {
+        $tokenStream = new PHP_Token_Stream(TEST_FILES_PATH . 'classInScopedNamespace.php');
+        foreach ($tokenStream as $token) {
             if ($token instanceof PHP_Token_NAMESPACE) {
                 $this->assertSame(8, $token->getEndLine());
             }

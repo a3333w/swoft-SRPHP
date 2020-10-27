@@ -10,6 +10,7 @@ use ReflectionException;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Connection\Connection;
+use Swoft\Db\Connection\ConnectionManager;
 use Swoft\Db\Database;
 use Swoft\Db\DB;
 use Swoft\Db\Exception\DbException;
@@ -77,25 +78,14 @@ class Builder
     protected $resolver;
 
     /**
-     * @var string
-     */
-    protected $database;
-
-    /**
-     * @param string $database
-     */
-    public function setDatabase(string $database): void
-    {
-        $this->database = $database;
-    }
-
-    /**
      * Add custom builder
      *
      * @param string $driver
      * @param string $builderClass
      *
      * @return void
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public static function addBuilder(string $driver, string $builderClass): void
     {
@@ -107,6 +97,8 @@ class Builder
      * @param string $builderClass
      *
      * @return Builder
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected static function getBeanBuilder(string $builderClass): self
     {
@@ -126,7 +118,9 @@ class Builder
      * @param mixed ...$params
      *
      * @return Builder
+     * @throws ContainerException
      * @throws DbException
+     * @throws ReflectionException
      */
     public static function new(...$params): Builder
     {
@@ -153,7 +147,9 @@ class Builder
      * @param string $poolName
      *
      * @return Builder
+     * @throws ContainerException
      * @throws DbException
+     * @throws ReflectionException
      */
     protected static function getBuilder(string $poolName): Builder
     {
@@ -175,7 +171,9 @@ class Builder
     /**
      * @param Grammar|null $grammar
      *
+     * @throws ContainerException
      * @throws DbException
+     * @throws ReflectionException
      */
     protected function setSchemaGrammar(Grammar $grammar = null): void
     {
@@ -344,16 +342,6 @@ class Builder
     }
 
     /**
-     * Check database exists
-     *
-     * @return bool
-     */
-    public function checkDatabaseExists(): bool
-    {
-        return true;
-    }
-
-    /**
      * Modify a table on the schema.
      *
      * @param string  $table
@@ -373,16 +361,16 @@ class Builder
      *
      * @param string  $table
      * @param Closure $callback
-     * @param bool    $ifNotExists
+     * @param bool    $ifNotExist
      *
      * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
      */
-    public function create(string $table, Closure $callback, bool $ifNotExists = false)
+    public function create(string $table, Closure $callback, bool $ifNotExist = false)
     {
-        $this->build(tap($this->createBlueprint($table), function (Blueprint $blueprint) use ($callback, $ifNotExists) {
-            $blueprint->create($ifNotExists);
+        $this->build(tap($this->createBlueprint($table), function (Blueprint $blueprint) use ($callback, $ifNotExist) {
+            $blueprint->create($ifNotExist);
 
             $callback($blueprint);
         }));
@@ -398,7 +386,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function createIfNotExists(string $table, Closure $callback)
+    public function createIfNotExist(string $table, Closure $callback)
     {
         $this->build(tap($this->createBlueprint($table), function (Blueprint $blueprint) use ($callback) {
             $blueprint->create(true);
@@ -497,7 +485,7 @@ class Builder
      */
     protected function build(Blueprint $blueprint)
     {
-        $blueprint->build($this);
+        $blueprint->build($this->getConnection(), $this->grammar);
     }
 
     /**
@@ -507,6 +495,8 @@ class Builder
      * @param Closure|null $callback
      *
      * @return Blueprint
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function createBlueprint(string $table, Closure $callback = null)
     {
@@ -540,13 +530,6 @@ class Builder
     public function getConnection()
     {
         $connection = DB::connection($this->poolName);
-
-        if (isset($this->database)) {
-            $connectionDatabase = $connection->getSelectDb() ?: $connection->getDb();
-            if ($this->database !== $connectionDatabase) {
-                $connection->db($this->database);
-            }
-        }
 
         return $connection;
     }
@@ -591,18 +574,22 @@ class Builder
      * Get connection database name
      *
      * @return string
+     * @throws ContainerException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function getDatabaseName(): string
     {
-        if (isset($this->database)) {
-            return $this->database;
-        }
-
         $connection = $this->getConnection();
         $db         = $connection->getSelectDb() ?: $connection->getDb();
-        // release
-        $connection->release();
+
+        /* @var ConnectionManager $cm */
+        $cm = bean(ConnectionManager::class);
+        // not transaction status
+        if ($cm->isTransaction($this->poolName) === false) {
+            // release
+            $connection->release();
+        }
 
         return $db;
     }

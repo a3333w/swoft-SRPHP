@@ -4,6 +4,7 @@
 namespace SwoftTest\Validator\Unit;
 
 
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Validator\Validator;
 use SwoftTest\Validator\Testing\ValidateDemo;
 use Swoft\Validator\Exception\ValidatorException;
@@ -19,7 +20,9 @@ class ValidatorTypeTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage array must exist!
      *
+     * @throws ContainerException
      * @throws ValidatorException
+     * @throws \ReflectionException
      */
     public function testArrayType()
     {
@@ -155,6 +158,8 @@ class ValidatorTypeTest extends TestCase
 
     /**
      * @throws ValidatorException
+     * @throws \ReflectionException
+     * @throws ContainerException
      */
     public function testName()
     {
@@ -167,7 +172,9 @@ class ValidatorTypeTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage swoftName must string!
      *
+     * @throws ContainerException
      * @throws ValidatorException
+     * @throws \ReflectionException
      */
     public function testFailName()
     {
@@ -235,7 +242,9 @@ class ValidatorTypeTest extends TestCase
     }
 
     /**
+     * @throws ContainerException
      * @throws ValidatorException
+     * @throws \ReflectionException
      */
     public function testFloatTypeQuery2()
     {

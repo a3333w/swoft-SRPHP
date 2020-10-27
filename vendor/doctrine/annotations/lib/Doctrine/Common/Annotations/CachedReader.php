@@ -48,7 +48,7 @@ final class CachedReader implements Reader
     /**
      * @var array
      */
-    private $loadedAnnotations = [];
+    private $loadedAnnotations = array();
 
     /**
      * Constructor.
@@ -172,7 +172,7 @@ final class CachedReader implements Reader
      */
     public function clearLoadedAnnotations()
     {
-        $this->loadedAnnotations = [];
+        $this->loadedAnnotations = array();
     }
 
     /**

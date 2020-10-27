@@ -3,6 +3,8 @@
 namespace SwoftTest\Console\Unit;
 
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Application;
 use function bean;
 use function input;
@@ -12,6 +14,10 @@ use function input;
  */
 class ApplicationTest extends TestCase
 {
+    /**
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
     public function testBasic(): void
     {
         $app = bean('cliApp');
@@ -35,6 +41,10 @@ class ApplicationTest extends TestCase
         $this->assertArrayNotHasKey('workDir', $vars);
     }
 
+    /**
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
     public function testRun(): void
     {
         $app = bean('cliApp');
@@ -50,5 +60,6 @@ class ApplicationTest extends TestCase
         $app->run();
 
         $this->assertIsArray($vars = $app->getCommentsVars());
+
     }
 }

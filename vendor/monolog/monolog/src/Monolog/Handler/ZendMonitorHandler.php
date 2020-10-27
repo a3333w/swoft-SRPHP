@@ -17,7 +17,6 @@ use Monolog\Logger;
  * Handler sending logs to Zend Monitor
  *
  * @author  Christian Bergau <cbergau86@gmail.com>
- * @author  Jason Davis <happydude@jasondavis.net>
  */
 class ZendMonitorHandler extends AbstractProcessingHandler
 {
@@ -26,7 +25,16 @@ class ZendMonitorHandler extends AbstractProcessingHandler
      *
      * @var array
      */
-    protected $levelMap = array();
+    protected $levelMap = array(
+        Logger::DEBUG     => 1,
+        Logger::INFO      => 2,
+        Logger::NOTICE    => 3,
+        Logger::WARNING   => 4,
+        Logger::ERROR     => 5,
+        Logger::CRITICAL  => 6,
+        Logger::ALERT     => 7,
+        Logger::EMERGENCY => 0,
+    );
 
     /**
      * Construct
@@ -38,21 +46,8 @@ class ZendMonitorHandler extends AbstractProcessingHandler
     public function __construct($level = Logger::DEBUG, $bubble = true)
     {
         if (!function_exists('zend_monitor_custom_event')) {
-            throw new MissingExtensionException(
-                'You must have Zend Server installed with Zend Monitor enabled in order to use this handler'
-            );
+            throw new MissingExtensionException('You must have Zend Server installed in order to use this handler');
         }
-        //zend monitor constants are not defined if zend monitor is not enabled.
-        $this->levelMap = array(
-            Logger::DEBUG     => \ZEND_MONITOR_EVENT_SEVERITY_INFO,
-            Logger::INFO      => \ZEND_MONITOR_EVENT_SEVERITY_INFO,
-            Logger::NOTICE    => \ZEND_MONITOR_EVENT_SEVERITY_INFO,
-            Logger::WARNING   => \ZEND_MONITOR_EVENT_SEVERITY_WARNING,
-            Logger::ERROR     => \ZEND_MONITOR_EVENT_SEVERITY_ERROR,
-            Logger::CRITICAL  => \ZEND_MONITOR_EVENT_SEVERITY_ERROR,
-            Logger::ALERT     => \ZEND_MONITOR_EVENT_SEVERITY_ERROR,
-            Logger::EMERGENCY => \ZEND_MONITOR_EVENT_SEVERITY_ERROR,
-        );
         parent::__construct($level, $bubble);
     }
 
@@ -62,23 +57,22 @@ class ZendMonitorHandler extends AbstractProcessingHandler
     protected function write(array $record)
     {
         $this->writeZendMonitorCustomEvent(
-            Logger::getLevelName($record['level']),
+            $this->levelMap[$record['level']],
             $record['message'],
-            $record['formatted'],
-            $this->levelMap[$record['level']]
+            $record['formatted']
         );
     }
 
     /**
-     * Write to Zend Monitor Events
-     * @param string $type Text displayed in "Class Name (custom)" field
-     * @param string $message Text displayed in "Error String"
-     * @param mixed $formatted Displayed in Custom Variables tab
-     * @param int $severity Set the event severity level (-1,0,1)
+     * Write a record to Zend Monitor
+     *
+     * @param int    $level
+     * @param string $message
+     * @param array  $formatted
      */
-    protected function writeZendMonitorCustomEvent($type, $message, $formatted, $severity)
+    protected function writeZendMonitorCustomEvent($level, $message, $formatted)
     {
-        zend_monitor_custom_event($type, $message, $formatted, $severity);
+        zend_monitor_custom_event($level, $message, $formatted);
     }
 
     /**

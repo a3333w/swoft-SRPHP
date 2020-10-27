@@ -1,15 +1,13 @@
 {
   "name": "swoft/http-message",
   "type": "library",
-  "version": "v2.0.6",
   "keywords": [
     "php",
     "swoole",
     "swoft",
-    "psr7",
     "http-message"
   ],
-    "description": "swoft http message component",
+  "description": "micro-service framework base on swoole",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1.0",

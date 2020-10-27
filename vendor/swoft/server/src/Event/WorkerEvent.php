@@ -6,7 +6,6 @@ use Swoole\Server;
 
 /**
  * Class WorkerEvent
- *
  * @since 2.0
  */
 class WorkerEvent extends ServerStartEvent
@@ -26,13 +25,6 @@ class WorkerEvent extends ServerStartEvent
      */
     public $taskProcess = false;
 
-    /**
-     * Class constructor.
-     *
-     * @param string $name
-     * @param Server $server
-     * @param int    $workerId
-     */
     public function __construct(string $name, Server $server, int $workerId)
     {
         parent::__construct($name, $server);

@@ -3,7 +3,9 @@
 
 namespace Swoft\Devtool\Model\Dao;
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Schema\Builder;
 
@@ -21,25 +23,22 @@ class SchemaDao
      * @param string $table
      *
      * @return array
+     * @throws ReflectionException
+     * @throws ContainerException
      * @throws DbException
      */
     public function getColumnsSchema(string $pool, string $table): array
     {
-        $schemaBuilder = Builder::new($pool);
+        $schemaBuilder = Builder::new($pool, null);
         $columnsDetail = $schemaBuilder->getColumnsDetail($table);
-
         foreach ($columnsDetail as &$column) {
-            $originPHPType = $schemaBuilder->convertType($column['type']);
-
             // if is null able
-            $nullable              = $column['nullable'] === 'YES';
-            $column['is_nullable'] = $nullable;
-
-            $column['phpType']       = $originPHPType . ($nullable ? '|null' : '');
-            $column['originPHPType'] = $originPHPType;
+            $nullable                = $column['nullable'] === 'YES' || $column['default'] === null;
+            $column['is_nullable']   = $nullable;
+            $column['originPHPType'] = $schemaBuilder->convertType($column['type']);
+            $column['phpType']       = $column['originPHPType'] . ($nullable ? '|null' : '');
         }
         unset($column);
-        
         return $columnsDetail;
     }
 
@@ -53,11 +52,13 @@ class SchemaDao
      * @param string $tablePrefix
      *
      * @return array
+     * @throws ReflectionException
+     * @throws ContainerException
      * @throws DbException
      */
     public function getTableSchema(string $pool, string $table, string $exclude, string $tablePrefix): array
     {
-        $schemaBuilder = Builder::new($pool);
+        $schemaBuilder = Builder::new($pool, null);
         $tableSchema   = $schemaBuilder->getTableSchema($table, [], $exclude, $tablePrefix);
         return $tableSchema;
     }

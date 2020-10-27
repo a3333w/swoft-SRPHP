@@ -3,6 +3,7 @@
 
 namespace SwoftTest\Task\Testing;
 
+use Swoft\Context\Context;
 use Swoft\Task\Annotation\Mapping\Task;
 use Swoft\Task\Annotation\Mapping\TaskMapping;
 use Swoft\Task\Exception\TaskException;
@@ -65,7 +66,6 @@ class DemoTask
      *
      * @return array
      *
-     * @throws \Swoft\Exception\SwoftException
      * @TaskMapping(name="method6")
      */
     public function method6(string $name, int $count): array
@@ -102,23 +102,5 @@ class DemoTask
     public function booReturn(): bool
     {
         return true;
-    }
-
-    /**
-     * @TaskMapping()
-     *
-     * @return null
-     */
-    public function nullReturn()
-    {
-        return null;
-    }
-
-    /**
-     * @TaskMapping()
-     */
-    public function voidReturn2()
-    {
-        return;
     }
 }

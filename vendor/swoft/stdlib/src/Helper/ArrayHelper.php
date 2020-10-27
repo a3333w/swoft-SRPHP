@@ -2,28 +2,27 @@
 
 namespace Swoft\Stdlib\Helper;
 
+use function array_pop;
 use ArrayAccess;
 use Closure;
-use InvalidArgumentException;
-use Iterator;
-use stdClass;
-use Swoft\Stdlib\Collection;
-use Swoft\Stdlib\Contract\Arrayable;
-use Traversable;
-use function array_pop;
 use function count;
 use function func_get_args;
 use function get_class;
 use function in_array;
+use InvalidArgumentException;
 use function is_array;
 use function is_float;
 use function is_int;
 use function is_numeric;
 use function is_object;
 use function is_string;
+use Iterator;
 use function mb_strlen;
 use function method_exists;
 use function similar_text;
+use Swoft\Stdlib\Collection;
+use Swoft\Stdlib\Contract\Arrayable;
+use Traversable;
 use function value;
 
 /**
@@ -473,7 +472,7 @@ class ArrayHelper
      *
      * @param array          $array
      * @param string|Closure $name
-     * @param boolean        $keepKeys  whether to maintain the array keys. If false, the resulting array
+     * @param boolean        $keepKeys whether to maintain the array keys. If false, the resulting array
      *                                  will be re-indexed with integers.
      *
      * @return array the list of column values
@@ -588,7 +587,7 @@ class ArrayHelper
      *                                         To sort by multiple keys, provide an array of keys here.
      * @param integer|array        $direction  the sorting direction. It can be either `SORT_ASC` or `SORT_DESC`.
      *                                         When sorting by multiple keys with different sorting directions, use an array of sorting directions.
-     * @param integer|array        $sortFlag   the PHP sort flag. Valid values include
+     * @param integer|array         $sortFlag  the PHP sort flag. Valid values include
      *                                         `SORT_REGULAR`, `SORT_NUMERIC`, `SORT_STRING`, `SORT_LOCALE_STRING`, `SORT_NATURAL` and `SORT_FLAG_CASE`.
      *                                         Please refer to [PHP manual](http://php.net/manual/en/function.sort.php)
      *                                         for more details. When sorting by multiple keys with different sort flags, use an array of sort flags.
@@ -886,7 +885,7 @@ class ArrayHelper
      * Determine if the given key exists in the provided array.
      *
      * @param ArrayAccess|array $array
-     * @param string|int        $key
+     * @param string|int         $key
      *
      * @return bool
      */
@@ -903,17 +902,13 @@ class ArrayHelper
      * Get an item from an array using "dot" notation.
      *
      * @param ArrayAccess|array $array
-     * @param string            $key
-     * @param mixed             $default
+     * @param string             $key
+     * @param mixed              $default
      *
      * @return mixed
      */
     public static function get($array, $key = null, $default = null)
     {
-        if ($array instanceof stdClass) {
-            $array = (array)$array;
-        }
-
         if (null === $key) {
             return $array;
         }
@@ -937,7 +932,7 @@ class ArrayHelper
      * Check if an item exists in an array using "dot" notation.
      *
      * @param ArrayAccess|array $array
-     * @param string            $key
+     * @param string             $key
      *
      * @return bool
      */
@@ -952,10 +947,8 @@ class ArrayHelper
         }
 
         foreach (explode('.', $key) as $segment) {
-            if ((is_array($array)
-                    && array_key_exists($segment,
-                        $array))
-                || ($array instanceof ArrayAccess && $array->offsetExists($segment))) {
+            if ((is_array($array) && array_key_exists($segment,
+                        $array)) || ($array instanceof ArrayAccess && $array->offsetExists($segment))) {
                 $array = $array[$segment];
             } else {
                 return false;
@@ -1070,9 +1063,9 @@ class ArrayHelper
     /**
      * find similar text from an array|Iterator
      *
-     * @param string         $need
+     * @param string          $need
      * @param Iterator|array $iterator
-     * @param int            $similarPercent
+     * @param int             $similarPercent
      *
      * @return array
      */
@@ -1247,8 +1240,7 @@ class ArrayHelper
     /**
      * Collapse an array of arrays into a single array.
      *
-     * @param array $array
-     *
+     * @param  array  $array
      * @return array
      */
     public static function collapse($array)
@@ -1258,7 +1250,7 @@ class ArrayHelper
         foreach ($array as $values) {
             if ($values instanceof Collection) {
                 $values = $values->all();
-            } elseif (!is_array($values)) {
+            } elseif (! is_array($values)) {
                 continue;
             }
 
@@ -1271,8 +1263,7 @@ class ArrayHelper
     /**
      * Cross join the given arrays, returning all possible permutations.
      *
-     * @param array ...$arrays
-     *
+     * @param  array  ...$arrays
      * @return array
      */
     public static function crossJoin(...$arrays)
@@ -1299,10 +1290,9 @@ class ArrayHelper
     /**
      * Push an item onto the beginning of an array.
      *
-     * @param array $array
-     * @param mixed $value
-     * @param mixed $key
-     *
+     * @param  array  $array
+     * @param  mixed  $value
+     * @param  mixed  $key
      * @return array
      */
     public static function prepend($array, $value, $key = null)
@@ -1319,8 +1309,8 @@ class ArrayHelper
     /**
      * Get one or a specified number of random values from an array.
      *
-     * @param array    $array
-     * @param int|null $number
+     * @param  array  $array
+     * @param  int|null  $number
      *
      * @return mixed
      *
@@ -1342,7 +1332,7 @@ class ArrayHelper
             return $array[array_rand($array)];
         }
 
-        if ((int)$number === 0) {
+        if ((int) $number === 0) {
             return [];
         }
 
@@ -1350,7 +1340,7 @@ class ArrayHelper
 
         $results = [];
 
-        foreach ((array)$keys as $key) {
+        foreach ((array) $keys as $key) {
             $results[] = $array[$key];
         }
 
@@ -1358,24 +1348,10 @@ class ArrayHelper
     }
 
     /**
-     * array to string
-     *
-     * @param array  $array
-     * @param string $glue
-     *
-     * @return string
-     */
-    public static function toString(array $array, string $glue = '_'): string
-    {
-        return implode($glue, $array);
-    }
-
-    /**
      * Shuffle the given array and return the result.
      *
-     * @param array    $array
-     * @param int|null $seed
-     *
+     * @param  array  $array
+     * @param  int|null  $seed
      * @return array
      */
     public static function shuffle($array, $seed = null)

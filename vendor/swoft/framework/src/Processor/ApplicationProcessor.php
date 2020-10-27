@@ -2,8 +2,8 @@
 
 namespace Swoft\Processor;
 
-use Swoft\Stdlib\Helper\ArrayHelper;
 use function get_class;
+use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
  * Application processor

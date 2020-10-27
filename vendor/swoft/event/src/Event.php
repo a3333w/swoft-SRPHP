@@ -3,7 +3,7 @@
  * This file is part of Swoft.
  *
  * @link     https://swoft.org
- * @document https://swoft.org/docs
+ * @document https://doc.swoft.org
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
@@ -32,14 +32,14 @@ class Event implements EventInterface, ArrayAccess, Serializable
     private $name = '';
 
     /**
-     * @var null|string|mixed
-     */
-    protected $target;
-
-    /**
      * @var array Event params
      */
     protected $params = [];
+
+    /**
+     * @var null|string|mixed
+     */
+    protected $target;
 
     /**
      * Stop execution of the listener queue associated with the event
@@ -85,8 +85,9 @@ class Event implements EventInterface, ArrayAccess, Serializable
     public static function checkName(string $name): string
     {
         $name = trim($name, '. ');
-        if (!$name || strlen($name) > 128) {
-            throw new InvalidArgumentException('Setup the name cannot be a empty string of not more than 128 characters!');
+
+        if (!$name || strlen($name) > 64) {
+            throw new InvalidArgumentException('Setup the name cannot be a empty string of not more than 64 characters!');
         }
 
         return $name;
@@ -110,27 +111,25 @@ class Event implements EventInterface, ArrayAccess, Serializable
     }
 
     /**
-     * Set all params
+     * set all params
      *
      * @param array $params
      */
     public function setParams(array $params): void
     {
-        if ($params) {
-            $this->params = $params;
-        }
+        $this->params = $params;
     }
 
     /**
      * @param array $params
      *
-     * @return void
+     * @return $this
      */
-    public function addParams(array $params): void
+    public function addParams(array $params): self
     {
-        if ($params) {
-            $this->params = array_merge($this->params, $params);
-        }
+        $this->params = array_merge($this->params, $params);
+
+        return $this;
     }
 
     /**
@@ -174,7 +173,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
     }
 
     /**
-     * Set a argument
+     * set a argument
      *
      * @param string $name
      * @param mixed  $value

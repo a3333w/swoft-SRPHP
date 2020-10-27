@@ -11,11 +11,6 @@ namespace Swoft\Connection\Pool\Contract;
 interface PoolInterface
 {
     /**
-     * Initialize pool
-     */
-    public function initPool(): void;
-
-    /**
      * Create connection
      *
      * @return ConnectionInterface

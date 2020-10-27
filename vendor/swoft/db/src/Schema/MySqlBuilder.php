@@ -8,7 +8,6 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
-use Swoft\Stdlib\Helper\StringHelper;
 
 /**
  * Class Builder
@@ -67,11 +66,13 @@ class MySqlBuilder extends Builder
      * @param array  $addSelect
      *
      * @return array
+     * @throws ContainerException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function getColumnsDetail(string $table, array $addSelect = []): array
     {
-        $columns = [
+        $columns    = [
             'COLUMN_NAME as name',
             'DATA_TYPE as type',
             'COLUMN_DEFAULT as default',
@@ -82,8 +83,8 @@ class MySqlBuilder extends Builder
             'CHARACTER_MAXIMUM_LENGTH as length',
             'EXTRA as extra'
         ];
-        $query   = QueryBuilder::new($this->poolName, null, null);
-        $results = $query->fromRaw('information_schema.columns')
+        $query      = QueryBuilder::new($this->poolName, null, null);
+        $results    = $query->fromRaw('information_schema.columns')
             ->where('table_schema', $this->getDatabaseName())
             ->where('table_name', $this->getTablePrefixName($table))
             ->useWritePdo()
@@ -107,7 +108,9 @@ class MySqlBuilder extends Builder
      * @param string $likeTable
      *
      * @return array
+     * @throws ContainerException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function getTableSchema(
         string $table,
@@ -115,12 +118,12 @@ class MySqlBuilder extends Builder
         string $exclude = '',
         string $likeTable = ''
     ): array {
-        $query   = QueryBuilder::new($this->poolName, null, null);
-        $columns = [
+        $query      = QueryBuilder::new($this->poolName, null, null);
+        $columns    = [
             'TABLE_NAME as name',
             'TABLE_COMMENT as comment',
         ];
-        $results = $query->fromRaw('information_schema.tables')
+        $results    = $query->fromRaw('information_schema.tables')
             ->where('table_schema', $this->getDatabaseName())
             ->when($table, function (QueryBuilder $query, $tableName) {
                 $query->whereIn('table_name', array_map(
@@ -158,48 +161,16 @@ class MySqlBuilder extends Builder
             ->addSelect($addSelect)
             ->get()
             ->toArray();
-
-        $removePrefix = '';
-        if ($likeTable) {
-            $removePrefixExplode = explode('_', $likeTable, 2);
-            $removePrefix        = current($removePrefixExplode);
-
-            if (count($removePrefixExplode) === 2) {
-                $removePrefix .= '_';
-            }
-        }
         foreach ($results as $key => $item) {
             $item = (array)$item;
             // Re builder result
-            $name = $this->removeTablePrefix($item['name']);
-
-            $item['name'] = $name;
-
-            if ($removePrefix) {
-                $name = StringHelper::replaceFirst($removePrefix, '', $name);
-            }
+            $name           = $this->removeTablePrefix($item['name']);
+            $item['name']   = $name;
             $results[$name] = $item;
             unset($results[$key]);
         }
         unset($item);
         return $results;
-    }
-
-    /**
-     * Check Mysql Database exists
-     *
-     * @return bool
-     * @throws ContainerException
-     * @throws DbException
-     * @throws ReflectionException
-     */
-    public function checkDatabaseExists(): bool
-    {
-        $query = QueryBuilder::new($this->poolName, null, null);
-
-        return $query->fromRaw('information_schema.SCHEMATA')
-            ->where('SCHEMA_NAME', $this->getDatabaseName())
-            ->exists();
     }
 
     /**

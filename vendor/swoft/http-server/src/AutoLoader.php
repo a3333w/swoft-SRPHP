@@ -2,6 +2,10 @@
 
 namespace Swoft\Http\Server;
 
+use function bean;
+use function dirname;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Helper\ComposerJSON;
 use Swoft\Http\Message\ContentType;
 use Swoft\Http\Message\Response;
@@ -11,10 +15,8 @@ use Swoft\Http\Server\Formatter\XmlResponseFormatter;
 use Swoft\Http\Server\Parser\JsonRequestParser;
 use Swoft\Http\Server\Parser\XmlRequestParser;
 use Swoft\Http\Server\Swoole\RequestListener;
-use Swoft\Server\SwooleEvent;
+use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\SwoftComponent;
-use function bean;
-use function dirname;
 
 /**
  * Class AutoLoader
@@ -50,6 +52,8 @@ class AutoLoader extends SwoftComponent
 
     /**
      * @return array
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function beans(): array
     {

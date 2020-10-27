@@ -2,8 +2,10 @@
 
 namespace Swoft\Devtool\Model\Data;
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
 use Swoft\Devtool\Model\Dao\SchemaDao;
 use Swoft\Stdlib\Helper\StringHelper;
@@ -36,6 +38,8 @@ class SchemaData
      * @param string $fieldPrefix
      *
      * @return array
+     * @throws ReflectionException
+     * @throws ContainerException
      * @throws DbException
      */
     public function getSchemaColumnsData(string $pool, string $table, string $fieldPrefix = ''): array
@@ -47,7 +51,6 @@ class SchemaData
             } else {
                 $mappingName = StringHelper::replaceFirst($fieldPrefix, '', $columnSchema['name']);
             }
-
             $columnSchema['mappingName'] = $this->getSafeMappingName($mappingName);
         }
         unset($columnSchema);
@@ -63,16 +66,15 @@ class SchemaData
      * @param string $exclude
      * @param string $tablePrefix
      *
-     * @param string $removePrefix
-     *
      * @return array
+     * @throws ReflectionException
+     * @throws ContainerException
      * @throws DbException
      */
-    public function getSchemaTableData(string $pool, string $table, string $exclude, string $tablePrefix, string $removePrefix = ''): array
+    public function getSchemaTableData(string $pool, string $table, string $exclude, string $tablePrefix): array
     {
         $schemas = $this->schemaDao->getTableSchema($pool, $table, $exclude, $tablePrefix);
         foreach ($schemas as $originTableName => &$schema) {
-            $originTableName = $this->removePrefix($originTableName, $removePrefix);
             $schema['mapping'] = $this->getSafeMappingName($originTableName, true);
         }
         unset($schema);
@@ -96,18 +98,5 @@ class SchemaData
             return $ucFirst ? 'Db' . mt_rand(1, 100) : 'db' . mt_rand(100, 1000);
         }
         return $ucFirst ? 'Db' . $mapping : 'db' . $mapping;
-    }
-
-    /**
-     * @param string $mapping
-     * @param string $removePrefix
-     * @return string
-     */
-    private function removePrefix(string $mapping, string $removePrefix)
-    {
-        if (!empty($removePrefix)) {
-            $mapping = StringHelper::replaceFirst($removePrefix, '', $mapping);
-        }
-        return $mapping;
     }
 }

@@ -2,7 +2,9 @@
 
 namespace Swoft\WebSocket\Server\MessageParser;
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Message\Message;
@@ -30,27 +32,26 @@ class JsonParser implements MessageParserInterface
      *
      * @param string $data Message data. It's {@see \Swoole\WebSocket\Frame::$data)
      *
-     * @return Message
+     * @return Message [
+     *                     [
+     *                      'cmd'  => 'home.index', // message command. it's must exists.
+     *                      'data' => message data,
+     *                      ...
+     *                     ]
+     *                  ]
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function decode(string $data): Message
     {
         $cmd = '';
-        $ext = [];
         $map = JsonHelper::decode($data, true);
 
-        // Find message route command
         if (isset($map['cmd'])) {
             $cmd = (string)$map['cmd'];
             unset($map['cmd']);
         }
 
-        if (isset($map['data'])) {
-            $data = $map['data'];
-            $ext  = $map['ext'] ?? [];
-        } else {
-            $data = $map;
-        }
-
-        return Message::new($cmd, $data, $ext);
+        return Message::new($cmd, $map['data'] ?? $map);
     }
 }

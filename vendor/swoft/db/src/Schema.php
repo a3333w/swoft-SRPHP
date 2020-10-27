@@ -3,6 +3,8 @@
 
 namespace Swoft\Db;
 
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Schema\Builder;
 use Swoft\Db\Schema\Grammars\Grammar;
@@ -10,7 +12,7 @@ use function in_array;
 
 /**
  * @method static Builder create(string $table, \Closure $callback, bool $ifNotExist = false)
- * @method static Builder createIfNotExists(string $table, \Closure $callback)
+ * @method static Builder createIfNotExist(string $table, \Closure $callback)
  * @method static Builder drop(string $table)
  * @method static Builder dropIfExists(string $table)
  * @method static Builder table(string $table, \Closure $callback)
@@ -33,7 +35,7 @@ class Schema
      */
     private static $passthru = [
         'create',
-        'createIfNotExists',
+        'createIfNotExist',
         'drop',
         'dropIfExists',
         'table',
@@ -43,13 +45,15 @@ class Schema
     ];
 
     /**
-     * @param string  $pool
+     * @param string $pool
      * @param Grammar $grammar
      *
      * @return Builder
      * @throws DbException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    public static function getSchemaBuilder(string $pool = Pool::DEFAULT_POOL, Grammar $grammar = null)
+    public static function getSchemaConnection(string $pool = Pool::DEFAULT_POOL, Grammar $grammar = null)
     {
         return Builder::new($pool, $grammar);
     }
@@ -62,6 +66,8 @@ class Schema
      *
      * @return mixed
      * @throws DbException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function __callStatic(string $name, array $arguments)
     {
@@ -69,7 +75,7 @@ class Schema
             throw new DbException(sprintf('Schema not support method(%s)!', $name));
         }
 
-        $schema = self::getSchemaBuilder();
-        return $schema->$name(...$arguments);
+        $schemaConnection = self::getSchemaConnection();
+        return $schemaConnection->$name(...$arguments);
     }
 }

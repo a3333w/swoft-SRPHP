@@ -477,7 +477,7 @@ class BuilderTest extends TestCase
         $this->assertTrue(DB::table('user')->updateOrInsert(['id' => 1]));
         $this->assertTrue(DB::table('user')->updateOrInsert(['id' => 1]));
         $this->assertTrue(DB::table('user')->updateOrInsert(['id' => 2], ['age' => 96]));
-        $this->assertTrue(DB::table('user')->updateOrInsert(['id' => 2], [], ['age' => 1]));
+        $this->assertTrue(DB::table('user')->updateOrInsert(['id' => 2]));
 
         $id     = $this->getFirstId();
         $update = DB::table('user')->where('id', $id)->update(['age' => 18, 'name' => 'ovo' . mt_rand(22, 33)]);
@@ -566,7 +566,9 @@ class BuilderTest extends TestCase
     }
 
     /**
+     * @throws ContainerException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function testEach()
     {
@@ -617,7 +619,9 @@ class BuilderTest extends TestCase
      * get first line `id`
      *
      * @return int
+     * @throws ContainerException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function getFirstId(): int
     {
@@ -763,15 +767,12 @@ class BuilderTest extends TestCase
 
     public function testWhereArray()
     {
-        $expectSql =
-            'select * from `user` where (`uid` = ? and `name` like ? or `phone` like ? and `id` = ? and `age` in (?, ?))';
+        $expectSql = 'select * from `user` where (`uid` = ? and `name` like ? or `phone` like ?)';
 
         $where = [
             'uid' => 1,
             ['name', 'like', '%xx%'],
-            ['phone', 'like', 'xx%', 'or',],
-            'id'  => [1],
-            'age' => [1, 2]
+            ['phone', 'like', 'xx%', 'or']
         ];
 
         $res = DB::table('user')->where($where)->toSql();

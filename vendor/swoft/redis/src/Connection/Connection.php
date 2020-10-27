@@ -296,6 +296,8 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
 
     /**
      * @throws RedisException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function create(): void
     {
@@ -317,6 +319,8 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
+     * @throws ReflectionException
+     * @throws ContainerException
      * @throws RedisException
      */
     public function createClient(): void
@@ -337,6 +341,8 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
+     * @throws ReflectionException
+     * @throws ContainerException
      * @throws RedisException
      */
     public function createClusterClient(): void
@@ -348,7 +354,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
-     * Run a command against the Redis database. Auto retry once
+     * Run a command against the Redis database.
      *
      * @param string $method
      * @param array  $parameters
@@ -395,46 +401,10 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
-     * Run a command callback against the Redis database. Auto retry once
-     *
-     * @param callable $callback
-     * @param bool     $reconnect
-     *
-     * @return mixed
-     * @throws ContainerException
-     * @throws Throwable
-     * @throws ReflectionException
-     *
-     * @example
-     *         Uses eval script
-     *         Redis::call(function(\Redis $redis) {
-     *              $redis->eval("return {1,2,3,redis.call('lrange','mylist',0,-1)}");*
-     *              return $redis->getLastError();
-     *         });
-     *
-     */
-    public function call(callable $callback, bool $reconnect = false)
-    {
-        try {
-            Log::profileStart('redis.%s', __FUNCTION__);
-            $result = $callback($this->client);
-            Log::profileEnd('redis.%s', __FUNCTION__);
-            // Release Connection
-            $this->release();
-        } catch (Throwable $e) {
-            if (!$reconnect && $this->reconnect()) {
-                return $this->call($callback, true);
-            }
-
-            throw $e;
-        }
-
-        return $result;
-    }
-
-    /**
      * @param bool $force
      *
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function release(bool $force = false): void
     {
@@ -490,7 +460,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
 
         $result = $this->command('zAdd', $params);
 
-        return (int)$result;
+        return $result;
     }
 
     /**
@@ -611,6 +581,8 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
 
     /**
      * @return bool
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function reconnect(): bool
     {

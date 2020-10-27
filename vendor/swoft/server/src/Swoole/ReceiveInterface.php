@@ -2,12 +2,22 @@
 
 namespace Swoft\Server\Swoole;
 
+use Swoole\Server;
+
 /**
  * Interface ReceiveInterface
  *
  * @since 2.0
- * @deprecated  since Swoft 2.0.4, use '\Swoft\Server\Contract\ReceiveInterface' for instead.
  */
-interface ReceiveInterface extends \Swoft\Server\Contract\ReceiveInterface
+interface ReceiveInterface
 {
+    /**
+     * Receive event
+     *
+     * @param Server $server
+     * @param int      $fd
+     * @param int      $reactorId
+     * @param string   $data
+     */
+    public function onReceive(Server $server, int $fd, int $reactorId, string $data): void;
 }

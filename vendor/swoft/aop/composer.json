@@ -1,14 +1,12 @@
 {
   "name": "swoft/aop",
   "type": "library",
-  "version": "v2.0.6",
   "keywords": [
     "php",
     "swoole",
-    "swoft",
-    "aop"
+    "swoft"
   ],
-    "description": "swoft aop component",
+  "description": "micro-service framework base on swoole",
   "license": "Apache-2.0",
   "require": {
     "php": ">=7.1",

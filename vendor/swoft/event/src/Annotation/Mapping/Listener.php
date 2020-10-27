@@ -59,6 +59,8 @@ final class Listener
     }
 
     /**
+     * 监听事件
+     *
      * @return string
      */
     public function getEvent(): string

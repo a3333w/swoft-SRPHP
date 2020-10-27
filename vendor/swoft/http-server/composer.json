@@ -1,13 +1,12 @@
 {
   "name": "swoft/http-server",
   "type": "library",
-  "version": "v2.0.6",
   "keywords": [
     "php",
     "swoole",
     "swoft"
   ],
-    "description": "swoft http server component",
+  "description": "micro-service framework base on swoole",
   "license": "Apache-2.0",
   "require": {
     "swoft/framework": "~2.0.0",

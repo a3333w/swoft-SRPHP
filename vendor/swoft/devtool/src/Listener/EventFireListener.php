@@ -3,10 +3,10 @@
 namespace Swoft\Devtool\Listener;
 
 use Swoft\Config\Annotation\Mapping\Config;
+use Swoft\Console\Console;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
-use Swoft\Log\Helper\CLog;
 
 /**
  * Class EventFireListener
@@ -29,6 +29,14 @@ class EventFireListener implements EventHandlerInterface
             return;
         }
 
-        CLog::info('Trigger event %s', $event->getName());
+        Console::log(
+            \sprintf('Trigger the event <cyan>%s</cyan>', $event->getName()),
+            [],
+            'debug',
+            [
+                'Application',
+                // 'WorkerId' => App::getWorkerId()
+            ]
+        );
     }
 }

@@ -19,7 +19,6 @@ class Extender implements ExtenderInterface
 {
     /**
      * @return array
-     * @throws \Swoft\Exception\SwoftException
      */
     public function getExt(): array
     {

@@ -3,6 +3,7 @@
 namespace SwoftTest\Console\Testing\Listener;
 
 use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\CommandRegister;
 use Swoft\Console\Router\Router;
 use Swoft\Event\Annotation\Mapping\Listener;
@@ -22,6 +23,7 @@ class AppInitCompleteListener implements EventHandlerInterface
      * @param EventInterface $event
      *
      * @throws ReflectionException
+     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {

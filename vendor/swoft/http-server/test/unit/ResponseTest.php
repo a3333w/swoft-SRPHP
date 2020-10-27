@@ -2,7 +2,8 @@
 
 namespace SwoftTest\Http\Server\Unit;
 
-use Swoft\Exception\SwoftException;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\ContentType;
 use SwoftTest\Http\Server\Testing\Controller\TestController;
 use SwoftTest\Http\Server\Testing\MockRequest;
@@ -15,7 +16,8 @@ use SwoftTest\Http\Server\Testing\MockRequest;
 class ResponseTest extends TestCase
 {
     /**
-     * @throws SwoftException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function testCookie(): void
     {
@@ -28,7 +30,8 @@ class ResponseTest extends TestCase
     }
 
     /**
-     * @throws SwoftException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function testHtml(): void
     {

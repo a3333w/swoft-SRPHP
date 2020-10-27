@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace Swoft\Contract;
 
@@ -6,7 +6,6 @@ use Swoft\Annotation\Contract\LoaderInterface;
 
 /**
  * Interface ComponentInterface
- *
  * @since 2.0
  */
 interface ComponentInterface extends DefinitionInterface, LoaderInterface
@@ -15,7 +14,7 @@ interface ComponentInterface extends DefinitionInterface, LoaderInterface
         'name'        => '',
         'title'       => '',
         'version'     => '1.0.0',
-        'homepage'    => '',
+        'homepage' => '',
         'description' => '',
     ];
 

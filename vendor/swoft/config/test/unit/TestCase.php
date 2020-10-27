@@ -3,6 +3,8 @@
 
 namespace SwoftTest\Config\Unit;
 
+use Swoft\Config\Config;
+
 /**
  * Class TestCase
  *

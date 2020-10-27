@@ -1,7 +1,6 @@
 {
     "name": "swoft/i18n",
     "type": "library",
-  "version": "v2.0.6",
     "keywords": [
         "php",
         "swoole",
@@ -9,7 +8,7 @@
         "i18n",
         "translation"
     ],
-    "description": "swoft i18n component",
+    "description": "I18n Translations Component for Swoft",
     "license": "Apache-2.0",
     "require": {
         "php": ">=7.1",

@@ -7,7 +7,12 @@
     "swoft",
     "ide-helper"
   ],
-  "description": "IDE helper for Swoft and Swoole",
+  "description": "ide helper for Swoft and Swoole",
   "license": "Apache-2.0",
-  "require-dev": {}
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://packagist.phpcomposer.com"
+    }
+  ]
 }

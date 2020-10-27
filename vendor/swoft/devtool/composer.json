@@ -1,7 +1,6 @@
 {
   "name": "swoft/devtool",
   "type": "library",
-  "version": "v2.0.6",
   "keywords": [
     "php",
     "swoole",
@@ -12,7 +11,7 @@
   "description": "Devtool for swoft framework",
   "license": "Apache-2.0",
   "require": {
-    "text/template": "~2.6"
+    "text/template": "~2.3"
   },
   "autoload": {
     "psr-4": {
@@ -25,6 +24,12 @@
       "SwoftTest\\Devtool\\Testing\\": "test/testing"
     }
   },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://packagist.laravel-china.org"
+    }
+  ],
   "require-dev": {
     "phpunit/phpunit": "^7.5"
   },

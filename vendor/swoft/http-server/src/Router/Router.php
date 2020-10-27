@@ -70,7 +70,7 @@ class Router implements RouterInterface
      *
      * @var Route[][]
      * [
-     *     // Group the entire first section as a key
+     *     // 使用完整的第一节作为key进行分组
      *     'edit' => [
      *          Route, // '/edit/{id}'
      *      ],
@@ -86,7 +86,7 @@ class Router implements RouterInterface
      *
      * @var Route[][]
      * [
-     *     // Group using HTTP METHOD as key
+     *     // 使用 HTTP METHOD 作为 key进行分组
      *     'GET' => [
      *          Route, // '/{name}/profile'
      *          ...
@@ -498,7 +498,7 @@ class Router implements RouterInterface
         }
 
         // It is a regular dynamic route(the first node is 1th level index key).
-        if ($fKey && $routeList = $this->regularRoutes[$fKey] ?? []) {
+        if ($fKey && $routeList = $this->regularRoutes[$fKey] ?? false) {
             /** @var Route $route */
             foreach ($routeList as $route) {
                 $result = $route->match($path);
@@ -509,7 +509,7 @@ class Router implements RouterInterface
         }
 
         // It is a irregular dynamic route
-        if ($routeList = $this->vagueRoutes[$method] ?? []) {
+        if ($routeList = $this->vagueRoutes[$method] ?? false) {
             foreach ($routeList as $route) {
                 $result = $route->match($path);
                 if ($result[0]) {
@@ -705,53 +705,31 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param callable|null $filter
-     *
      * @return string
      */
-    public function toString(callable $filter = null): string
+    public function toString(): string
     {
-        $count  = 0;
-        $indent = '  ';
-
-        $strings   = ['# Routes Number: ' . $this->count()];
-        $strings[] = "\n# Static Routes:";
-
+        $indent    = '  ';
+        $strings   = ['#Routes Number: ' . $this->count()];
+        $strings[] = "\n#Static Routes:";
         /** @var Route $route */
         foreach ($this->staticRoutes as $route) {
-            $routeString = $route->toString();
-
-            if (!$filter || $filter($routeString)) {
-                $count++;
-                $strings[] = $indent . $routeString;
-            }
+            $strings[] = $indent . $route->toString();
         }
 
         $strings[] = "\n# Regular Routes:";
         foreach ($this->regularRoutes as $routes) {
             foreach ($routes as $route) {
-                $routeString = $route->toString();
-
-                if (!$filter || $filter($routeString)) {
-                    $count++;
-                    $strings[] = $indent . $routeString;
-                }
+                $strings[] = $indent . $route->toString();
             }
         }
 
         $strings[] = "\n# Vague Routes:";
         foreach ($this->vagueRoutes as $routes) {
             foreach ($routes as $route) {
-                $routeString = $route->toString();
-
-                if (!$filter || $filter($routeString)) {
-                    $count++;
-                    $strings[] = $indent . $routeString;
-                }
+                $strings[] = $indent . $route->toString();
             }
         }
-
-        $strings[] = "\nCurrent displayed count: $count";
 
         return implode("\n", $strings);
     }

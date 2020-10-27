@@ -17,7 +17,6 @@ use Swoft\Db\Eloquent\Model;
  */
 class User extends Model
 {
-
     /**
      * @Id(incrementing=true)
      *
@@ -31,29 +30,6 @@ class User extends Model
      * @var string|null
      */
     private $name;
-
-    /**
-     * @Column()
-     * @var int|null
-     */
-    private $hahh;
-
-
-    /**
-     * @return null|int
-     */
-    public function getHahh(): ?int
-    {
-        return $this->hahh;
-    }
-
-    /**
-     * @param null|int $hahh
-     */
-    public function setHahh(?int $hahh): void
-    {
-        $this->hahh = $hahh;
-    }
 
     /**
      * @Column(name="password", hidden=true)
@@ -83,55 +59,6 @@ class User extends Model
      * @var string|null
      */
     private $testHump;
-
-    /**
-     *
-     *
-     * @Column(name="test_json", prop="testJson")
-     * @var array|null
-     */
-    private $testJson;
-
-    /**
-     *
-     *
-     * @Column()
-     * @var float|null
-     */
-    private $amount;
-
-    /**
-     * @return float|null
-     */
-    public function getAmount(): ?float
-    {
-        return $this->amount;
-    }
-
-    /**
-     * @param float|null $amount
-     */
-    public function setAmount(?float $amount): void
-    {
-        $this->amount = $amount;
-    }
-
-    /**
-     * @return null|array
-     */
-    public function getTestJson(): ?array
-    {
-        return $this->testJson;
-    }
-
-    /**
-     * @param null|array $testJson
-     */
-    public function setTestJson(?array $testJson): void
-    {
-        $this->testJson = $testJson;
-    }
-
 
     /**
      * @return null|string

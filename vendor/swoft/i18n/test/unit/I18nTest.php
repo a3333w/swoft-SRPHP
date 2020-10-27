@@ -1,9 +1,12 @@
 <?php declare(strict_types=1);
 
+
 namespace SwoftTest\I18n\Unit;
+
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\I18n\I18n;
 
 /**
@@ -14,36 +17,34 @@ use Swoft\I18n\I18n;
 class I18nTest extends TestCase
 {
     /**
-     * Translate test
+     * @var I18n
      */
-    public function testCommon(): void
-    {
-        /** @var I18n $i18n */
-        $i18n = BeanFactory::getBean('i18n');
+    private $i18n;
 
-        $this->assertNotEmpty($ls = $i18n->getLanguages());
-        $this->assertContains('en', $ls);
-        $this->assertContains('zh-CN', $ls);
+    /**
+     * @throws \ReflectionException
+     * @throws ContainerException
+     */
+    public function setUp()
+    {
+        $this->i18n = BeanFactory::getBean('i18n');
     }
 
     /**
-     * Translate test
+     * Translate
      */
-    public function testTranslate(): void
+    public function testTranslate()
     {
-        /** @var I18n $i18n */
-        $i18n = BeanFactory::getBean('i18n');
-
-        $title = $i18n->translate('title', ['name' => 'Swoft']);
+        $title = $this->i18n->translate('title', ['name' => 'Swoft']);
         $this->assertEquals($title, 'Hello Swoft');
 
-        $title = $i18n->translate('title', ['name' => 'Swoft'], 'zh-CN');
+        $title = $this->i18n->translate('title', ['name' => 'Swoft'], 'zh-cn');
         $this->assertEquals($title, '你好 Swoft');
 
-        $title = $i18n->translate('msg.body', ['name' => 'Swoft', 'base' => 'Swoole']);
+        $title = $this->i18n->translate('msg.body', ['name' => 'Swoft', 'base' => 'Swoole']);
         $this->assertEquals($title, 'Swoft framework，base on Swoole');
 
-        $title = $i18n->translate('msg.body', ['name' => 'Swoft', 'base' => 'Swoole'], 'zh-CN');
+        $title = $this->i18n->translate('msg.body', ['name' => 'Swoft', 'base' => 'Swoole'], 'zh-cn');
         $this->assertEquals($title, 'Swoft框架协程框架，基于Swoole');
     }
 }

@@ -4,8 +4,10 @@
 namespace Swoft\Task;
 
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Task\Contract\RequestInterface;
 use Swoft\Task\Exception\TaskException;
 use Swoole\Server;
@@ -83,6 +85,8 @@ class Request implements RequestInterface
      * @param SwooleTask $task
      *
      * @return Request
+     * @throws ReflectionException
+     * @throws ContainerException
      * @throws TaskException
      */
     public static function new(Server $server = null, SwooleTask $task = null): self

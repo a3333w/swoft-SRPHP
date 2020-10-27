@@ -62,6 +62,8 @@ class Packet implements PacketInterface
      *
      * @return string
      * @throws RpcException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function encode(Protocol $protocol): string
     {
@@ -74,6 +76,8 @@ class Packet implements PacketInterface
      *
      * @return Protocol
      * @throws RpcException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function decode(string $string): Protocol
     {
@@ -89,6 +93,8 @@ class Packet implements PacketInterface
      *
      * @return string
      * @throws RpcException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function encodeResponse($result, int $code = null, string $message = '', $data = null): string
     {
@@ -101,6 +107,8 @@ class Packet implements PacketInterface
      *
      * @return Response
      * @throws RpcException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function decodeResponse(string $string): Response
     {
@@ -110,6 +118,8 @@ class Packet implements PacketInterface
 
     /**
      * @return array
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function defaultPackets(): array
     {
@@ -145,6 +155,8 @@ class Packet implements PacketInterface
     /**
      * @return PacketInterface
      * @throws RpcException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     private function getPacket(): PacketInterface
     {

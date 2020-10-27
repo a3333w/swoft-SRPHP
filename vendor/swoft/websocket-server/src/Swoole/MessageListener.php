@@ -4,10 +4,9 @@ namespace Swoft\WebSocket\Server\Swoole;
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\BeanFactory;
 use Swoft\Context\Context;
-use Swoft\Server\Contract\MessageInterface;
+use Swoft\Server\Swoole\MessageInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
@@ -19,22 +18,16 @@ use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Websocket\Frame;
 use Swoole\Websocket\Server;
 use Throwable;
-use function server;
 
 /**
  * Class MessageListener
  *
- * @since 2.0
  * @Bean()
+ *
+ * @since 2.0
  */
 class MessageListener implements MessageInterface
 {
-    /**
-     * @Inject("wsMsgDispatcher")
-     * @var WsMessageDispatcher
-     */
-    private $dispatcher;
-
     /**
      * @param Server $server
      * @param Frame  $frame
@@ -46,41 +39,40 @@ class MessageListener implements MessageInterface
         $fd  = $frame->fd;
         $sid = (string)$fd;
 
-        server()->log("Message: conn#{$fd} received message: {$frame->data}", [], 'debug');
-
-        $request  = Request::new($frame);
-        $response = Response::new($fd);
-
+        $req = Request::new($frame);
+        $res = Response::new($fd);
         /** @var WsMessageContext $ctx */
-        $ctx = WsMessageContext::new($request, $response);
+        $ctx = WsMessageContext::new($req, $res);
 
         // Storage context
         Context::set($ctx);
         // Bind cid => sid(fd)
         Session::bindCo($sid);
 
+        /** @var WsMessageDispatcher $dispatcher */
+        $dispatcher = BeanFactory::getSingleton('wsMsgDispatcher');
+
         try {
-            // Trigger message before event
-            Swoft::trigger(WsServerEvent::MESSAGE_RECEIVE, $fd, $server, $frame);
+            \server()->log("Message: conn#{$fd} received message: {$frame->data}", [], 'debug');
+            Swoft::trigger(WsServerEvent::MESSAGE_BEFORE, $fd, $server, $frame);
 
             // Parse and dispatch message
-            $this->dispatcher->dispatch($server, $request, $response);
+            $dispatcher->dispatch($server, $frame);
 
-            // Trigger message after event
             Swoft::trigger(WsServerEvent::MESSAGE_AFTER, $fd, $server, $frame);
         } catch (Throwable $e) {
-            Swoft::trigger(WsServerEvent::MESSAGE_ERROR, $e, $frame);
+            Swoft::trigger(WsServerEvent::HANDSHAKE_ERROR, $e, $frame);
 
-            server()->log("Message: conn#{$fd} error: " . $e->getMessage(), [], 'error');
+            \server()->log("Message: conn#{$fd} error: " . $e->getMessage(), [], 'error');
 
             /** @var WsErrorDispatcher $errDispatcher */
             $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
             $errDispatcher->messageError($e, $frame);
         } finally {
-            // Defer event
+            // Defer
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
-            // Destroy event
+            // Destroy
             Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
 
             // Unbind cid => sid(fd)

@@ -2,7 +2,8 @@
 
 namespace SwoftTest\Http\Server\Unit;
 
-use Swoft\Exception\SwoftException;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\ContentType;
 use Swoft\Stdlib\Helper\JsonHelper;
 use SwoftTest\Http\Server\Testing\MockRequest;
@@ -16,9 +17,10 @@ use SwoftTest\Http\Server\Testing\MockRequest;
 class RouteTest extends TestCase
 {
     /**
-     * @throws SwoftException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    public function testReturnType(): void
+    public function testReturnType()
     {
         $response = $this->mockServer->request(MockRequest::GET, '/testRoute/string');
         $response->assertEqualJson(['data' => 'string']);
@@ -31,9 +33,10 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @throws SwoftException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    public function testAcceptType(): void
+    public function testAcceptType()
     {
         $data = [
             'name' => 'swoft',
@@ -59,9 +62,10 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @throws SwoftException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    public function testRequestContentParser(): void
+    public function testRequestContentParser()
     {
         $data = [
             'name' => 'swoft',
@@ -92,7 +96,8 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @throws SwoftException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function testMethod(): void
     {
@@ -104,7 +109,8 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @throws SwoftException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function testNotSupportedMethod(): void
     {
@@ -113,7 +119,8 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @throws SwoftException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function testRouteCNParam(): void
     {
@@ -131,7 +138,8 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @throws SwoftException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function testTrait(): void
     {
@@ -140,7 +148,8 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @throws SwoftException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function testBaseAction(): void
     {

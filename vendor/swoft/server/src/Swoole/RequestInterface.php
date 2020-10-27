@@ -2,12 +2,21 @@
 
 namespace Swoft\Server\Swoole;
 
+use Swoole\Http\Request;
+use Swoole\Http\Response;
+
 /**
  * Interface RequestInterface
  *
- * @since      2.0
- * @deprecated  since Swoft 2.0.4, use '\Swoft\Server\Contract\RequestInterface' for instead.
+ * @since 2.0
  */
-interface RequestInterface extends \Swoft\Server\Contract\RequestInterface
+interface RequestInterface
 {
+    /**
+     * Request event
+     *
+     * @param Request  $request
+     * @param Response $response
+     */
+    public function onRequest(Request $request, Response $response): void;
 }

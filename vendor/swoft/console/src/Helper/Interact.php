@@ -4,6 +4,9 @@ namespace Swoft\Console\Helper;
 
 use Closure;
 use RuntimeException;
+use function sprintf;
+use const STDIN;
+use function strtolower;
 use Swoft\Console\Advanced\Interact\Checkbox;
 use Swoft\Console\Advanced\Interact\Choose;
 use Swoft\Console\Advanced\Interact\Confirm;
@@ -11,10 +14,7 @@ use Swoft\Console\Advanced\Interact\LimitedAsk;
 use Swoft\Console\Advanced\Interact\Password;
 use Swoft\Console\Advanced\Interact\Question;
 use Swoft\Console\Console;
-use function sprintf;
-use function strtolower;
 use function trim;
-use const STDIN;
 
 /**
  * Class Interact
@@ -135,30 +135,24 @@ class Interact extends Show
 
     /**
      * Send a message request confirmation
-     *
      * @param string $question The question message
-     * @param bool   $default  Default value
-     * @param bool   $nl
-     *
+     * @param bool   $default Default value
      * @return bool
      */
-    public static function confirm(string $question, bool $default = true, bool $nl = true): bool
+    public static function confirm(string $question, bool $default = true): bool
     {
-        return Confirm::ask($question, $default, $nl);
+        return Confirm::ask($question, $default);
     }
 
     /**
      * Send a message request confirmation
-     *
      * @param string $question The question message
      * @param bool   $default Default value
-     * @param bool   $nl
-     *
      * @return bool
      */
-    public static function unConfirm(string $question, bool $default = true, bool $nl = true): bool
+    public static function unConfirm(string $question, bool $default = true): bool
     {
-        return Confirm::not($question, $default, $nl);
+        return false === Confirm::ask($question, $default);
     }
 
     /**
@@ -204,9 +198,9 @@ class Interact extends Show
      * @param string   $question question message
      * @param string   $default default value
      * @param Closure $validator The validate callback. It must return bool.
-     * @return string
+     * @return string|null
      */
-    public static function ask(string $question, string $default = '', Closure $validator = null): string
+    public static function ask(string $question, string $default = '', Closure $validator = null): ?string
     {
         return self::question($question, $default, $validator);
     }

@@ -3,8 +3,8 @@
 
 namespace SwoftTest\Http\Server\Unit;
 
-use Swoft\Exception\SwoftException;
-use Swoft\Validator\Exception\ValidatorException;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Stdlib\Helper\JsonHelper;
 use SwoftTest\Http\Server\Testing\MockRequest;
 use SwoftTest\Http\Server\Testing\Validator\UserBaseValidate;
 
@@ -16,9 +16,10 @@ use SwoftTest\Http\Server\Testing\Validator\UserBaseValidate;
 class ValidatorTest extends TestCase
 {
     /**
-     * @throws SwoftException
+     * @throws \ReflectionException
+     * @throws ContainerException
      */
-    public function testDefaultValidator(): void
+    public function testDefaultValidator()
     {
         $data     = [
             'string'  => 'string',
@@ -36,9 +37,10 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * @throws SwoftException
+     * @throws \ReflectionException
+     * @throws ContainerException
      */
-    public function testFailUserValidator(): void
+    public function testFailUserValidator()
     {
         $data     = [
             'start' => 12,
@@ -49,7 +51,8 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * @throws SwoftException
+     * @throws \ReflectionException
+     * @throws ContainerException
      */
     public function testUserValidator()
     {
@@ -63,7 +66,8 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * @throws ValidatorException
+     * @throws \ReflectionException
+     * @throws ContainerException
      */
     public function testUserValidator2()
     {
@@ -83,7 +87,8 @@ class ValidatorTest extends TestCase
 
 
     /**
-     * @throws SwoftException
+     * @throws \ReflectionException
+     * @throws ContainerException
      */
     public function testDefaultValidatorQuery()
     {
@@ -103,7 +108,8 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * @throws SwoftException
+     * @throws \ReflectionException
+     * @throws ContainerException
      */
     public function testFailUserValidatorQuery()
     {
@@ -116,7 +122,8 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * @throws SwoftException
+     * @throws \ReflectionException
+     * @throws ContainerException
      */
     public function testUserValidatorQuery()
     {
@@ -130,7 +137,8 @@ class ValidatorTest extends TestCase
     }
 
     /**
-     * @throws SwoftException
+     * @throws \ReflectionException
+     * @throws ContainerException
      */
     public function testNoToValidate()
     {

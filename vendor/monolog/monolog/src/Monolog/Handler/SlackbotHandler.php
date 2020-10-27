@@ -16,11 +16,8 @@ use Monolog\Logger;
 /**
  * Sends notifications through Slack's Slackbot
  *
- * @author     Haralan Dobrev <hkdobrev@gmail.com>
- * @see        https://slack.com/apps/A0F81R8ET-slackbot
- * @deprecated According to Slack the API used on this handler it is deprecated.
- *             Therefore this handler will be removed on 2.x
- *             Slack suggests to use webhooks instead. Please contact slack for more information.
+ * @author Haralan Dobrev <hkdobrev@gmail.com>
+ * @see    https://slack.com/apps/A0F81R8ET-slackbot
  */
 class SlackbotHandler extends AbstractProcessingHandler
 {
@@ -51,7 +48,6 @@ class SlackbotHandler extends AbstractProcessingHandler
      */
     public function __construct($slackTeam, $token, $channel, $level = Logger::CRITICAL, $bubble = true)
     {
-        @trigger_error('SlackbotHandler is deprecated and will be removed on 2.x', E_USER_DEPRECATED);
         parent::__construct($level, $bubble);
 
         $this->slackTeam = $slackTeam;

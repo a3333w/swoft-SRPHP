@@ -1,9 +1,10 @@
     /**
      * @param {= paramType} {= paramName}
-     *
-     * @return void
+     * @return self
      */
-    public function {= methodName}({= type} {= paramName}): void
+    public function {= methodName}({= type} {= paramName}): self
     {
         $this->{= property} = {= paramName};
+
+        return $this;
     }

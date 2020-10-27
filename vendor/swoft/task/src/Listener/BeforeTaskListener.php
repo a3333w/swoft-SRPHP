@@ -4,12 +4,14 @@
 namespace Swoft\Task\Listener;
 
 
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Log\Helper\Log;
-use Swoft\Server\SwooleEvent;
+use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\Task\Request;
 use Swoft\Task\Response;
 use Swoft\Task\TaskContext;
@@ -27,6 +29,8 @@ class BeforeTaskListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {

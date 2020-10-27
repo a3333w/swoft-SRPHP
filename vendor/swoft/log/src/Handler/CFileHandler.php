@@ -17,9 +17,9 @@ class CFileHandler extends AbstractProcessingHandler
     /**
      * Write log levels
      *
-     * @var string
+     * @var array
      */
-    protected $levels = '';
+    protected $levels = [];
 
     /**
      * Write log file
@@ -45,9 +45,9 @@ class CFileHandler extends AbstractProcessingHandler
     }
 
     /**
-     * @param string $levels
+     * @param array $levels
      */
-    public function setLevels(string $levels): void
+    public function setLevels(array $levels): void
     {
         $this->levels = $levels;
     }

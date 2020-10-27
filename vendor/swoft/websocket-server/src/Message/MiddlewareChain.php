@@ -3,16 +3,20 @@
 namespace Swoft\WebSocket\Server\Message;
 
 use InvalidArgumentException;
+use ReflectionException;
 use RuntimeException;
 use SplDoublyLinkedList;
 use SplStack;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Contract\MessageHandlerInterface;
 use Swoft\WebSocket\Server\Contract\MiddlewareInterface;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
 use UnexpectedValueException;
+use function class_exists;
 use function is_callable;
 use function is_string;
 
@@ -24,30 +28,28 @@ use function is_string;
  */
 class MiddlewareChain implements MessageHandlerInterface
 {
-    /**
-     * @var SplStack
-     */
+    use PrototypeTrait;
+
+    /** @var SplStack */
     private $stack;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $locked = false;
 
-    /**
-     * @var MiddlewareInterface
-     */
+    /** @var MiddlewareInterface */
     private $coreHandler;
 
     /**
      * @param MiddlewareInterface $coreHandler
      *
      * @return MiddlewareChain
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(MiddlewareInterface $coreHandler): self
     {
         /** @var self $self */
-        $self = Swoft::getBean(self::class);
+        $self = self::__instance();
 
         $self->coreHandler = $coreHandler;
 
@@ -114,6 +116,8 @@ class MiddlewareChain implements MessageHandlerInterface
      * @param RequestInterface $request
      *
      * @return ResponseInterface
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function run(RequestInterface $request): ResponseInterface
     {
@@ -140,6 +144,8 @@ class MiddlewareChain implements MessageHandlerInterface
      * @param RequestInterface $request
      *
      * @return ResponseInterface
+     * @throws ContainerException
+     * @throws ReflectionException
      * @internal
      */
     public function handle(RequestInterface $request): ResponseInterface
@@ -151,8 +157,8 @@ class MiddlewareChain implements MessageHandlerInterface
 
         $middleware = $this->stack->shift();
 
-        // if is a class name or bean name
-        if (is_string($middleware)) {
+        // if is a class name
+        if (is_string($middleware) && class_exists($middleware)) {
             // $middleware = new $middleware;
             $middleware = Swoft::getBean($middleware);
         }

@@ -2,7 +2,9 @@
 
 namespace Swoft\Devtool\Http\Controller;
 
+use ReflectionException;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Server\Annotation\Mapping\Controller;
 use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
 use Swoft\Http\Server\Annotation\Mapping\RequestMethod;
@@ -17,6 +19,8 @@ class RpcController
     /**
      * @RequestMapping("rpc/routes", method=RequestMethod::GET)
      * @return array
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function rpcRoutes(): array
     {

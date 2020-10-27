@@ -2,13 +2,21 @@
 
 namespace Swoft\Server\Swoole;
 
+use Swoole\Server;
+
 /**
  * Interface FinishInterface
  *
- * @since      2.0
- *
- * @deprecated  since Swoft 2.0.4, use '\Swoft\Server\Contract\FinishInterface' for instead.
+ * @since 2.0
  */
-interface FinishInterface extends \Swoft\Server\Contract\FinishInterface
+interface FinishInterface
 {
+    /**
+     * Finish event
+     *
+     * @param Server $server
+     * @param int      $taskId
+     * @param string   $data
+     */
+    public function onFinish(Server $server, int $taskId, string $data): void;
 }

@@ -38,7 +38,7 @@ class Task
             $params
         ];
         $result  = self::cos($tasks, $timeout, $ext);
-        if (empty($result)) {
+        if (!isset($result[0])) {
             throw new TaskException(
                 sprintf('Task(name=%s method=%s) execution error!', $name, $method)
             );
@@ -114,7 +114,8 @@ class Task
             $taskData[] = Packet::pack(self::CO, $name, $method, $params, $ext);
         }
 
-        $resultData  = [];
+        $resultData = [];
+
         $taskResults = Swoft::swooleServer()->taskCo($taskData, $timeout);
         foreach ($taskResults as $key => $taskResult) {
             if ($taskResult == false) {

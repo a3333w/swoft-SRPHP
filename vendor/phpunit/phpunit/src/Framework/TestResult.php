@@ -863,16 +863,13 @@ class TestResult implements Countable
             if ($name && $reflected->hasMethod($name)) {
                 $reflected = $reflected->getMethod($name);
             }
-
             $this->addFailure(
                 $test,
-                new RiskyTestError(
-                    \sprintf(
-                        "This test did not perform any assertions\n\n%s:%d",
-                        $reflected->getFileName(),
-                        $reflected->getStartLine()
-                    )
-                ),
+                new RiskyTestError(\sprintf(
+                    "This test did not perform any assertions\n\n%s:%d",
+                    $reflected->getFileName(),
+                    $reflected->getStartLine()
+                )),
                 $time
             );
         } elseif ($this->beStrictAboutTestsThatDoNotTestAnything &&
@@ -880,12 +877,10 @@ class TestResult implements Countable
             $test->getNumAssertions() > 0) {
             $this->addFailure(
                 $test,
-                new RiskyTestError(
-                    \sprintf(
-                        'This test is annotated with "@doesNotPerformAssertions" but performed %d assertions',
-                        $test->getNumAssertions()
-                    )
-                ),
+                new RiskyTestError(\sprintf(
+                    'This test is annotated with "@doesNotPerformAssertions" but performed %d assertions',
+                    $test->getNumAssertions()
+                )),
                 $time
             );
         } elseif ($this->beStrictAboutOutputDuringTests && $test->hasOutput()) {

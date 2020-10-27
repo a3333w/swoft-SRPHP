@@ -40,7 +40,7 @@ if (!function_exists('tap')) {
      */
     function tap($value, Closure $callback = null)
     {
-        if (!$callback) {
+        if (is_null($callback)) {
             return $value;
         }
 
@@ -52,21 +52,12 @@ if (!function_exists('tap')) {
 
 if (!function_exists('printr')) {
     /**
-     * Print data like print_r, but allow multi params
+     * like print_r, but allow multi params
      *
      * @param mixed ...$vars
      */
     function printr(...$vars)
     {
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-
-        $line = $trace[0]['line'];
-        $pos  = $trace[1]['class'] ?? $trace[0]['file'];
-
-        if ($pos) {
-            echo "CALL ON $pos($line):\n";
-        }
-
         foreach ($vars as $var) {
             /** @noinspection ForgottenDebugOutputInspection */
             print_r($var);
@@ -77,25 +68,14 @@ if (!function_exists('printr')) {
 
 if (!function_exists('vdump')) {
     /**
-     * Dump data like var_dump
+     * like var_dump
      *
      * @param mixed ...$vars
      */
     function vdump(...$vars)
     {
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-
-        $line = $trace[0]['line'];
-        $pos  = $trace[1]['class'] ?? $trace[0]['file'];
-
-        if ($pos) {
-            echo "CALL ON $pos($line):\n";
-        }
-
         ob_start();
-        /** @noinspection ForgottenDebugOutputInspection */
         var_dump(...$vars);
-
         $string = ob_get_clean();
 
         echo preg_replace(

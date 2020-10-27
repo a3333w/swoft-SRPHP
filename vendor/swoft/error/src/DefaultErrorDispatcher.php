@@ -11,8 +11,6 @@ use function error_get_last;
 use function register_shutdown_function;
 use function set_error_handler;
 use function set_exception_handler;
-use const E_ALL;
-use const E_STRICT;
 
 /**
  * Class DefaultErrorDispatcher
@@ -22,11 +20,6 @@ use const E_STRICT;
  */
 class DefaultErrorDispatcher
 {
-    /**
-     * @var int
-     */
-    private $errorTypes = E_ALL | E_STRICT;
-
     /**
      * @var DefaultErrorHandlerInterface
      */
@@ -51,7 +44,7 @@ class DefaultErrorDispatcher
      */
     protected function registerErrorHandle(): void
     {
-        set_error_handler([$this, 'handleError'], $this->errorTypes);
+        set_error_handler([$this, 'handleError']);
         set_exception_handler([$this, 'handleException']);
         register_shutdown_function(function () {
             if (!$e = error_get_last()) {
@@ -83,6 +76,8 @@ class DefaultErrorDispatcher
      * Running exception handling
      *
      * @param Throwable $e
+     *
+     * @throws InvalidArgumentException
      */
     public function handleException(Throwable $e): void
     {
@@ -95,22 +90,6 @@ class DefaultErrorDispatcher
     public function run(Throwable $e): void
     {
         $this->defaultHandler->handle($e);
-    }
-
-    /**
-     * @return int
-     */
-    public function getErrorTypes(): int
-    {
-        return $this->errorTypes;
-    }
-
-    /**
-     * @param int $errorTypes
-     */
-    public function setErrorTypes(int $errorTypes): void
-    {
-        $this->errorTypes = $errorTypes;
     }
 
     /**

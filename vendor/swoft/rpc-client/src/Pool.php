@@ -24,7 +24,9 @@ class Pool extends AbstractPool
 
     /**
      * @return ConnectionInterface
-     * @throws RpcClientException
+     * @throws Exception\RpcClientException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function createConnection(): ConnectionInterface
     {

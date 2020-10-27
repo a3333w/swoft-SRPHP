@@ -2,19 +2,17 @@
 
 namespace Swoft\Console\Concern;
 
-use Closure;
-use Generator;
-use LogicException;
-use Swoft\Console\Helper\Interact;
-use Swoft\Console\Helper\Show;
-use Swoft\Console\Style\Style;
-use Swoft\Stdlib\Helper\PhpHelper;
 use function array_merge;
+use Generator;
 use function json_encode;
+use LogicException;
 use function method_exists;
 use function sprintf;
 use function strpos;
 use function substr;
+use Swoft\Console\Helper\Show;
+use Swoft\Console\Style\Style;
+use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
  * Class FormatOutputAwareTrait
@@ -49,12 +47,6 @@ use function substr;
  * @method pointing($msg = 'handling ', $ended = false)
  *
  * @method Generator counterTxt($msg = 'Pending ', $ended = false)
- *
- * @method confirm(string $question, bool $default = true, bool $nl = true): bool
- * @method select(string $description, $options, $default = null, bool $allowExit = true): string
- * @method checkbox(string $description, $options, $default = null, bool $allowExit = true): array
- * @method ask(string $question, string $default = '', Closure $validator = null): string
- * @method askPassword(string $prompt = 'Enter Password:'): string
  */
 trait FormatOutputAwareTrait
 {
@@ -241,10 +233,6 @@ trait FormatOutputAwareTrait
 
         if (method_exists(Show::class, $method)) {
             return Show::$method(...$args);
-        }
-
-        if (method_exists(Interact::class, $method)) {
-            return Interact::$method(...$args);
         }
 
         throw new LogicException("Call a not exists method: $method of the " . static::class);

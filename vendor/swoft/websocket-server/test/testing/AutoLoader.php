@@ -28,13 +28,6 @@ class AutoLoader extends SwoftComponent
      */
     public function metadata(): array
     {
-        return [
-            'wsServer' => [
-                'debug' => 0,
-                'setting' => [
-                    'log_file' => '',
-                ]
-            ]
-        ];
+        return [];
     }
 }

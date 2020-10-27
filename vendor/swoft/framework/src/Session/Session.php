@@ -3,12 +3,11 @@
 namespace Swoft\Session;
 
 use Swoft\Co;
-use Swoft\Contract\SessionInterface;
 use Swoft\Exception\SessionException;
 use Swoft\WebSocket\Server\Connection;
 
 /**
- * Class Session - Global long connection session manager(use for ws,tcp)
+ * Class Session - Global session manage
  *
  * @since 2.0
  */
@@ -86,18 +85,6 @@ class Session
      ****************************************************************************/
 
     /**
-     * Check session has exist on current worker
-     *
-     * @param string $sid
-     *
-     * @return bool
-     */
-    public static function has(string $sid): bool
-    {
-        return isset(self::$sessions[$sid]);
-    }
-
-    /**
      * Get session by FD
      *
      * @param string $sid If not specified, return the current corresponding session
@@ -136,9 +123,6 @@ class Session
     public static function set(string $sid, SessionInterface $session): void
     {
         self::$sessions[$sid] = $session;
-
-        // Bind cid => sid(fd)
-        self::bindCo($sid);
     }
 
     /**
@@ -153,16 +137,8 @@ class Session
         if (isset(self::$sessions[$sid])) {
             // Clear self data.
             self::$sessions[$sid]->clear();
-            unset(self::$sessions[$sid]);
+            unset(self::$sessions[$sid], $conn);
         }
-    }
-
-    /**
-     * Clear all
-     */
-    public static function clear(): void
-    {
-        self::$idMap = self::$sessions = [];
     }
 
     /**

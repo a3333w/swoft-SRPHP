@@ -5,11 +5,13 @@ namespace Swoft\Http\Message\Stream;
 use BadMethodCallException;
 use Exception;
 use Psr\Http\Message\StreamInterface;
+use ReflectionException;
 use RuntimeException;
-use Swoft;
-use Swoft\Bean\Annotation\Mapping\Bean;
-use function strlen;
 use const SEEK_SET;
+use function strlen;
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class Stream
@@ -20,6 +22,8 @@ use const SEEK_SET;
  */
 class Stream implements StreamInterface
 {
+    use PrototypeTrait;
+
     /**
      * @var int
      */
@@ -36,10 +40,12 @@ class Stream implements StreamInterface
      * @param string $contents
      *
      * @return Stream
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(string $contents): self
     {
-        $instance = Swoft::getBean(self::class);
+        $instance = self::__instance();
 
         $instance->contents = $contents;
         $instance->size     = strlen($instance->contents);

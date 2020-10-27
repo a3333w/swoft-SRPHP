@@ -3,9 +3,9 @@
 namespace Swoft\Error;
 
 use Swoft\Error\Contract\DefaultErrorHandlerInterface;
-use Swoft\Log\Helper\CLog;
-use Swoft\Stdlib\Helper\PhpHelper;
 use Throwable;
+use function get_class;
+use function printf;
 
 /**
  * Class DefaultExceptionHandler
@@ -21,10 +21,14 @@ class DefaultExceptionHandler implements DefaultErrorHandlerInterface
      */
     public function handle(Throwable $e): void
     {
-        // Log::error($e->getMessage());
-        $error = PhpHelper::exceptionToString($e, 'DEFAULT HANDLER', true);
-
-        CLog::error($error);
+        printf(
+            "(DEFAULT HANDLER)Exception(%s): %s\nAt File %s line %d\nTrace:\n%s\n",
+            get_class($e),
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine(),
+            $e->getTraceAsString()
+        );
     }
 
     /**

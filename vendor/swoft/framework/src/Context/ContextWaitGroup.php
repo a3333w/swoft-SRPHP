@@ -58,20 +58,6 @@ class ContextWaitGroup implements WaitGroupInterface
     }
 
     /**
-     * @return bool
-     */
-    public function isWait(): bool
-    {
-        // Not wait group
-        $waitGroup = $this->getWaitGroup();
-        if ($waitGroup === null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Wait
      */
     public function wait(): void

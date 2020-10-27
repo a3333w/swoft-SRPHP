@@ -7,7 +7,6 @@ use SplQueue;
 use Swoft\Connection\Pool\Contract\ConnectionInterface;
 use Swoft\Connection\Pool\Contract\PoolInterface;
 use Swoft\Connection\Pool\Exception\ConnectionPoolException;
-use Swoft\Log\Helper\CLog;
 use Swoole\Coroutine\Channel;
 use Throwable;
 
@@ -61,11 +60,6 @@ abstract class AbstractPool implements PoolInterface
     protected $maxCloseTime = 3;
 
     /**
-     * @var bool
-     */
-    protected $init = false;
-
-    /**
      * @var Channel
      */
     protected $channel;
@@ -88,27 +82,6 @@ abstract class AbstractPool implements PoolInterface
      * @var int
      */
     protected $connectionId = 0;
-
-    /**
-     * Initialize pool
-     *
-     * @throws ConnectionPoolException
-     */
-    public function initPool(): void
-    {
-        if (!$this->init) {
-            return;
-        }
-
-        // Enable initialize pool
-        for ($i = 0; $i < $this->minActive; $i++) {
-            $connection = $this->getConnection();
-            $connection->setRelease(true);
-            $connection->release();
-        }
-
-        CLog::debug('Initialize ' . static::class . ' pool size=' . $this->count);
-    }
 
     /**
      * @return int
@@ -216,7 +189,7 @@ abstract class AbstractPool implements PoolInterface
             );
         }
 
-        /* @var ConnectionInterface $connection */
+        /* @var ConnectionInterface $connection*/
         // Sleep coroutine and resume coroutine after `maxWaitTime`, Return false is waiting timeout
         $connection = $this->channel->pop($this->maxWaitTime);
         if ($connection === false) {
@@ -265,7 +238,7 @@ abstract class AbstractPool implements PoolInterface
      */
     private function popByChannel(): ?ConnectionInterface
     {
-        $time = time();
+        $time       = time();
 
         while (!$this->channel->isEmpty()) {
             /* @var ConnectionInterface $connection */

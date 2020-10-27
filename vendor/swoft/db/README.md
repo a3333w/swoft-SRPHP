@@ -17,7 +17,7 @@ composer require swoft/db
 
 ## Document
 
-[Official document](https://swoft.org/docs)
+[Official document](https://doc.swoft.org)
 
 ## LICENSE
 

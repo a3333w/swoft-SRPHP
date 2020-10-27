@@ -219,10 +219,6 @@ function(A $a) : A {};
 function fn3(?A $a) : ?A {}
 function fn4(?array $a) : ?array {}
 
-fn(array $a): array => $a;
-fn(A $a): A => $a;
-fn(?A $a): ?A => $a;
-
 A::b();
 A::$b;
 A::B;
@@ -267,9 +263,6 @@ function fn3(?\NS\A $a) : ?\NS\A
 function fn4(?array $a) : ?array
 {
 }
-fn(array $a): array => $a;
-fn(\NS\A $a): \NS\A => $a;
-fn(?\NS\A $a): ?\NS\A => $a;
 \NS\A::b();
 \NS\A::$b;
 \NS\A::B;

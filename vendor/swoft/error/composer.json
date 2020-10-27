@@ -1,7 +1,6 @@
 {
   "name": "swoft/error",
   "type": "library",
-  "version": "v2.0.6",
   "keywords": [
     "php",
     "swoole",
@@ -9,7 +8,7 @@
     "error-handler",
     "exception"
   ],
-    "description": "swoft error handle component",
+  "description": "Error Handler Component for Swoft",
   "license": "Apache-2.0",
   "require": {
     "swoft/stdlib": "~2.0.0"

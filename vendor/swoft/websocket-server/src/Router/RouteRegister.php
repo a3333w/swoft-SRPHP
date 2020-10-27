@@ -59,30 +59,29 @@ final class RouteRegister
     }
 
     /**
-     * @param string $class
+     * @param string $controllerClass
      * @param string $prefix
      */
-    public static function bindController(string $class, string $prefix): void
+    public static function bindController(string $controllerClass, string $prefix): void
     {
-        self::$commands[$class] = [
-            'prefix' => $prefix ?: Str::getClassName($class, 'Controller'),
-            'class'  => $class,
+        self::$commands[$controllerClass] = [
+            'prefix' => $prefix ?: Str::getClassName($controllerClass, 'Controller'),
+            'class'  => $controllerClass,
             'routes' => [], // see bindCommand()
         ];
     }
 
     /**
-     * @param string $class
+     * @param string $controllerClass
      * @param string $method
      * @param string $command
-     * @param array  $options
      */
-    public static function bindCommand(string $class, string $method, string $command, array $options = []): void
+    public static function bindCommand(string $controllerClass, string $method, string $command): void
     {
-        $options['method']  = $method;
-        $options['command'] = $command ?: $method;
-
-        self::$commands[$class]['routes'][] = $options;
+        self::$commands[$controllerClass]['routes'][] = [
+            'method'  => $method,
+            'command' => $command ?: $method,
+        ];
     }
 
     /**
@@ -107,12 +106,8 @@ final class RouteRegister
                 $info['module'] = $mdlClass;
 
                 foreach ($info['routes'] as $route) {
-                    $cmd   = $route['command'];
-                    $cmdId = $route['isRoot'] ? $cmd : $prefix . '.' . $cmd;
-
-                    $router->addCommand($path, $cmdId, [$ctrlClass, $route['method']], [
-                        'opcode' => $route['opcode'] ?: $mdlInfo['defaultOpcode'],
-                    ]);
+                    $cmdId = $prefix . '.' . $route['command'];
+                    $router->addCommand($path, $cmdId, [$ctrlClass, $route['method']]);
                 }
             }
         }

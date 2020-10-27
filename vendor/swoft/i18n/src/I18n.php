@@ -1,24 +1,26 @@
 <?php declare(strict_types=1);
 
+
 namespace Swoft\I18n;
 
+use function array_keys;
+use function implode;
 use InvalidArgumentException;
+use function is_readable;
+use function is_string;
+use function pathinfo;
+use ReflectionException;
 use SplFileInfo;
+use function sprintf;
+use function str_replace;
+use function strpos;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\I18n\Exception\I18nException;
 use Swoft\Log\Debug;
 use Swoft\Stdlib\Helper\ArrayHelper;
 use Swoft\Stdlib\Helper\DirectoryHelper;
-use function array_keys;
-use function implode;
-use function is_readable;
-use function is_string;
-use function pathinfo;
-use function sprintf;
-use function str_replace;
-use function strpos;
-use const PATHINFO_EXTENSION;
 
 /**
  * Class I18n
@@ -58,7 +60,7 @@ class I18n
     /**
      * @var string
      */
-    protected $defaultCategory = 'default';
+    protected $defualtCategory = 'default';
 
     /**
      * @var string
@@ -67,17 +69,23 @@ class I18n
 
     /**
      * @throws I18nException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    public function init(): void
+    public function init()
     {
         $sourcePath = Swoft::getAlias($this->resourcePath);
+
         if (!$sourcePath || !file_exists($sourcePath)) {
-            Debug::log('Resource i18n(%s) is not exist!', $sourcePath);
+            Debug::log(
+                sprintf('Resource i18n(%s) is not exist!', $sourcePath)
+            );
             return;
         }
-
         if (!is_readable($sourcePath)) {
-            throw new I18nException(sprintf(' I18n resource path(%s) is not readable', $sourcePath));
+            throw new I18nException(
+                sprintf(' I18n resources(%s) is not readable', $sourcePath)
+            );
         }
 
         $this->loadLanguages($sourcePath);
@@ -88,7 +96,7 @@ class I18n
      *
      * @return void
      */
-    protected function loadLanguages(string $sourcePath): void
+    protected function loadLanguages(string $sourcePath)
     {
         $languages = [];
         $files     = DirectoryHelper::recursiveIterator($sourcePath);
@@ -101,11 +109,9 @@ class I18n
             }
 
             $messages = str_replace([$sourcePath, '.php'], '', $file);
+            list($language, $category) = explode('/', $messages);
 
-            [$language, $category] = explode('/', $messages, 2);
-            $languages[$language] = 1;
-
-            // load data
+            $languages[$language]                 = 1;
             $this->messages[$language][$category] = require $file;
         }
 
@@ -117,16 +123,15 @@ class I18n
      *
      * @param string $key "category.key" or "locale.category.key"
      * @param array  $params
-     * @param string $locale If is empty will use default locale
+     * @param string $locale
      *
      * @return string
      * @throws InvalidArgumentException
      */
-    public function translate(string $key, array $params = [], string $locale = ''): string
+    public function translate(string $key, array $params, string $locale = self::DEFAULT_LANG): string
     {
         $realKey = $this->getRealKey($key, $locale);
         $message = ArrayHelper::get($this->messages, $realKey);
-
         // Not exist, return key
         if (!is_string($message)) {
             return $key;
@@ -155,7 +160,6 @@ class I18n
 
     /**
      * get messages
-     *
      * @return array
      */
     public function getMessages(): array
@@ -165,7 +169,6 @@ class I18n
 
     /**
      * get languages
-     *
      * @return array
      */
     public function getLanguages(): array
@@ -181,10 +184,8 @@ class I18n
      */
     private function getRealKey(string $key, string $locale): string
     {
-        $locale = $locale ?: $this->defaultLanguage;
-
         if (strpos($key, '.') === false) {
-            $key = implode('.', [$this->defaultCategory, $key]);
+            $key = implode([$this->defualtCategory, $key], '.');
         }
 
         return implode('.', [$locale, $key]);
@@ -200,7 +201,8 @@ class I18n
      */
     private function formatMessage(string $message, array $params): string
     {
-        $search = $replace = [];
+        $search  = [];
+        $replace = [];
 
         foreach ($params as $name => $value) {
             $search[]  = sprintf('{%s}', $name);

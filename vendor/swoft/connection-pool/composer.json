@@ -1,13 +1,12 @@
 {
   "name": "swoft/connection-pool",
   "type": "library",
-  "version": "v2.0.6",
   "keywords": [
     "php",
     "swoole",
     "swoft"
   ],
-  "description": "swoft connection pool component",
+  "description": "connect pool for swoft",
   "license": "Apache-2.0",
   "require": {
     "swoft/stdlib": "~2.0.0"

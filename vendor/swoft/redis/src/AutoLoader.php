@@ -37,6 +37,8 @@ class AutoLoader extends SwoftComponent
 
     /**
      * @return array
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function beans(): array
     {
@@ -49,7 +51,7 @@ class AutoLoader extends SwoftComponent
             ],
             'redis.pool' => [
                 'class'   => Pool::class,
-                'redisDb' => bean('redis'),
+                'redisDb' => bean('redis')
             ]
         ];
     }

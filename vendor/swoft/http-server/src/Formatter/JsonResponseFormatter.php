@@ -2,15 +2,17 @@
 
 namespace Swoft\Http\Server\Formatter;
 
+use function is_string;
+use const JSON_UNESCAPED_UNICODE;
 use Psr\Http\Message\ResponseInterface;
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\ContentType;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
 use Swoft\Http\Message\Response;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\JsonHelper;
-use function is_string;
-use const JSON_UNESCAPED_UNICODE;
 
 /**
  * Class JsonResponseFormatter
@@ -25,6 +27,8 @@ class JsonResponseFormatter implements ResponseFormatterInterface
      * @param Response|ResponseInterface $response
      *
      * @return Response
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function format(Response $response): Response
     {

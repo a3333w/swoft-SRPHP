@@ -1,4 +1,5 @@
 <?php
+/** For Swoole coroutine tests */
 
 use Swoole\ExitException;
 
@@ -71,7 +72,7 @@ if (!in_array('-c', $_SERVER['argv'])) {
 require PHPUNIT_COMPOSER_INSTALL;
 
 $status = 0;
-srun(function () {
+go(function (){
     // Status
     global $status;
 
@@ -82,5 +83,8 @@ srun(function () {
         $status = $e->getCode();
     }
 });
+
+
+Swoole\Event::wait();
 
 exit($status);

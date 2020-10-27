@@ -1,13 +1,14 @@
 {
   "name": "swoft/server",
   "type": "library",
-  "version": "v2.0.6",
   "keywords": [
     "php",
     "swoole",
-    "swoft"
+    "swoft",
+    "websocket-server",
+    "websocket"
   ],
-    "description": "swoft base server component",
+  "description": "base server for swoft",
   "license": "Apache-2.0",
   "require": {
     "swoft/stdlib": "~2.0.0"
@@ -21,6 +22,12 @@
     "psr-4": {
       "SwoftTest\\Server\\Unit\\": "test/unit/",
       "SwoftTest\\Server\\Testing\\": "test/testing/"
+    }
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://packagist.laravel-china.org"
     }
   },
   "require-dev": {

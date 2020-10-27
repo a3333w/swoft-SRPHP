@@ -1,18 +1,17 @@
 {
   "name": "swoft/config",
   "type": "library",
-  "version": "v2.0.6",
   "keywords": [
     "php",
     "swoole",
     "swoft"
   ],
-    "description": "swoft config component",
+  "description": "micro-service framework base on swoole",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1",
-    "vlucas/phpdotenv": "^3.4",
-    "symfony/yaml": "^4.3",
+    "vlucas/phpdotenv": "^2.5",
+    "symfony/yaml": "^4.2",
     "swoft/stdlib": "~2.0.0"
   },
   "autoload": {

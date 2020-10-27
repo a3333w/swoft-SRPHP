@@ -6,7 +6,7 @@ namespace Swoft\Db\Query\Grammar;
 use ReflectionException;
 use RuntimeException;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Stdlib\Collection;
+use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Grammar as BaseGrammar;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
@@ -56,8 +56,6 @@ class Grammar extends BaseGrammar
      * @param Builder $query
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileSelect(Builder $query)
     {
@@ -162,8 +160,6 @@ class Grammar extends BaseGrammar
      * @param string  $table
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileFrom(Builder $query, $table)
     {
@@ -177,10 +173,12 @@ class Grammar extends BaseGrammar
      * @param array   $joins
      *
      * @return string
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function compileJoins(Builder $query, $joins)
     {
-        return Collection::make($joins)->map(function ($join) use ($query) {
+        return Collection::new($joins)->map(function ($join) use ($query) {
             $table = $this->wrapTable($join->table);
 
             $nestedJoins = is_null($join->joins) ? '' : ' ' . $this->compileJoins($query, $join->joins);
@@ -197,6 +195,8 @@ class Grammar extends BaseGrammar
      * @param Builder $query
      *
      * @return string
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function compileWheres(Builder $query)
     {
@@ -223,10 +223,12 @@ class Grammar extends BaseGrammar
      * @param Builder $query
      *
      * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function compileWheresToArray($query)
     {
-        return Collection::make($query->wheres)->map(function ($where) use ($query) {
+        return Collection::new($query->wheres)->map(function ($where) use ($query) {
             return $where['boolean'] . ' ' . $this->{"where{$where['type']}"}($query, $where);
         })->all();
     }
@@ -266,8 +268,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereBasic(Builder $query, $where)
     {
@@ -283,8 +283,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereIn(Builder $query, $where)
     {
@@ -302,8 +300,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereNotIn(Builder $query, $where)
     {
@@ -323,8 +319,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereNotInRaw(Builder $query, $where)
     {
@@ -342,8 +336,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereInSub(Builder $query, $where)
     {
@@ -357,8 +349,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereNotInSub(Builder $query, $where)
     {
@@ -374,8 +364,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereInRaw(Builder $query, $where)
     {
@@ -393,8 +381,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereNull(Builder $query, $where)
     {
@@ -408,8 +394,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereNotNull(Builder $query, $where)
     {
@@ -423,8 +407,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereBetween(Builder $query, $where)
     {
@@ -444,8 +426,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereDate(Builder $query, $where)
     {
@@ -459,8 +439,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereTime(Builder $query, $where)
     {
@@ -474,8 +452,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereDay(Builder $query, $where)
     {
@@ -489,8 +465,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereMonth(Builder $query, $where)
     {
@@ -504,8 +478,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereYear(Builder $query, $where)
     {
@@ -520,8 +492,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function dateBasedWhere($type, Builder $query, $where)
     {
@@ -537,8 +507,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereColumn(Builder $query, $where)
     {
@@ -552,6 +520,8 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function whereNested(Builder $query, $where)
     {
@@ -570,8 +540,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereSub(Builder $query, $where)
     {
@@ -587,8 +555,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereExists(Builder $query, $where)
     {
@@ -602,8 +568,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereNotExists(Builder $query, $where)
     {
@@ -736,8 +700,6 @@ class Grammar extends BaseGrammar
      * @param array $having
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileHaving(array $having)
     {
@@ -759,8 +721,6 @@ class Grammar extends BaseGrammar
      * @param array $having
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileBasicHaving($having)
     {
@@ -777,8 +737,6 @@ class Grammar extends BaseGrammar
      * @param array $having
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileHavingBetween($having)
     {
@@ -915,8 +873,6 @@ class Grammar extends BaseGrammar
      * @param Builder $query
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileUnionAggregate(Builder $query)
     {
@@ -933,8 +889,6 @@ class Grammar extends BaseGrammar
      * @param Builder $query
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileExists(Builder $query)
     {
@@ -969,57 +923,11 @@ class Grammar extends BaseGrammar
         // We need to build a list of parameter place-holders of values that are bound
         // to the query. Each insert should have the exact same amount of parameter
         // bindings so we will loop through the record and parameterize them all.
-        $parameters = Collection::make($values)->map(function ($record) {
+        $parameters = Collection::new($values)->map(function ($record) {
             return '(' . $this->parameterize($record) . ')';
         })->implode(', ');
 
         return "insert into $table ($columns) values $parameters";
-    }
-
-    /**
-     * Compile batch update Sql
-     *
-     * @param Builder $query
-     * @param array   $values
-     * @param string  $primary
-     *
-     * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
-     */
-    public function compileBatchUpdateByIds(Builder $query, array $values, string $primary)
-    {
-        $table = $this->wrapTable($query->from);
-
-        if (!is_array(reset($values))) {
-            $values = [$values];
-        }
-
-        // Take the first value as columns
-        $columns = array_keys(current($values));
-
-        $setStr = '';
-        foreach ($columns as $column) {
-            if ($column === $primary) {
-                continue;
-            }
-
-            $setStr .= " `$column` = case `$primary` ";
-            foreach ($values as $row) {
-                $value    = $row[$column];
-                $rowValue = is_string($value) ? "'$value'" : $value;
-
-                $setStr .= " when '$row[$primary]' then $rowValue ";
-            }
-            $setStr .= ' end,';
-        }
-        // Remove the last character
-        $setStr = substr($setStr, 0, -1);
-
-        $ids    = array_column($values, $primary);
-        $idsStr = implode(',', $ids);
-
-        return "update $table set $setStr where $primary in ($idsStr)";
     }
 
     /**
@@ -1046,8 +954,6 @@ class Grammar extends BaseGrammar
      * @param string  $sql
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileInsertUsing(Builder $query, array $columns, string $sql)
     {
@@ -1071,7 +977,7 @@ class Grammar extends BaseGrammar
         // Each one of the columns in the update statements needs to be wrapped in the
         // keyword identifiers, also a place-holder needs to be created for each of
         // the values in the list of bindings so we can make the sets statements.
-        $columns = Collection::make($values)->map(function ($value, $key) {
+        $columns = Collection::new($values)->map(function ($value, $key) {
             return $this->wrap($key) . ' = ' . $this->parameter($value);
         })->implode(', ');
 
@@ -1143,8 +1049,6 @@ class Grammar extends BaseGrammar
      * @param Builder $query
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileTruncate(Builder $query)
     {
@@ -1205,8 +1109,6 @@ class Grammar extends BaseGrammar
      * @param bool              $prefixAlias
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function wrap($value, $prefixAlias = false)
     {
@@ -1249,8 +1151,6 @@ class Grammar extends BaseGrammar
      * @param string $column
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function wrapJsonFieldAndPath($column)
     {

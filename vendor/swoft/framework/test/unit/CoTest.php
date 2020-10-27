@@ -21,6 +21,8 @@ use Swoole\Coroutine\Http\Client;
 class CoTest extends TestCase
 {
     /**
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function tearDown()
     {
@@ -28,6 +30,8 @@ class CoTest extends TestCase
     }
 
     /**
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function testMulti()
     {

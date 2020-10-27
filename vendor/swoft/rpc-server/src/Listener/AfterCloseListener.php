@@ -24,6 +24,7 @@ class AfterCloseListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
+     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {

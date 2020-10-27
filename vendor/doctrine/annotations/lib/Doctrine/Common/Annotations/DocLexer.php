@@ -56,7 +56,7 @@ final class DocLexer extends AbstractLexer
     /**
      * @var array
      */
-    protected $noCase = [
+    protected $noCase = array(
         '@'  => self::T_AT,
         ','  => self::T_COMMA,
         '('  => self::T_OPEN_PARENTHESIS,
@@ -67,16 +67,16 @@ final class DocLexer extends AbstractLexer
         ':'  => self::T_COLON,
         '-'  => self::T_MINUS,
         '\\' => self::T_NAMESPACE_SEPARATOR
-    ];
+    );
 
     /**
      * @var array
      */
-    protected $withCase = [
+    protected $withCase = array(
         'true'  => self::T_TRUE,
         'false' => self::T_FALSE,
         'null'  => self::T_NULL
-    ];
+    );
 
     /**
      * Whether the next token starts immediately, or if there were
@@ -94,11 +94,11 @@ final class DocLexer extends AbstractLexer
      */
     protected function getCatchablePatterns()
     {
-        return [
+        return array(
             '[a-z_\\\][a-z0-9_\:\\\]*[a-z_][a-z0-9_]*',
             '(?:[+-]?[0-9]+(?:[\.][0-9]+)*)(?:[eE][+-]?[0-9]+)?',
             '"(?:""|[^"])*+"',
-        ];
+        );
     }
 
     /**
@@ -106,7 +106,7 @@ final class DocLexer extends AbstractLexer
      */
     protected function getNonCatchablePatterns()
     {
-        return ['\s+', '\*+', '(.)'];
+        return array('\s+', '\*+', '(.)');
     }
 
     /**

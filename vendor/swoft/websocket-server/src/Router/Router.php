@@ -4,7 +4,7 @@ namespace Swoft\WebSocket\Server\Router;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Contract\RouterInterface;
-use Swoft\Stdlib\Helper\Str;
+use Swoft\WebSocket\Server\Helper\WsHelper;
 use function array_shift;
 use function count;
 use function preg_match;
@@ -16,7 +16,8 @@ use function trim;
 /**
  * Class Router
  *
- * @since 2.0
+ * @package Swoft\WebSocket\Server\Router
+ *
  * @Bean("wsRouter")
  */
 class Router implements RouterInterface
@@ -32,8 +33,7 @@ class Router implements RouterInterface
     private $counter = 0;
 
     /**
-     * WebSocket modules
-     *
+     * @var array
      * [
      *  '/echo' => [
      *      'path'   => route path,
@@ -41,7 +41,6 @@ class Router implements RouterInterface
      *      'name'   => module name,
      *      'params' => ['id' => '\d+'],
      *      'messageParser'  => message parser class,
-     *      'defaultOpcode'  => 1,
      *      'defaultCommand' => default command,
      *      'eventMethods'   => [
      *          'handshake' => method1, (on the moduleClass)
@@ -51,38 +50,25 @@ class Router implements RouterInterface
      *  ],
      *  ... ...
      * ]
-     *
-     * @var array
      */
     private $modules = [];
 
     /**
-     * Message commands for each module
-     *
+     * @var array
      * [
      *  '/echo' => [
-     *      'prefix1.cmd1' => [
-     *          'opcode'  => 0,
-     *          'handler' => [controllerClass1, method1],
-     *      ],
-     *  ],
+     *      'prefix1.cmd1' => [controllerClass1, method1],
+     *      'prefix1.cmd2' => [controllerClass1, method2],
+     *      'prefix2.cmd1' => [controllerClass2, method1],
+     *  ]
      * ]
-     *
-     * @var array
      */
     private $commands = [];
 
     /**
-     * Want disabled modules
-     *
-     * [
-     *  // path => 1,
-     *  '/echo' => 1,
-     * ]
-     *
-     * @var array
+     * @var bool Enable dynamic route
      */
-    private $disabledModules = [];
+    private $enableDynamicRoute = false;
 
     /**
      * @param string $path
@@ -90,41 +76,36 @@ class Router implements RouterInterface
      */
     public function addModule(string $path, array $info = []): void
     {
-        $path = Str::formatPath($path);
-
-        // It's an disabled module
-        if (isset($this->disabledModules[$path])) {
-            return;
-        }
-
+        $path = WsHelper::formatPath($path);
         // Re-set path
-        $info['path']  = $path;
-        $info['regex'] = '';
+        $info['path'] = $path;
 
-        // Not exist path var. eg: "/users/{id}"
-        if (strpos($path, '{') === false) {
+        // Exist path var. eg: "/users/{id}"
+        if (!$this->enableDynamicRoute || strpos($path, '{') === false) {
+            $info['regex'] = '';
+
+            // Add module
             $this->modules[$path] = $info;
-            return;
         }
 
-        $matches = [];
-        $params  = $info['params'] ?? [];
+        $params = $info['params'] ?? [];
 
         // Parse the parameters and replace them with the corresponding regular
-        if (preg_match_all('#\{([a-zA-Z_][\w-]*)\}#', $path, $matches)) {
+        if (preg_match_all('#\{([a-zA-Z_][\w-]*)\}#', $path, $m)) {
             /** @var array[] $m */
             $pairs = [];
 
-            foreach ($matches[1] as $name) {
+            foreach ($m[1] as $name) {
                 $regex = $params[$name] ?? self::DEFAULT_REGEX;
                 // Build pairs
                 $pairs['{' . $name . '}'] = '(' . $regex . ')';
             }
 
-            $info['vars']  = $matches[1];
+            $info['vars']  = $m[1];
             $info['regex'] = '#^' . strtr($path, $pairs) . '$#';
         }
 
+        // Add module
         $this->modules[$path] = $info;
     }
 
@@ -132,23 +113,13 @@ class Router implements RouterInterface
      * @param string   $path
      * @param string   $cmdId
      * @param callable $handler
-     * @param array    $info
      */
-    public function addCommand(string $path, string $cmdId, $handler, array $info = []): void
+    public function addCommand(string $path, string $cmdId, $handler): void
     {
-        $path = Str::formatPath($path);
-
-        // It's an disabled module
-        if (isset($this->disabledModules[$path])) {
-            return;
-        }
-
-        // Set handler
-        $info['cmdId']   = $cmdId;
-        $info['handler'] = $handler;
+        $path = WsHelper::formatPath($path);
 
         $this->counter++;
-        $this->commands[$path][$cmdId] = $info;
+        $this->commands[$path][$cmdId] = $handler;
     }
 
     /**
@@ -160,9 +131,15 @@ class Router implements RouterInterface
      */
     public function match(string $path): array
     {
-        $path = Str::formatPath($path);
+        $path = WsHelper::formatPath($path);
+
         if (isset($this->modules[$path])) {
             return $this->modules[$path];
+        }
+
+        // Not enable dynamic route
+        if (!$this->enableDynamicRoute) {
+            return [];
         }
 
         // If is dynamic route
@@ -172,7 +149,6 @@ class Router implements RouterInterface
             }
 
             // Regex match
-            $matches = [];
             if (preg_match($pathRegex, $path, $matches)) {
                 $params   = [];
                 $pathVars = $module['vars'];
@@ -193,17 +169,17 @@ class Router implements RouterInterface
 
     /**
      * @param string $path
-     * @param string $route The message route command ID. like 'home.index'
+     * @param string $route like 'home.index'
      *
-     * @return array Return match result
+     * @return array
      *                      [
      *                          status,
-     *                          route info
+     *                          [controllerClass, method]
      *                      ]
      */
     public function matchCommand(string $path, string $route): array
     {
-        $path = Str::formatPath($path);
+        $path = WsHelper::formatPath($path);
         if (!isset($this->commands[$path])) {
             return [self::NOT_FOUND, null];
         }
@@ -260,20 +236,18 @@ class Router implements RouterInterface
     }
 
     /**
-     * @return array
+     * @return bool
      */
-    public function getDisabledModules(): array
+    public function isEnableDynamicRoute(): bool
     {
-        return $this->disabledModules;
+        return $this->enableDynamicRoute;
     }
 
     /**
-     * @param array $paths
+     * @param bool $enable
      */
-    public function setDisabledModules(array $paths): void
+    public function setEnableDynamicRoute(bool $enable): void
     {
-        foreach ($paths as $path) {
-            $this->disabledModules[$path] = 1;
-        }
+        $this->enableDynamicRoute = $enable;
     }
 }

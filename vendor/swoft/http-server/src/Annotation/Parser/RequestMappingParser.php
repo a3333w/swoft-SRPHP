@@ -31,11 +31,10 @@ class RequestMappingParser extends Parser
         }
 
         $routeInfo = [
-            'action' => $this->methodName,
-            'route'  => $annotation->getRoute(),
-            'name'   => $annotation->getName(),
+            'action'  => $this->methodName,
+            'route'   => $annotation->getRoute(),
             'method' => $annotation->getMethod(),
-            'params' => $annotation->getParams(),
+            'params'  => $annotation->getParams(),
         ];
 
         // Add route info for controller action

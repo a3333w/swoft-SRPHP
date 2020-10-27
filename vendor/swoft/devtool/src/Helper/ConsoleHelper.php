@@ -4,9 +4,6 @@
 namespace Swoft\Devtool\Helper;
 
 
-use Toolkit\Cli\Highlighter;
-use Toolkit\Cli\Cli;
-
 /**
  * Class ConsoleHelper
  *
@@ -53,19 +50,5 @@ class ConsoleHelper
         }
 
         return false;
-    }
-
-    /**
-     * highlight code
-     *
-     * @param array|string $messages
-     * @param bool         $quit
-     */
-    public static function highlight($messages, $quit = true)
-    {
-        // this is an comment
-        $rendered = Highlighter::create()->highlight($messages);
-
-        Cli::write($rendered, true, $quit);
     }
 }

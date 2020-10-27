@@ -2,12 +2,21 @@
 
 namespace Swoft\Server\Swoole;
 
+use Swoole\Server;
+
 /**
  * Interface ConnectInterface
  *
  * @since 2.0
- * @deprecated  since Swoft 2.0.4, use '\Swoft\Server\Contract\ConnectInterface' for instead.
  */
-interface ConnectInterface extends \Swoft\Server\Contract\ConnectInterface
+interface ConnectInterface
 {
+    /**
+     * Connect event
+     *
+     * @param Server $server
+     * @param int      $fd
+     * @param int      $reactorId
+     */
+    public function onConnect(Server $server, int $fd, int $reactorId): void;
 }

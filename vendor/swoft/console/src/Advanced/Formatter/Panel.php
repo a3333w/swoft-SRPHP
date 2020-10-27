@@ -2,10 +2,6 @@
 
 namespace Swoft\Console\Advanced\Formatter;
 
-use Swoft\Console\Advanced\MessageFormatter;
-use Swoft\Console\Console;
-use Swoft\Console\Helper\FormatUtil;
-use Swoft\Stdlib\StrBuffer;
 use function array_filter;
 use function array_merge;
 use function ceil;
@@ -13,12 +9,16 @@ use function is_array;
 use function is_bool;
 use function is_numeric;
 use function mb_strlen;
+use const PHP_EOL;
 use function rtrim;
 use function str_pad;
 use function strip_tags;
+use Swoft\Console\Advanced\MessageFormatter;
+use Swoft\Console\Console;
+use Swoft\Console\Helper\FormatUtil;
+use Swoft\Stdlib\StrBuffer;
 use function trim;
 use function ucwords;
-use const PHP_EOL;
 
 /**
  * Class Panel

@@ -12,7 +12,7 @@ use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Server\Request;
 use Swoft\Rpc\Server\Response;
 use Swoft\Rpc\Server\ServiceDispatcher;
-use Swoft\Server\Contract\ReceiveInterface;
+use Swoft\Server\Swoole\ReceiveInterface;
 use Swoole\Server;
 
 /**
@@ -30,6 +30,8 @@ class ReceiveListener implements ReceiveInterface
      * @param int    $reactorId
      * @param string $data
      *
+     * @throws ReflectionException
+     * @throws ContainerException
      * @throws RpcException
      */
     public function onReceive(Server $server, int $fd, int $reactorId, string $data): void

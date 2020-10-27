@@ -2,36 +2,41 @@
 
 namespace Swoft\WebSocket\Server\Command;
 
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\Helper\Show;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
-use Swoft\Server\SwooleEvent;
 use Swoft\WebSocket\Server\WebSocketServer;
 use Throwable;
 use function bean;
 use function input;
 use function output;
 
+// use Swoft\Helper\EnvHelper;
+
 /**
  * Class WsServerCommand
  *
  * @Command("ws",
  *     coroutine=false,
- *     alias="wsserver,websocket",
- *     desc="provide some commands to manage swoft websocket server"
+ *     alias="ws-server,wsserver,websocket",
+ *     desc="provide some commands to operate swoft WebSocket Server"
  * )
  */
 class WsServerCommand extends BaseServerCommand
 {
     /**
-     * Start the websocket server
+     * Start the WebSocket server
      *
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background", default="false", type="bool")
      *
+     * @throws ContainerException
+     * @throws ReflectionException
      * @throws ServerException
      * @throws Throwable
      * @example
@@ -60,30 +65,27 @@ class WsServerCommand extends BaseServerCommand
         // Server startup parameters
         $mainHost = $server->getHost();
         $mainPort = $server->getPort();
+        $modeName = $server->getModeName();
+        $typeName = $server->getTypeName();
 
-        $allowHttp = $server->hasListener(SwooleEvent::REQUEST);
-        $httpText = $allowHttp ? 'enabled' : 'disabled';
+        // TCP 启动参数
+        // $tcpStatus = $server->getTcpSetting();
+        // $httpEnable = $server->hasListener(SwooleEvent::REQUEST);
 
-        // Main server
-        $panel = [
+        Show::panel([
             'WebSocket' => [
                 'listen' => $mainHost . ':' . $mainPort,
-                'type'   => $server->getTypeName(),
-                'mode'   => $server->getModeName(),
-                'worker' => $workerNum . " (HTTP:$httpText)",
+                'type'   => $typeName,
+                'mode'   => $modeName,
+                'worker' => $workerNum,
             ],
-            // 'ExtraInfo' => [
-            //     'HttpHandle' => $server->hasListener(SwooleEvent::REQUEST),
-            //     'pidFile'    => $server->getPidFile(),
-            // ],
-        ];
+            'Extra'     => [
+                // 'httpHandle' => $httpEnable,
+                'pidFile' => $server->getPidFile(),
+            ],
+        ]);
 
-        // Port Listeners
-        $panel = $this->appendPortsToPanel($server, $panel);
-
-        Show::panel($panel);
-
-        output()->writef('<success>WebSocket Server start success !</success>');
+        output()->writef('<success>Server start success !</success>');
 
         // Start the server
         $server->start();
@@ -94,6 +96,9 @@ class WsServerCommand extends BaseServerCommand
      *
      * @CommandMapping(usage="{fullCommand} [-t]")
      * @CommandOption("t", desc="Only to reload task processes, default to reload worker and task")
+     *
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function reload(): void
     {
@@ -124,6 +129,9 @@ class WsServerCommand extends BaseServerCommand
      * Stop the currently running server
      *
      * @CommandMapping()
+     *
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function stop(): void
     {
@@ -140,11 +148,13 @@ class WsServerCommand extends BaseServerCommand
     }
 
     /**
-     * Restart the websocket server
+     * Restart the http server
      *
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background")
      *
+     * @throws ReflectionException
+     * @throws ContainerException
      * @example
      * {fullCommand}
      * {fullCommand} -d
@@ -153,32 +163,25 @@ class WsServerCommand extends BaseServerCommand
     {
         $server = $this->createServer();
 
-        // Check if it has started
-        if ($server->isRunning()) {
-            $success = $server->stop();
-
-            if (!$success) {
-                output()->error('Stop the old server failed!');
-                return;
-            }
-        }
-
         // Restart server
-        $server->startWithDaemonize();
+        $server->restart();
     }
 
     /**
      * @return WebSocketServer
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     private function createServer(): WebSocketServer
     {
-        $script  = input()->getScript();
-        $command = $this->getFullCommand();
+        // check env
+        // EnvHelper::check();
 
-        /* @var WebSocketServer $server */
+        // http server初始化
+        $script = input()->getScript();
+
         $server = bean('wsServer');
         $server->setScriptFile($script);
-        $server->setFullCommand($command);
 
         return $server;
     }

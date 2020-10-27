@@ -8,8 +8,7 @@ use ReflectionException;
 use ReflectionMethod;
 
 /**
- * Class Reflections
- *
+ * Class Reflections - use for cache some common classes reflection info
  * @since 2.0
  */
 final class Reflections
@@ -26,8 +25,8 @@ final class Reflections
      *         'methods'  => [
      *             'methodName' => [
      *                'params'     => [
-     *                    'argName',  // like `name`
-     *                    'argType',  // like `int`
+     *                    'argType',  // like `int $arg`
+     *                    'argType',  // like `class $arg`
      *                    null // like `$arg`
      *                ],
      *                'comments'   => 'method doc comments',

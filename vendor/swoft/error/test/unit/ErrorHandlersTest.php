@@ -5,7 +5,7 @@ namespace SwoftTest\Error\Unit;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use Swoft\Error\ErrorManager;
+use Swoft\Error\ErrorHandlers;
 use SwoftTest\Error\Testing\CustomErrorHandler;
 
 /**
@@ -16,7 +16,7 @@ class ErrorHandlersTest extends TestCase
     public function testGeneric(): void
     {
         $e  = new RuntimeException('error on runtime');
-        $eh = new ErrorManager();
+        $eh = new ErrorHandlers();
 
         // null
         $ret = $eh->matchHandler($e);

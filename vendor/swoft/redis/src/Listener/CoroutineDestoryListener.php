@@ -25,6 +25,8 @@ class CoroutineDestoryListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {

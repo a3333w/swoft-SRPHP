@@ -2,9 +2,18 @@
 
 namespace Swoft\Bean;
 
-use InvalidArgumentException;
+
+use function array_keys;
+use function class_exists;
+use function count;
+use function end;
+use function is_array;
+use function is_string;
+use function method_exists;
 use ReflectionClass;
 use ReflectionException;
+use function sprintf;
+use function strpos;
 use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Contract\ContainerInterface;
@@ -15,20 +24,10 @@ use Swoft\Bean\Definition\ObjectDefinition;
 use Swoft\Bean\Definition\Parser\AnnotationObjParser;
 use Swoft\Bean\Definition\Parser\DefinitionObjParser;
 use Swoft\Bean\Definition\PropertyInjection;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\ArrayHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Reflections;
-use Throwable;
-use function array_keys;
-use function class_exists;
-use function count;
-use function end;
-use function interface_exists;
-use function is_array;
-use function is_string;
-use function method_exists;
-use function sprintf;
-use function strpos;
 use function ucfirst;
 
 /**
@@ -293,8 +292,9 @@ class Container implements ContainerInterface
     /**
      * Init
      *
-     * @throws AnnotationException
+     * @throws ContainerException
      * @throws ReflectionException
+     * @throws AnnotationException
      */
     public function init(): void
     {
@@ -323,6 +323,8 @@ class Container implements ContainerInterface
      * @param string $id Usually is coroutine ID
      *
      * @return object
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function getRequest(string $name, string $id)
     {
@@ -337,17 +339,15 @@ class Container implements ContainerInterface
         // Class name
         $classNames = $this->classNames[$name] ?? [];
         if ($classNames) {
-            $className = end($classNames);
-            if ($className !== $name) {
-                return $this->getRequest($className, $id);
-            }
+            $name = end($classNames);
+            return $this->getRequest($name, $id);
         }
 
         if (!isset($this->requestDefinitions[$name])) {
-            throw new InvalidArgumentException(sprintf('Request bean(%s) is not defined', $name));
+            throw new ContainerException(sprintf('Request bean(%s) is not defined', $name));
         }
 
-        return $this->safeNewBean($name, $id);
+        return $this->newBean($name, $id);
     }
 
     /**
@@ -357,7 +357,8 @@ class Container implements ContainerInterface
      * @param string $sid
      *
      * @return object
-     * @throws InvalidArgumentException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function getSession(string $name, string $sid)
     {
@@ -377,10 +378,10 @@ class Container implements ContainerInterface
         }
 
         if (!isset($this->sessionDefinitions[$name])) {
-            throw new InvalidArgumentException(sprintf('Session bean(%s) is not defined', $name));
+            throw new ContainerException(sprintf('Session bean(%s) is not defined', $name));
         }
 
-        return $this->safeNewBean($name, $sid);
+        return $this->newBean($name, $sid);
     }
 
     /**
@@ -391,7 +392,8 @@ class Container implements ContainerInterface
      * When class name will return all of instance for class name
      *
      * @return object
-     * @throws InvalidArgumentException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function get($id)
     {
@@ -418,22 +420,16 @@ class Container implements ContainerInterface
             return $this->get($id);
         }
 
-        // Interface
-        if (interface_exists($id)) {
-            $id = InterfaceRegister::getInterfaceInjectBean($id);
-            return $this->get($id);
-        }
-
         // Not defined
         if (!isset($this->objectDefinitions[$id])) {
-            throw new InvalidArgumentException(sprintf('The bean of %s is not defined', $id));
+            throw new ContainerException(sprintf('The bean of %s is not defined', $id));
         }
 
         /* @var ObjectDefinition $objectDefinition */
         $objectDefinition = $this->objectDefinitions[$id];
 
         // Prototype
-        return $this->safeNewBean($objectDefinition->getName());
+        return $this->newBean($objectDefinition->getName());
     }
 
     /**
@@ -442,6 +438,8 @@ class Container implements ContainerInterface
      * @param string $className
      *
      * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function gets(string $className): array
     {
@@ -465,6 +463,7 @@ class Container implements ContainerInterface
      * @param string $name
      *
      * @return object|mixed
+     * @throws ContainerException
      */
     public function getSingleton(string $name)
     {
@@ -483,13 +482,7 @@ class Container implements ContainerInterface
             return $this->singletonPool[$name];
         }
 
-        // Interface
-        if (interface_exists($name)) {
-            $name = InterfaceRegister::getInterfaceInjectBean($name);
-            return $this->getSingleton($name);
-        }
-
-        throw new InvalidArgumentException(sprintf('The singleton bean "%s" is not defined', $name));
+        throw new ContainerException(sprintf('The singleton bean "%s" is not defined', $name));
     }
 
     /**
@@ -499,7 +492,8 @@ class Container implements ContainerInterface
      * @param array  $definition
      *
      * @return object
-     * @throws InvalidArgumentException
+     * @throws ContainerException
+     * @throws ReflectionException
      * @example
      *         [
      *         'class' =>  'className',
@@ -522,7 +516,7 @@ class Container implements ContainerInterface
     public function create(string $name, array $definition = [])
     {
         if ($this->has($name)) {
-            throw new InvalidArgumentException('Create ' . $name . ' bean by definition is exist!');
+            throw new ContainerException('Create ' . $name . ' bean by definition is exist!');
         }
 
         //  Create bean only by class name
@@ -532,12 +526,12 @@ class Container implements ContainerInterface
             ];
         }
 
-        $definitionObjParser = new DefinitionObjParser([$name=>$definition], [], [], $this->aliases);
+        $definitionObjParser = new DefinitionObjParser($definition, [], [], $this->aliases);
         [, $objectDefinitions] = $definitionObjParser->parseDefinitions();
 
         $this->objectDefinitions[$name] = $objectDefinitions[$name];
 
-        return $this->safeNewBean($name);
+        return $this->newBean($name);
     }
 
     /**
@@ -644,6 +638,7 @@ class Container implements ContainerInterface
     /**
      * Parse annotations
      *
+     * @throws ContainerException
      * @throws AnnotationException
      */
     private function parseAnnotations(): void
@@ -658,6 +653,8 @@ class Container implements ContainerInterface
 
     /**
      * Parse definitions
+     *
+     * @throws ContainerException
      */
     private function parseDefinitions(): void
     {
@@ -767,7 +764,7 @@ class Container implements ContainerInterface
     /**
      * Initialize beans
      *
-     * @throws InvalidArgumentException
+     * @throws ContainerException
      * @throws ReflectionException
      */
     private function initializeBeans(): void
@@ -798,7 +795,7 @@ class Container implements ContainerInterface
      * @param string $beanName
      *
      * @return ObjectDefinition
-     * @throws InvalidArgumentException
+     * @throws ContainerException
      */
     private function getNewObjectDefinition(string $beanName): ObjectDefinition
     {
@@ -824,7 +821,7 @@ class Container implements ContainerInterface
             return $this->getNewObjectDefinition($this->aliases[$beanName]);
         }
 
-        throw new InvalidArgumentException('Bean name of ' . $beanName . ' is not defined!');
+        throw new ContainerException('Bean name of ' . $beanName . ' is not defined!');
     }
 
     /**
@@ -858,23 +855,6 @@ class Container implements ContainerInterface
     }
 
     /**
-     * Secure creation of beans
-     *
-     * @param string $beanName
-     * @param string $id
-     *
-     * @return object|mixed
-     */
-    private function safeNewBean(string $beanName, string $id = '')
-    {
-        try {
-            return $this->newBean($beanName, $id);
-        } catch (Throwable $e) {
-            throw new InvalidArgumentException($e->getMessage(), 500, $e);
-        }
-    }
-
-    /**
      * Initialize beans
      *
      * @param string $beanName
@@ -882,6 +862,7 @@ class Container implements ContainerInterface
      *
      * @return object
      * @throws ReflectionException
+     * @throws ContainerException
      */
     private function newBean(string $beanName, string $id = '')
     {
@@ -942,13 +923,14 @@ class Container implements ContainerInterface
      * @param string          $id
      *
      * @return array
-     * @throws InvalidArgumentException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     private function getConstructParams(MethodInjection $methodInjection, string $id = ''): array
     {
         $methodName = $methodInjection->getMethodName();
         if ($methodName !== '__construct') {
-            throw new InvalidArgumentException('ConstructInjection method must be `__construct`');
+            throw new ContainerException('ConstructInjection method must be `__construct`');
         }
 
         $argInjects = $methodInjection->getParameters();
@@ -984,6 +966,7 @@ class Container implements ContainerInterface
      * @param array           $args
      *
      * @return object
+     * @throws ContainerException
      * @throws ReflectionException
      */
     private function newInstance(ReflectionClass $reflectionClass, array $args)
@@ -992,10 +975,9 @@ class Container implements ContainerInterface
             return $reflectionClass->newInstance();
         }
 
-        /** @noinspection PhpUnhandledExceptionInspection */
         $reflectMethod = $reflectionClass->getMethod('__construct');
         if ($reflectMethod->isPrivate() || $reflectMethod->isProtected()) {
-            throw new InvalidArgumentException('Construct function for bean must be public!');
+            throw new ContainerException('Construct function for bean must be public!');
         }
 
         return $reflectionClass->newInstanceArgs($args);
@@ -1010,6 +992,7 @@ class Container implements ContainerInterface
      * @param string          $id
      *
      * @return void
+     * @throws ContainerException
      * @throws ReflectionException
      */
     private function newProperty(
@@ -1031,21 +1014,14 @@ class Container implements ContainerInterface
                 continue;
             }
 
-            /** @noinspection PhpUnhandledExceptionInspection */
             $reflectProperty = $reflectionClass->getProperty($propertyName);
 
             if ($reflectProperty->isStatic()) {
-                throw new InvalidArgumentException(sprintf('Property %s for bean can not be `static` ', $propertyName));
+                throw new ContainerException(sprintf('Property %s for bean can not be `static` ', $propertyName));
             }
 
             // Parse property value
             $propertyValue = $propertyInject->getValue();
-
-            // Inject interface
-            if (is_string($propertyValue) && interface_exists($propertyValue)) {
-                $propertyValue = InterfaceRegister::getInterfaceInjectBean($propertyValue);
-            }
-
             if (is_array($propertyValue)) {
                 $propertyValue = $this->newPropertyArray($propertyValue, $id);
             }
@@ -1107,7 +1083,8 @@ class Container implements ContainerInterface
      * @param string $id
      *
      * @return array
-     * @throws InvalidArgumentException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     private function newPropertyArray(array $propertyValue, string $id = ''): array
     {
@@ -1128,7 +1105,8 @@ class Container implements ContainerInterface
      * @param string $id
      *
      * @return mixed
-     * @throws InvalidArgumentException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     private function getRefValue($value, string $id = '')
     {
@@ -1137,7 +1115,7 @@ class Container implements ContainerInterface
         }
 
         if (strpos($value, '.') !== 0) {
-            return $this->safeNewBean($value, $id);
+            return $this->newBean($value, $id);
         }
 
         // Remove `.`

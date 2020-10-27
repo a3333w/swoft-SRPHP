@@ -2,12 +2,21 @@
 
 namespace Swoft\Server\Swoole;
 
+use Swoole\Server;
+
 /**
  * Interface PipeMessageInterface
  *
- * @since      2.0
- * @deprecated  since Swoft 2.0.4, use '\Swoft\Server\Contract\PipeMessageInterface' for instead.
+ * @since 2.0
  */
-interface PipeMessageInterface extends \Swoft\Server\Contract\PipeMessageInterface
+interface PipeMessageInterface
 {
+    /**
+     * Pipe message event
+     *
+     * @param Server $server
+     * @param int      $srcWorkerId
+     * @param mixed    $message
+     */
+    public function onPipeMessage(Server $server, int $srcWorkerId, $message): void;
 }

@@ -34,7 +34,8 @@ class DefaultMiddleware implements MiddlewareInterface
      *
      * @return ResponseInterface
      * @throws RpcServerException
-     * @throws \Swoft\Exception\SwoftException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function process(RequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
     {
@@ -46,7 +47,8 @@ class DefaultMiddleware implements MiddlewareInterface
      *
      * @return ResponseInterface
      * @throws RpcServerException
-     * @throws \Swoft\Exception\SwoftException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     private function handler(RequestInterface $request): ResponseInterface
     {

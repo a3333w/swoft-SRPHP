@@ -5,8 +5,6 @@ namespace Swoft\Http\Message\Upload;
 use InvalidArgumentException;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
-use Swoft;
-use Swoft\Stdlib\Helper\Dir;
 use const UPLOAD_ERR_OK;
 
 /**
@@ -27,11 +25,9 @@ class UploadedFile implements UploadedFileInterface
     private $errorCode;
 
     /**
-     * Temp file path
-     *
      * @var string
      */
-    private $file = '';
+    private $file;
 
     /**
      * @var string
@@ -49,14 +45,9 @@ class UploadedFile implements UploadedFileInterface
     private $moved;
 
     /**
-     * @var string
-     */
-    private $path;
-
-    /**
      * @param string $tmpFile
-     * @param int    $size
-     * @param int    $errorStatus
+     * @param int $size
+     * @param int $errorStatus
      * @param string $clientFilename
      * @param string $clientMediaType
      */
@@ -66,9 +57,12 @@ class UploadedFile implements UploadedFileInterface
         int $errorStatus,
         string $clientFilename = '',
         string $clientMediaType = ''
-    ) {
-        $this->setError($errorStatus)->setSize($size)->setClientFilename($clientFilename)
-             ->setClientMediaType($clientMediaType);
+    )
+    {
+        $this->setError($errorStatus)
+            ->setSize($size)
+            ->setClientFilename($clientFilename)
+            ->setClientMediaType($clientMediaType);
 
         $this->isOk() && $this->setFile($tmpFile);
     }
@@ -108,19 +102,18 @@ class UploadedFile implements UploadedFileInterface
      */
     public function moveTo($targetPath): void
     {
-        $targetPath = Swoft::getAlias($targetPath);
+        $targetPath = \Swoft::getAlias($targetPath);
         $this->validateActive();
         if (!$this->isStringNotEmpty($targetPath)) {
-            throw new InvalidArgumentException('Invalid path provided for move operation');
+            throw new \InvalidArgumentException('Invalid path provided for move operation');
         }
 
         if ($this->file) {
             $this->validateSavePath($targetPath);
             $this->moved = move_uploaded_file($this->file, $targetPath);
         }
-
         if (!$this->moved) {
-            throw new RuntimeException(sprintf('Uploaded file could not be move to %s', $targetPath));
+            throw new \RuntimeException(sprintf('Uploaded file could not be move to %s', $targetPath));
         }
     }
 
@@ -195,7 +188,6 @@ class UploadedFile implements UploadedFileInterface
 
     /**
      * @param int $errorCode
-     *
      * @return UploadedFile
      */
     public function setError(int $errorCode): self
@@ -206,35 +198,12 @@ class UploadedFile implements UploadedFileInterface
 
     /**
      * @param string $tmpFile
-     *
      * @return UploadedFile
      */
     private function setFile(string $tmpFile): self
     {
         $this->file = $tmpFile;
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFile(): string
-    {
-        return $this->file;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray(): array
-    {
-        return [
-            'size'     => $this->getSize(),
-            'type'     => $this->getClientMediaType(),
-            'file'     => $this->file,
-            'path'     => $this->path,
-            'fileName' => $this->getClientFilename()
-        ];
     }
 
     /**
@@ -247,7 +216,6 @@ class UploadedFile implements UploadedFileInterface
 
     /**
      * @param int $size
-     *
      * @return UploadedFile
      */
     public function setSize(int $size): UploadedFile
@@ -258,7 +226,6 @@ class UploadedFile implements UploadedFileInterface
 
     /**
      * @param string $clientFilename
-     *
      * @return UploadedFile
      */
     public function setClientFilename(string $clientFilename): UploadedFile
@@ -269,7 +236,6 @@ class UploadedFile implements UploadedFileInterface
 
     /**
      * @param string $clientMediaType
-     *
      * @return UploadedFile
      */
     public function setClientMediaType(string $clientMediaType): UploadedFile
@@ -288,7 +254,6 @@ class UploadedFile implements UploadedFileInterface
 
     /**
      * @param mixed $param
-     *
      * @return boolean
      */
     private function isStringNotEmpty($param): bool
@@ -297,44 +262,29 @@ class UploadedFile implements UploadedFileInterface
     }
 
     /**
-     * @return string
-     */
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-
-    /**
-     * @param string $path
-     */
-    public function setPath(string $path): void
-    {
-        $this->path = $path;
-    }
-
-    /**
      * check file upload
      */
-    public function validateActive(): void
+    public function validateActive()
     {
         if (false === $this->isOk()) {
-            throw new RuntimeException('Cannot retrieve stream due to upload error');
+            throw new \RuntimeException("Cannot retrieve stream due to upload error");
         }
-
         if ($this->getSize() <= 0) {
-            throw new RuntimeException('Cannot retrieve stream due to upload error');
+            throw new \RuntimeException("Cannot retrieve stream due to upload error");
         }
     }
 
     /**
      * check file savePath
-     *
      * @param $targetPath
      */
-    public function validateSavePath($targetPath): void
+    public function validateSavePath($targetPath)
     {
-        Dir::make(dirname($targetPath));
-
-        $this->setPath($targetPath);
+        $dir = dirname($targetPath);
+        if (!is_dir($dir) && !file_exists($dir)) {
+            if (!mkdir($dir, 0777, true)) {
+                throw new \RuntimeException("Cannot create directory");
+            }
+        }
     }
 }

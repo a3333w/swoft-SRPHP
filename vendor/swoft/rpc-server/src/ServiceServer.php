@@ -23,7 +23,7 @@ class ServiceServer extends Server
     /**
      * @var string
      */
-    protected static $serverType = 'RPC';
+    protected static $serverType = 'rpc';
 
     /**
      * Default port
@@ -40,17 +40,14 @@ class ServiceServer extends Server
     /**
      * @var string
      */
-    protected $commandFile = '@runtime/swoft-rpc.command';
-
-    /**
-     * @var string
-     */
     protected $pidFile = '@runtime/swoft-rpc.pid';
 
     /**
      * Start server
      *
      * @throws ServerException
+     * @throws ServerException
+     * @throws ContainerException
      */
     public function start(): void
     {

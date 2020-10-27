@@ -1,12 +1,13 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace Swoft\Processor;
 
+use function bean;
 use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\CommandRegister;
 use Swoft\Console\Router\Router;
 use Swoft\Log\Helper\CLog;
-use function bean;
 
 /**
  * Console processor
@@ -15,10 +16,10 @@ use function bean;
 class ConsoleProcessor extends Processor
 {
     /**
-     * Handle console init
-     *
+     * Handle console
      * @return bool
      * @throws ReflectionException
+     * @throws ContainerException
      */
     public function handle(): bool
     {

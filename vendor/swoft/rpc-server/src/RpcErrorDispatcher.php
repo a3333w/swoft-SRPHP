@@ -7,7 +7,7 @@ namespace Swoft\Rpc\Server;
 use ReflectionException;
 use Swoft;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Error\ErrorManager;
+use Swoft\Error\ErrorHandlers;
 use Swoft\Error\ErrorType;
 use Swoft\Log\Debug;
 use Swoft\Rpc\Error;
@@ -29,11 +29,13 @@ class RpcErrorDispatcher
      * @param Response  $response
      *
      * @return Response
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function run(Throwable $e, Response $response): Response
     {
-        /** @var ErrorManager $handlers */
-        $handlers = Swoft::getSingleton(ErrorManager::class);
+        /** @var ErrorHandlers $handlers */
+        $handlers = Swoft::getSingleton(ErrorHandlers::class);
 
         /** @var RpcServerErrorHandlerInterface $handler */
         if ($handler = $handlers->matchHandler($e, ErrorType::RPC)) {

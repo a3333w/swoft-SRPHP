@@ -34,7 +34,6 @@ class PhpDocReader
         'callable',
         'resource',
         'mixed',
-        'iterable',
     );
 
     /**

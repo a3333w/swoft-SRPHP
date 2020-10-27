@@ -679,16 +679,6 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * Alias method of the getPwd()
-     *
-     * @return string
-     */
-    public function getWorkDir(): string
-    {
-        return $this->getPwd();
-    }
-
-    /**
      * @return string
      */
     public function getScript(): string

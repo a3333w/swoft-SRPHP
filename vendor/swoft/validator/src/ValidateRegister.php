@@ -19,8 +19,7 @@ class ValidateRegister
      *         'methodName' => [
      *              'validatorName' => [
      *                  'validator' => 'validatorName',
-     *                  'fields' => ['a', 'b'],
-     *                  'unfields' => ['c', 'd'],
+     *                  'fields' => ['a', 'b']
      *                  'params' => [1,2]
      *                  'message' => 'Fail message',
      *                  'type' => 'body'
@@ -36,7 +35,6 @@ class ValidateRegister
      * @param string $method
      * @param string $validator
      * @param array  $fields
-     * @param array  $unfields
      * @param array  $params
      * @param string $message
      * @param string $type
@@ -46,7 +44,6 @@ class ValidateRegister
         string $method,
         string $validator,
         array $fields,
-        array $unfields,
         array $params,
         string $message,
         string $type
@@ -54,7 +51,6 @@ class ValidateRegister
         self::$validates[$className][$method][$validator] = [
             'validator' => $validator,
             'fields'    => $fields,
-            'unfields'  => $unfields,
             'params'    => $params,
             'message'   => $message,
             'type'      => $type

@@ -2,24 +2,12 @@
 
 namespace Swoft\Console\Exception;
 
-use Throwable;
-
 /**
  * Class ConsoleErrorException
  *
- * @since 2.0.3
+ * @since 2.0
  */
-class ConsoleErrorException extends ConsoleException
+class ConsoleErrorException extends CommandFlagException
 {
-    /**
-     * @param string         $message
-     * @param int            $code
-     * @param Throwable|null $previous
-     *
-     * @throws ConsoleErrorException
-     */
-    public static function throw(string $message, int $code = 0, Throwable $previous = null): void
-    {
-        throw new self($message, $code, $previous);
-    }
+
 }

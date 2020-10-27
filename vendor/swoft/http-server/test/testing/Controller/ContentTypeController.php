@@ -1,7 +1,10 @@
 <?php declare(strict_types=1);
 
+
 namespace SwoftTest\Http\Server\Testing\Controller;
 
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\ContentType;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
@@ -23,6 +26,8 @@ class ContentTypeController
      * @param Response $response
      *
      * @return Response
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function userCt(Response $response): Response
     {
@@ -35,6 +40,8 @@ class ContentTypeController
      * @param Response $response
      *
      * @return Response
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function userCt2(Response $response): Response
     {

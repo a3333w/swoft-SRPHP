@@ -50,14 +50,6 @@ class DemoService implements DemoInterface
     }
 
     /**
-     * @return array
-     */
-    public function notClassMd(): array
-    {
-        return [];
-    }
-
-    /**
      * @param int $id
      *
      * @return bool
@@ -68,11 +60,6 @@ class DemoService implements DemoInterface
             return true;
         }
         return false;
-    }
-
-    public function returnNull(): void
-    {
-        return ;
     }
 
     /**

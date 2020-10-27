@@ -3,6 +3,7 @@
 namespace Swoft\Http\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 
@@ -16,13 +17,6 @@ use Swoft\Server\Server;
 class HttpServer extends Server
 {
     /**
-     * Server type
-     *
-     * @var string
-     */
-    protected static $serverType = 'HTTP';
-
-    /**
      * Default http port
      *
      * @var int
@@ -30,14 +24,17 @@ class HttpServer extends Server
     protected $port = 18306;
 
     /**
+     * Server type
+     *
      * @var string
      */
-    protected $pidName = 'swoft-http';
+    protected static $serverType = 'HTTP';
 
     /**
      * Start server
      *
      * @throws ServerException
+     * @throws ContainerException
      */
     public function start(): void
     {

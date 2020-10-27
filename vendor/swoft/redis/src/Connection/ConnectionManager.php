@@ -5,7 +5,7 @@ namespace Swoft\Redis\Connection;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
-use Swoft\Concern\ArrayPropertyTrait;
+use Swoft\Concern\DataPropertyTrait;
 use Swoft\Connection\Pool\Contract\ConnectionInterface;
 
 /**
@@ -27,7 +27,7 @@ class ConnectionManager
      *     ]
      * ]
      */
-    use ArrayPropertyTrait;
+    use DataPropertyTrait;
 
     /**
      * @param ConnectionInterface $connection

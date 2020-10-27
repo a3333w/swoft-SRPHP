@@ -2,9 +2,6 @@
 
 namespace Swoft\Console\Helper;
 
-use Swoft\Stdlib\Helper\Arr;
-use Swoft\Stdlib\Helper\Sys;
-use Toolkit\Cli\ColorTag;
 use function array_keys;
 use function array_merge;
 use function count;
@@ -24,6 +21,9 @@ use function str_pad;
 use function str_repeat;
 use function str_replace;
 use function strpos;
+use Swoft\Stdlib\Helper\Arr;
+use Swoft\Stdlib\Helper\Sys;
+use Toolkit\Cli\ColorTag;
 use function trim;
 use function ucfirst;
 use function wordwrap;

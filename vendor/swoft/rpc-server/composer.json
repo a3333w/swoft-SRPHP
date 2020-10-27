@@ -1,14 +1,13 @@
 {
     "name": "swoft/rpc-server",
     "type": "library",
-  "version": "v2.0.6",
     "keywords": [
         "php",
         "swoole",
         "swoft",
         "rpc"
     ],
-    "description": "swoft rpc server component",
+    "description": "microservice framework base on swoole",
     "license": "Apache-2.0",
     "require": {
         "swoft/framework": "~2.0.0",

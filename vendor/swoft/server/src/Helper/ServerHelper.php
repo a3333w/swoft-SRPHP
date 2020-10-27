@@ -2,16 +2,15 @@
 
 namespace Swoft\Server\Helper;
 
-use Swoole\Process;
 use function file_exists;
 use function sleep;
+use Swoole\Process;
 use function time;
 use function unlink;
 use function usleep;
 
 /**
  * Class ServerHelper
- *
  * @since 2.0
  */
 class ServerHelper
@@ -22,6 +21,7 @@ class ServerHelper
      * @param int    $pid      Process Pid
      * @param int    $signal   SIGTERM = 15
      * @param string $name
+     * @param bool   $force
      * @param int    $waitTime Seconds
      *
      * @return bool
@@ -30,6 +30,7 @@ class ServerHelper
         int $pid,
         int $signal = 15,
         string $name = 'process',
+        bool $force = false,
         int $waitTime = 10
     ): bool {
         // Do stop
@@ -55,7 +56,7 @@ class ServerHelper
             }
 
             if (time() - $startTime > $waitTime) {
-                $errorMsg = "Stop the $name(PID:$pid) failed(timeout:{$waitTime}s)!";
+                $errorMsg = "Stop the $name(PID:$pid) failed(timeout)!";
                 break;
             }
 
@@ -64,11 +65,12 @@ class ServerHelper
         }
 
         if ($errorMsg) {
-            echo PHP_EOL . $errorMsg . PHP_EOL;
+            echo PHP_EOL . $errorMsg;
             return false;
         }
 
-        echo ' Successful!' . PHP_EOL;
+        echo PHP_EOL . 'Stop success !' . PHP_EOL;
+
         return true;
     }
 
@@ -132,7 +134,7 @@ class ServerHelper
             return unlink($pidFile);
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -143,25 +145,5 @@ class ServerHelper
     public static function isRunning(int $pid): bool
     {
         return ($pid > 0) && Process::kill($pid, 0);
-    }
-
-    /**
-     * Check swoole is > 4.4.0
-     *
-     * @return bool
-     */
-    public static function isGtSwoole44(): bool
-    {
-        return SWOOLE_VERSION_ID > 40400;
-    }
-
-    /**
-     * Check swoole is >= 4.4.0
-     *
-     * @return bool
-     */
-    public static function isGteSwoole44(): bool
-    {
-        return SWOOLE_VERSION_ID >= 40400;
     }
 }

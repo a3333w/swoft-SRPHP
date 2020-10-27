@@ -2,27 +2,29 @@
 
 namespace Swoft\Http\Server\Middleware;
 
+use function context;
+use function explode;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use ReflectionException;
 use ReflectionNamedType;
+use function sprintf;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\Container;
-use Swoft\Exception\SwoftException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Contract\MiddlewareInterface;
 use Swoft\Http\Server\Exception\MethodNotAllowedException;
 use Swoft\Http\Server\Exception\NotFoundRouteException;
+use Swoft\Http\Server\Formatter\AcceptResponseFormatter;
 use Swoft\Http\Server\Router\Route;
 use Swoft\Http\Server\Router\Router;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\PhpHelper;
-use function context;
-use function explode;
-use function sprintf;
 
 /**
  * Class DefaultMiddleware
@@ -33,16 +35,40 @@ use function sprintf;
 class DefaultMiddleware implements MiddlewareInterface
 {
     /**
-     * @param ServerRequestInterface|Request $request
-     * @param RequestHandlerInterface        $handler
+     * Accept formatter
+     *
+     * @var AcceptResponseFormatter
+     * @Inject()
+     */
+    private $acceptFormatter;
+
+    /**
+     * @param ServerRequestInterface  $request
+     * @param RequestHandlerInterface $handler
      *
      * @return ResponseInterface
      * @throws MethodNotAllowedException
      * @throws NotFoundRouteException
      * @throws ReflectionException
-     * @throws SwoftException
+     * @throws ContainerException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        $response = $this->handle($request);
+        $response = $this->acceptFormatter->format($response);
+        return $response;
+    }
+
+    /**
+     * @param ServerRequestInterface|Request $request
+     *
+     * @return Response
+     * @throws MethodNotAllowedException
+     * @throws NotFoundRouteException
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    private function handle(ServerRequestInterface $request): Response
     {
         $method  = $request->getMethod();
         $uriPath = $request->getUriPath();
@@ -52,7 +78,7 @@ class DefaultMiddleware implements MiddlewareInterface
 
         // Not found
         if ($status === Router::NOT_FOUND) {
-            throw new NotFoundRouteException("Route not found(path {$uriPath})!");
+            throw new NotFoundRouteException(sprintf('Route not found(path %s)!', $uriPath));
         }
 
         // Method not allowed
@@ -92,7 +118,6 @@ class DefaultMiddleware implements MiddlewareInterface
      *
      * @return array
      * @throws ReflectionException
-     * @throws SwoftException
      */
     private function bindParams(string $className, string $method, array $pathParams): array
     {

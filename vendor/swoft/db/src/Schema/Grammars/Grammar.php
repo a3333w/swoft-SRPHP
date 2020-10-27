@@ -3,8 +3,7 @@
 
 namespace Swoft\Db\Schema\Grammars;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
+use Swoft\Db\Connection\Connection;
 use Swoft\Db\Grammar as BaseGrammar;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Schema\Blueprint;
@@ -22,13 +21,13 @@ abstract class Grammar extends BaseGrammar
      *
      * @var string
      */
-    public const INT     = 'int';      // php integer type
-    public const STRING  = 'string';   // php string type
-    public const FLOAT   = 'float';    // php float type
-    public const BOOLEAN = 'boolean';  // php boolean type
-    public const BOOL    = 'bool';     // php boolean type
-    public const ARRAY   = 'array';    // php array type
-
+    public const INT      = 'int';
+    public const NUMBER   = 'number';
+    public const STRING   = 'string';
+    public const FLOAT    = 'float';
+    public const DATETIME = 'datetime';
+    public const BOOLEAN  = 'boolean';
+    public const BOOL     = 'bool';
 
     /**
      * @var array
@@ -73,15 +72,13 @@ abstract class Grammar extends BaseGrammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function compileForeign(Blueprint $blueprint, Fluent $command)
     {
         // We need to prepare several of the elements of the foreign key definition
         // before we can create the SQL, such as wrapping the tables and convert
         // an array of columns to comma-delimited strings for the SQL queries.
-        $sql = sprintf('alter table %s add constraint %s ',
+        $sql = sprintf('alter table %s add public constraint %s ',
             $this->wrapTable($blueprint),
             $this->wrap($command['index'])
         );
@@ -95,7 +92,7 @@ abstract class Grammar extends BaseGrammar
             $this->columnize((array)$command['references'])
         );
 
-        // Once we have the basic foreign key creation statement constructed we can
+        // Once we have the basic foreign key creation statement public constructed we can
         // build out the syntax for what should happen on an update or delete of
         // the affected columns, which will get something like "cascade", etc.
         if (!is_null($command['onDelete'])) {
@@ -115,8 +112,6 @@ abstract class Grammar extends BaseGrammar
      * @param Blueprint $blueprint
      *
      * @return array
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     protected function getColumns(Blueprint $blueprint)
     {
@@ -222,8 +217,6 @@ abstract class Grammar extends BaseGrammar
      * @param mixed $table
      *
      * @return string
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function wrapTable($table)
     {
@@ -239,8 +232,6 @@ abstract class Grammar extends BaseGrammar
      * @param bool              $prefixAlias
      *
      * @return string
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function wrap($value, $prefixAlias = false)
     {
@@ -290,7 +281,7 @@ abstract class Grammar extends BaseGrammar
     }
 
     /**
-     * Compile the command to enable foreign key constraints.
+     * Compile the command to enable foreign key public constraints.
      *
      * @return string
      */
@@ -300,7 +291,7 @@ abstract class Grammar extends BaseGrammar
     }
 
     /**
-     * Compile the command to disable foreign key constraints.
+     * Compile the command to disable foreign key public constraints.
      *
      * @return string
      */

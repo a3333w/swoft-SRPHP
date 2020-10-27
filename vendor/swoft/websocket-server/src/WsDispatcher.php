@@ -2,8 +2,10 @@
 
 namespace Swoft\WebSocket\Server;
 
-use Swoft;
+use InvalidArgumentException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Session\Session;
@@ -12,7 +14,6 @@ use Swoft\WebSocket\Server\Exception\WsModuleRouteException;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoole\WebSocket\Server;
 use Throwable;
-use function server;
 use function sprintf;
 
 /**
@@ -31,12 +32,13 @@ class WsDispatcher
      *
      * @return array eg. [status, response]
      * @throws WsModuleRouteException
+     * @throws InvalidArgumentException
      * @throws Throwable
      */
     public function handshake(Request $request, Response $response): array
     {
         /** @var Router $router */
-        $router = Swoft::getSingleton('wsRouter');
+        $router = BeanFactory::getSingleton('wsRouter');
 
         /** @var Connection $conn */
         $conn = Session::mustGet();
@@ -49,10 +51,10 @@ class WsDispatcher
         $class = $info['class'];
         $conn->setModuleInfo($info);
 
-        server()->log("Handshake: found handler for path '$path', ws module class is $class", [], 'debug');
+        \server()->log("Handshake: found handler for path '$path', ws module class is $class", [], 'debug');
 
         /** @var WsModuleInterface $module */
-        $module = Swoft::getSingleton($class);
+        $module = BeanFactory::getSingleton($class);
 
         // Call user method
         if ($method = $info['eventMethods']['handshake'] ?? '') {
@@ -68,6 +70,8 @@ class WsDispatcher
      *
      * @param Server $server
      * @param int    $fd
+     *
+     * @throws ContainerException
      */
     public function close(Server $server, int $fd): void
     {
@@ -81,10 +85,10 @@ class WsDispatcher
         }
 
         $class = $info['class'];
-        server()->log("conn#{$fd} call ws close handler '{$class}::{$method}'", [], 'debug');
+        \server()->log("conn#{$fd} call ws close handler '{$class}::{$method}'", [], 'debug');
 
         /** @var WsModuleInterface $module */
-        $module = Swoft::getSingleton($class);
+        $module = BeanFactory::getSingleton($class);
         $module->$method($server, $fd);
     }
 }

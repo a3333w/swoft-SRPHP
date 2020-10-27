@@ -4,8 +4,10 @@
 namespace Swoft\Db\Eloquent;
 
 use ArrayAccess;
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
 use Swoft\Stdlib\Collection as BaseCollection;
 use Swoft\Stdlib\Contract\Arrayable;
@@ -25,14 +27,16 @@ class Collection extends BaseCollection
     /**
      * Create a new collection.
      *
-     * @param array|object $items
+     * @param array $items
      *
      * @return static
+     * @throws ContainerException
+     * @throws ReflectionException
      */
-    public static function new($items = []): self
+    public static function  new(array $items = []): self
     {
         $self        = self::__instance();
-        $self->items = $self->getArrayableItems($items);
+        $self->items = $items;
 
         return $self;
     }
@@ -271,6 +275,10 @@ class Collection extends BaseCollection
 
         return $dictionary;
     }
+
+    /**
+     * The following methods are intercepted to always return base collections.
+     */
 
     /**
      * Get an array with the values of a given key.

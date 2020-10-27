@@ -5,6 +5,7 @@ namespace SwoftTest\Bean\Testing\Definition;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
 
 /**
  * Class CommaNameClass

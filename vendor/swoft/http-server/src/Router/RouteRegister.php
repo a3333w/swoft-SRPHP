@@ -35,16 +35,6 @@ class RouteRegister
     }
 
     /**
-     * @param string $className
-     *
-     * @return bool
-     */
-    public static function hasRouteByClassName(string $className): bool
-    {
-        return isset(self::$routes[$className]);
-    }
-
-    /**
      * @param Router $router
      */
     public static function registerRoutes(Router $router): void
@@ -80,5 +70,8 @@ class RouteRegister
                 $router->map($route['method'], $path, $handler, $route['params']);
             }
         }
+
+        // clear data
+        self::$routes = [];
     }
 }

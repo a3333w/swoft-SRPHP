@@ -63,7 +63,7 @@ trait RpcResponseAssertTrait
         }
 
         $errorMessage = $error->getMessage();
-        Assert::assertContains($message, $errorMessage);
+        Assert::assertEquals($message, $errorMessage);
     }
 
     /**

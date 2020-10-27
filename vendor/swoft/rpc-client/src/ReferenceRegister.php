@@ -63,7 +63,7 @@ class ReferenceRegister
     public static function getVersion(string $className): string
     {
         $version = self::$references[$className]['version'] ?? '';
-        if ($version == '') {
+        if (empty($version)) {
             throw new RpcClientException(
                 sprintf('`@Reference` version(%s) is not exist!', $className)
             );

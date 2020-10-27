@@ -2,12 +2,21 @@
 
 namespace Swoft\Server\Swoole;
 
+use Swoole\Websocket\Frame;
+use Swoole\Websocket\Server;
+
 /**
  * Interface MessageInterface
  *
- * @since      2.0
- * @deprecated  since Swoft 2.0.4, use '\Swoft\Server\Contract\MessageInterface' for instead.
+ * @since 2.0
  */
-interface MessageInterface extends \Swoft\Server\Contract\MessageInterface
+interface MessageInterface
 {
+    /**
+     * Message event
+     *
+     * @param Server $server
+     * @param Frame  $frame
+     */
+    public function onMessage(Server $server, Frame $frame): void;
 }

@@ -8,6 +8,8 @@ use SwoftTest\Rpc\Server\Testing\Lib\DemoInterface;
 class RpcV2Test extends TestCase
 {
     /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function testGetList()
@@ -28,6 +30,8 @@ class RpcV2Test extends TestCase
     }
 
     /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function testGetInfo()
@@ -47,6 +51,8 @@ class RpcV2Test extends TestCase
     }
 
     /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function testGetDelete()
@@ -61,6 +67,8 @@ class RpcV2Test extends TestCase
     }
 
     /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function testCallErro()
@@ -72,6 +80,8 @@ class RpcV2Test extends TestCase
     }
 
     /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function testException()
