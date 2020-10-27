@@ -1,0 +1,62 @@
+<?php declare(strict_types=1);
+
+namespace Swoft\Server\Context;
+
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Context\AbstractContext;
+use Swoole\Server as SwooleServer;
+
+/**
+ * Class WorkerStartContext
+ *
+ * @since 2.0
+ *
+ * @Bean(scope=Bean::PROTOTYPE)
+ */
+class WorkerStartContext extends AbstractContext
+{
+    use PrototypeTrait;
+
+    /**
+     * @var SwooleServer
+     */
+    private $server;
+
+    /**
+     * @var int
+     */
+    private $workerId;
+
+    /**
+     * @param SwooleServer $server
+     * @param int          $workerId
+     *
+     * @return WorkerStartContext
+     */
+    public static function new(SwooleServer $server, int $workerId): self
+    {
+        $self = self::__instance();
+
+        $self->server   = $server;
+        $self->workerId = $workerId;
+
+        return $self;
+    }
+
+    /**
+     * @return SwooleServer
+     */
+    public function getSwooleServer(): SwooleServer
+    {
+        return $this->server;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWorkerId(): int
+    {
+        return $this->workerId;
+    }
+}
