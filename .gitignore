@@ -5,7 +5,6 @@
 .idea/
 .git/
 runtime/
-vendor/
 *.lock
 .phpintel/
 .env
