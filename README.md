@@ -91,81 +91,46 @@ swoft快不基于swoole了，赶紧更新一波。但写文档是个麻烦的事
 
 
 ###  文件结构
-
-+ app 
-
-  + Annotation
-
-  + Aspect //AOP
-
-  + Common //基础
-
-  + Console
-
-  + Exception
-
-  + Helper //助手
-
-  + Http //http服务
-
-  + InstallDb //mysql初始化文件
-
-  + Listener //监听
-
-  + Logic
-
-    + System //系统模块逻辑层
-    + local //本地模块逻辑层（安装模块会生成）
-
-  + Migration
-
-  + Model
-
-    + Entity //实体
-
-    + Model 
-
-      + BaseService
-
-      + System //系统模块数据处理
-      + Local //本地模块的数据处理（安装模块时生成）
-
-  + Process
-
-  + Rpc
-
-  + Task
-
-  + Tcp
-
-  + Utils
-
-  + Validator
-
-  + WebSocket
-
-+ bin
-
-+ config
-
-  + properties //jwt
-  + version //接口版本
-  + 本地模块的配置目录、基础配置文件
-
-+ database
-
-+ public
-
-  + xadmin
-
-+ resource
-
-+ runtime
-
-+ test
-
-+ vendor
-
+```
+app
+| Annotation
+| Aspect //AOP
+| Common //基础
+| Console
+| Exception
+| Helper //助手
+| Http //http服务
+| nstallDb //mysql初始化文件
+| Listener //监听
+| Logic
+|   | System //系统模块逻辑层
+|   | local //本地模块逻辑层（安装模块会生成）
+| Migration
+| Model
+|   | BaseService
+|   | System //系统模块数据处理
+|   | Local //本地模块的数据处理（安装模块时生成）
+| Process
+| Rpc
+| Task
+| Tcp
+| Utils
+| Validator
+| WebSocket
+bin
+config
+| properties //jwt
+| version //接口版本
+| 本地模块的配置目录、基础配置文件
+database
+public
+| xadmin
+| image
+resource
+runtime
+test
+vendor
+```
 
 ###  系统功能
 
