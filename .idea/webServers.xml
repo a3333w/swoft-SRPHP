@@ -2,12 +2,11 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="61a29966-2aaf-4f56-9756-3ffa304b73fe" name="SRPHPlk" url="http://121.36.11.159">
-        <fileTransfer host="121.36.11.159" port="22" rootFolder="/home/swoft-SRPHP" accessType="SFTP">
+      <webServer id="0b9a4124-1b8a-48ca-9f79-4099f85c1e2b" name="ss" url="http://121.36.11.159">
+        <fileTransfer rootFolder="/data/swoft-SRPHP" accessType="SFTP" host="121.36.11.159" port="22" sshConfigId="e4afa794-c644-4995-b79a-b18aa244ecb3" sshConfig="ss">
           <advancedOptions>
-            <advancedOptions dataProtectionLevel="Private" />
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
-          <option name="port" value="22" />
         </fileTransfer>
       </webServer>
     </option>

@@ -2,6 +2,10 @@
 .settings/
 *.patch
 .idea/
+.idea/deployment.xml
+.idea/webServers.xml
+.idea/workspace.xml
+.idea/php.xml
 .git/
 *.lock
 .phpintel/
