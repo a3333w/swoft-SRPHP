@@ -3,13 +3,15 @@
 namespace Swoft\WebSocket\Server;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
-use Swoft\Session\SessionInterface;
+use Swoft\Contract\SessionInterface;
+use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
+use Swoft\WebSocket\Server\MessageParser\RawTextParser;
 use Swoft\WebSocket\Server\Router\Router;
 use function microtime;
 use function server;
@@ -23,9 +25,9 @@ use const WEBSOCKET_OPCODE_TEXT;
  */
 class Connection implements SessionInterface
 {
-    use DataPropertyTrait, PrototypeTrait;
+    use DataPropertyTrait;
 
-    private const METADATA_KEY = 'metadata';
+    private const METADATA_KEY = '_metadata';
 
     /**
      * @var int
@@ -38,6 +40,11 @@ class Connection implements SessionInterface
      * @var WsModuleInterface
      */
     // private $module;
+
+    /**
+     * @var WebSocketServer
+     */
+    private $server;
 
     /**
      * @var Request|ServerRequestInterface
@@ -61,20 +68,19 @@ class Connection implements SessionInterface
     private $moduleInfo;
 
     /**
-     * @param int      $fd
-     * @param Request  $request
-     * @param Response $response
+     * @param WebSocketServer $server
+     * @param Request         $request
+     * @param Response        $response
      *
      * @return Connection
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function new(int $fd, Request $request, Response $response): self
+    public static function new(WebSocketServer $server, Request $request, Response $response): self
     {
         /** @var self $sess */
-        $sess = self::__instance();
+        $sess = Swoft::getBean(self::class);
 
-        $sess->fd = $fd;
+        $sess->fd     = $fd = $request->getFd();
+        $sess->server = $server;
 
         // Init meta info
         $sess->buildMetadata($fd, $request->getUriPath());
@@ -92,7 +98,7 @@ class Connection implements SessionInterface
      */
     private function buildMetadata(int $fd, string $path): void
     {
-        $info = server()->getClientInfo($fd);
+        $info = $this->server->getClientInfo($fd);
 
         server()->log("Handshake: conn#{$fd} send handshake request to {$path}, client info: ", $info, 'debug');
 
@@ -115,7 +121,7 @@ class Connection implements SessionInterface
      */
     public function push(string $data, int $opcode = WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
     {
-        return server()->push($this->fd, $data, $opcode, $finish);
+        return $this->server->push($this->fd, $data, $opcode, $finish);
     }
 
     /**
@@ -184,6 +190,24 @@ class Connection implements SessionInterface
     }
 
     /**
+     * @return MessageParserInterface
+     */
+    public function getParser(): MessageParserInterface
+    {
+        $parseClass = $this->getParserClass();
+
+        return Swoft::getSingleton($parseClass);
+    }
+
+    /**
+     * @return string
+     */
+    public function getParserClass(): string
+    {
+        return $this->moduleInfo['messageParser'] ?? RawTextParser::class;
+    }
+
+    /**
      * @return Response
      */
     public function getResponse(): Response
@@ -205,5 +229,13 @@ class Connection implements SessionInterface
     public function setModuleInfo(array $moduleInfo): void
     {
         $this->moduleInfo = $moduleInfo;
+    }
+
+    /**
+     * @return WebSocketServer
+     */
+    public function getServer(): WebSocketServer
+    {
+        return $this->server;
     }
 }

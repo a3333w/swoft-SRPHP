@@ -6,8 +6,6 @@ namespace Swoft\Db;
 
 use function bean;
 use PDO;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\SwoftComponent;
 
 /**
@@ -19,8 +17,6 @@ class AutoLoader extends SwoftComponent
 {
     /**
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function beans(): array
     {
@@ -29,13 +25,13 @@ class AutoLoader extends SwoftComponent
                 'class'  => Database::class,
                 'dsn'    => 'mysql:dbname=dbname;host=127.0.0.1',
                 'config' => [
-                     // fetch array
+                    // fetch array
                     'fetchMode' => PDO::FETCH_ASSOC,
                 ],
             ],
             'db.pool' => [
                 'class'    => Pool::class,
-                'database' => bean('db')
+                'database' => bean('db'),
             ]
         ];
     }

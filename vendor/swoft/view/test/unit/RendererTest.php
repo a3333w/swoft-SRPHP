@@ -50,6 +50,7 @@ class RendererTest extends TestCase
 
         $r = new Renderer($config);
         $this->assertEquals('ABC', $r->renderBody('B'));
+        $this->assertEquals('AB=$100C', $r->renderBody('B=$100'));
 
         $this->expectException(RuntimeException::class);
         $r->renderPartial('not-exist');

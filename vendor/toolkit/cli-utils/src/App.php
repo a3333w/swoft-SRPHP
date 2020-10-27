@@ -21,6 +21,7 @@ use function implode;
 use function is_array;
 use function is_object;
 use function is_string;
+use function ksort;
 use function method_exists;
 use function str_pad;
 use function strlen;
@@ -92,10 +93,14 @@ class App
 
         // parse cli argv
         $argv = $argv ?? (array)$_SERVER['argv'];
+
         // get script file
         $this->script = array_shift($argv);
+
         // parse flags
-        [$this->args, $this->opts] = Flags::parseArgv($argv, ['mergeOpts' => true]);
+        [$this->args, $this->opts] = Flags::parseArgv($argv, [
+            'mergeOpts' => true
+        ]);
     }
 
     /**
@@ -105,12 +110,33 @@ class App
      */
     public function run(bool $exit = true): void
     {
-        if (isset($this->args[0])) {
-            $this->command = $this->args[0];
-            unset($this->args[0]);
-        }
+        $this->findCommand();
 
         $this->dispatch($exit);
+    }
+
+    /**
+     * find command name. it is first argument.
+     */
+    protected function findCommand(): void
+    {
+        if (!isset($this->args[0])) {
+            return;
+        }
+
+        $newArgs = [];
+
+        foreach ($this->args as $key => $value) {
+            if ($key === 0) {
+                $this->command = trim($value);
+            } elseif (is_int($key)) {
+                $newArgs[] = $value;
+            } else {
+                $newArgs[$key] = $value;
+            }
+        }
+
+        $this->args = $newArgs;
     }
 
     /**
@@ -126,7 +152,7 @@ class App
         }
 
         if (!isset($this->commands[$command])) {
-            $this->displayHelp("The command {$command} not exists!");
+            $this->displayHelp("The command '{$command}' is not exists!");
             return;
         }
 
@@ -200,9 +226,10 @@ class App
         }
 
         $code = $e->getCode() !== 0 ? $e->getCode() : -1;
+        $eTpl = "Exception(%d): %s\nFile: %s(Line %d)\nTrace:\n%s\n";
 
-        printf("Exception(%d): %s\nFile: %s(Line %d)\nTrace:\n%s\n", $code, $e->getMessage(), $e->getFile(),
-            $e->getLine(), $e->getTraceAsString());
+        // print exception message
+        printf($eTpl, $code, $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
 
         return $code;
     }
@@ -290,12 +317,14 @@ class App
             echo Color::render("<red>ERROR</red>: $err\n\n");
         }
 
-        $commandWidth = $this->keyWidth;
         // help
+        $len  = $this->keyWidth;
         $help = "Welcome to the Lite Console Application.\n\n<comment>Available Commands:</comment>\n";
+        $data = $this->messages;
+        ksort($data);
 
-        foreach ($this->messages as $command => $item) {
-            $command = str_pad($command, $commandWidth, ' ');
+        foreach ($data as $command => $item) {
+            $command = str_pad($command, $len, ' ');
             $desc    = $item['desc'] ? ucfirst($item['desc']) : 'No description for the command';
             $help    .= "  $command   $desc\n";
         }
@@ -322,11 +351,12 @@ class App
             ];
         } else {
             $checkVar = true;
+            $userHelp = $config['help'];
 
             $nodes = [
                 ucfirst($config['desc']),
                 "<comment>Usage:</comment> \n  " . ($config['usage'] ?: $usage),
-                $config['help']
+                $userHelp ? $userHelp . "\n" : ''
             ];
         }
 

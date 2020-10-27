@@ -1,6 +1,7 @@
 {
   "name": "swoft/view",
   "type": "library",
+  "version": "v2.0.6",
   "keywords": [
     "php",
     "swoole",

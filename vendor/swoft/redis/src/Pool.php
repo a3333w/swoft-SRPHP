@@ -27,10 +27,10 @@ use Throwable;
  * @method mixed eval(string $script, array $args = [], int $numKeys = 0)
  * @method mixed evalSha(string $scriptSha, array $args = [], int $numKeys = 0)
  * @method bool exists(string $key)
- * @method int geoAdd(string $key, float $longitude, float $latitude, string $member)
+ * @method int geoAdd(string $key, float $longitude, float $latitude, string $member, ...$args)
  * @method float geoDist(string $key, string $member1, string $member2, string $unit = 'm')
- * @method array geohash(string $key, string $member1, string $member2 = null, string $memberN = null)
- * @method array geopos(string $key, string $member1, string $member2 = null, string $memberN = null)
+ * @method array geohash(string $key, string ...$members)
+ * @method array geopos(string $key, string ...$members)
  * @method mixed|bool get(string $key)
  * @method int getBit(string $key, int $offset)
  * @method int getOption(string $name)
@@ -38,7 +38,7 @@ use Throwable;
  * @method string getSet(string $key, string $value)
  * @method string hDel(string $key, string $hashKey1, string $hashKey2 = null, string $hashKeyN = null)
  * @method bool hExists(string $key, string $hashKey)
- * @method array hGet(string $key, string $hashKey)
+ * @method mixed hGet(string $key, string $hashKey)
  * @method array hGetAll(string $key)
  * @method int hIncrBy(string $key, string $hashKey, int $value)
  * @method float hIncrByFloat(string $key, string $field, float $increment)
@@ -67,7 +67,7 @@ use Throwable;
  * @method string rPop(string $key)
  * @method int|bool rPush(string $key, string $value1, string $value2 = null, string $valueN = null)
  * @method int|bool rPushx(string $key, string $value)
- * @method mixed rawCommand(string|array $nodeParams, string $command, mixed $arguments)
+ * @method mixed rawCommand(...$args)
  * @method bool renameNx(string $srcKey, string $dstKey)
  * @method bool restore(string $key, int $ttl, string $value)
  * @method string rpoplpush(string $srcKey, string $dstKey)
@@ -136,6 +136,7 @@ use Throwable;
  * @method bool mset(array $keyValues, int $ttl = 0)
  * @method array pipeline(callable $callback)
  * @method array transaction(callable $callback)
+ * @method mixed call(callable $callback, bool $reconnect = false)
  */
 class Pool extends AbstractPool
 {
@@ -151,9 +152,7 @@ class Pool extends AbstractPool
 
     /**
      * @return ConnectionInterface
-     * @throws Exception\RedisException
-     * @throws ReflectionException
-     * @throws ContainerException
+     * @throws RedisException
      */
     public function createConnection(): ConnectionInterface
     {
@@ -166,7 +165,7 @@ class Pool extends AbstractPool
      * @param string $name
      * @param array  $arguments
      *
-     * @return ConnectionInterface
+     * @return Connection
      * @throws RedisException
      */
     public function __call(string $name, array $arguments)
@@ -193,5 +192,13 @@ class Pool extends AbstractPool
         }
 
         return $connection->{$name}(...$arguments);
+    }
+
+    /**
+     * @return RedisDb
+     */
+    public function getRedisDb(): RedisDb
+    {
+        return $this->redisDb;
     }
 }

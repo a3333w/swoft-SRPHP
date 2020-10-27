@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Devtool\Model\Logic;
 
 use Leuffen\TextTemplate\TemplateParsingException;
+use function strpos;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Container;
@@ -86,6 +86,11 @@ class MetaLogic
             $alias     = $definition->getAlias();
             $className = $definition->getClassName();
 
+            // It's should ignore class
+            if ($this->isShouldIgnore($className)) {
+                continue;
+            }
+
             $itemStub .= sprintf("%s'%s' => \%s::class,%s", $indentSpace, $beanName, $className, PHP_EOL);
 
             if ($beanName !== $className) {
@@ -97,14 +102,14 @@ class MetaLogic
             }
         }
 
-        $funcs = [
+        $functions = [
             '\bean(0)',
             '\Swoft::getBean()',
             '\Swoft\Bean\BeanFactory::getBean(0)',
             '\Swoft\Bean\Container::getInstance()->get(0)',
         ];
 
-        foreach ($funcs as $func) {
+        foreach ($functions as $func) {
             $config = [
                 'tplFilename' => $this->overrideTplName,
                 'tplDir'      => $this->tplDir,
@@ -115,10 +120,42 @@ class MetaLogic
                 'item' => $itemStub
             ];
 
-            $gen          = new FileGenerator($config);
-            $overrideStub .= $gen->render($data);
+            $generator    = new FileGenerator($config);
+            $overrideStub .= $generator->render($data);
         }
 
         return $overrideStub;
+    }
+
+    /**
+     * Ignore listener, middleware, http controller, console command class
+     *
+     * @param string $className
+     *
+     * @return bool
+     */
+    private function isShouldIgnore(string $className): bool
+    {
+        if (strpos($className, '\\Listener\\') > 0) {
+            return true;
+        }
+
+        if (strpos($className, '\\Middleware\\') > 0) {
+            return true;
+        }
+
+        if (strpos($className, '\\Controller\\') > 0) {
+            return true;
+        }
+
+        if (strpos($className, '\\Command\\') > 0) {
+            return true;
+        }
+
+        if (strpos($className, '\\Validator\\') > 0) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -2,11 +2,11 @@
 
 namespace Swoft\Context;
 
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
+use Swoft\Contract\ContextInterface;
 use Swoft\Exception\ContextException;
+use Swoft\Exception\SwoftException;
 use Swoft\Http\Server\HttpContext;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
 
@@ -34,19 +34,31 @@ class Context
     /**
      * Get context
      *
+     * @param bool $throwable
+     *
      * @return ContextInterface|HttpContext|WsMessageContext
+     * @throws SwoftException
      */
-    public static function get(): ?ContextInterface
+    public static function get(bool $throwable = false): ?ContextInterface
     {
-        $tid = Co::tid();
+        $tid     = Co::tid();
+        $context = self::$context[$tid] ?? null;
+        if ($context) {
+            return $context;
+        }
 
-        return self::$context[$tid] ?? null;
+        if ($throwable) {
+            throw new SwoftException('context information has been lost of the coID: ' . $tid);
+        }
+
+        return $context;
     }
 
     /**
      * Get context by coID, if not found will throw exception.
      *
      * @return ContextInterface|HttpContext|WsMessageContext
+     * @deprecated Instead of `Context::get()` Or `context()->get()`
      */
     public static function mustGet(): ContextInterface
     {
@@ -75,9 +87,6 @@ class Context
      * Get context wait group
      *
      * @return ContextWaitGroup
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function getWaitGroup(): ContextWaitGroup
     {

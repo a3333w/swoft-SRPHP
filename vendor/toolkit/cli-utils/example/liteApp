@@ -9,8 +9,11 @@ require dirname(__DIR__) . '/test/boot.php';
 $app = new Toolkit\Cli\App;
 
 // register commands
-$app->addCommand('test', function () {
-    echo "hello\n";
+$app->addCommand('test', function ($app) {
+    echo "args:\n";
+    /** @var Toolkit\Cli\App $app */
+    print_r($app->getArgs());
+
 }, 'the description text for the command: test');
 
 $app->addCommand('test1', function () {

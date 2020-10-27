@@ -1,14 +1,20 @@
 <?php
 
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Config\Config;
 use Swoft\Context\Context;
-use \Swoft\Context\ContextInterface;
+use Swoft\Contract\ContextInterface;
 use Swoft\Event\Manager\EventManager;
+use Swoft\Exception\SwoftException;
 use Swoft\Http\Server\HttpContext;
 use Swoft\Http\Server\HttpServer;
+use Swoft\Process\Context\ProcessContext;
+use Swoft\Process\Context\UserProcessContext;
 use Swoft\Rpc\Server\ServiceContext;
+use Swoft\Server\Context\ShutdownContext;
+use Swoft\Server\Context\StartContext;
+use Swoft\Server\Context\WorkerStartContext;
+use Swoft\Server\Context\WorkerStopContext;
 use Swoft\Server\Server;
 use Swoft\Task\FinishContext;
 use Swoft\Task\TaskContext;
@@ -71,8 +77,6 @@ if (!function_exists('alias')) {
 if (!function_exists('event')) {
     /**
      * @return EventManager
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     function event(): EventManager
     {
@@ -88,8 +92,6 @@ if (!function_exists('config')) {
      * @param mixed  $default
      *
      * @return mixed
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     function config(string $key = null, $default = null)
     {
@@ -104,7 +106,6 @@ if (!function_exists('config')) {
     }
 }
 
-
 if (!function_exists('sgo')) {
     /**
      * Create coroutine like 'go()'
@@ -112,10 +113,24 @@ if (!function_exists('sgo')) {
      *
      * @param callable $callable
      * @param bool     $wait
+     *
+     * @return int
      */
-    function sgo(callable $callable, bool $wait = true)
+    function sgo(callable $callable, bool $wait = true): int
     {
-        \Swoft\Co::create($callable, $wait);
+        return \Swoft\Co::create($callable, $wait);
+    }
+}
+
+if (!function_exists('srun')) {
+    /**
+     * @param callable $callable
+     *
+     * @return bool
+     */
+    function srun(callable $callable): bool
+    {
+        return \Swoft\Co::run($callable);
     }
 }
 
@@ -123,11 +138,12 @@ if (!function_exists('context')) {
     /**
      * Get current context
      *
-     * @return ContextInterface|HttpContext|ServiceContext|TaskContext|FinishContext
+     * @return ContextInterface|HttpContext|ServiceContext|TaskContext|FinishContext|UserProcessContext|ProcessContext|StartContext|WorkerStartContext|WorkerStopContext|ShutdownContext
+     * @throws SwoftException
      */
     function context(): ContextInterface
     {
-        return Context::get();
+        return Context::get(true);
     }
 }
 
@@ -151,8 +167,6 @@ if (!function_exists('validate')) {
      * @param array  $userValidators
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws ValidatorException
      */
     function validate(array $data, string $validatorName, array $fields = [], array $userValidators = []): array
@@ -162,11 +176,3 @@ if (!function_exists('validate')) {
         return $validator->validate($data, $validatorName, $fields, $userValidators);
     }
 }
-
-
-
-
-
-
-
-

@@ -1,18 +1,17 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Server;
 
-
-use function bean;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Helper\ComposerJSON;
 use Swoft\Rpc\Packet;
 use Swoft\Rpc\Server\Swoole\CloseListener;
 use Swoft\Rpc\Server\Swoole\ConnectListener;
 use Swoft\Rpc\Server\Swoole\ReceiveListener;
-use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Server\SwooleEvent;
 use Swoft\SwoftComponent;
+use function bean;
 
 /**
  * Class AutoLoader
@@ -36,13 +35,13 @@ class AutoLoader extends SwoftComponent
      */
     public function metadata(): array
     {
-        return [];
+        $jsonFile = dirname(__DIR__) . '/composer.json';
+
+        return ComposerJSON::open($jsonFile)->getMetadata();
     }
 
     /**
      * @return array
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function beans(): array
     {

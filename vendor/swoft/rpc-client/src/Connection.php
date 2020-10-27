@@ -47,8 +47,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param Pool                     $pool
      *
      * @return Connection
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(RpcClient $client, Pool $pool): Connection
     {
@@ -96,8 +94,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @return bool
      * @throws RpcClientException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function reconnect(): bool
     {
@@ -149,11 +145,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
     private function getHostPort(): array
     {
         $provider = $this->client->getProvider();
-        if (empty($provider) || !$provider instanceof ProviderInterface || empty($provider->getList())) {
+        if (empty($provider) || !$provider instanceof ProviderInterface || empty($provider->getList($this->client))) {
             return [$this->client->getHost(), $this->client->getPort()];
         }
 
-        $list = $provider->getList();
+        $list = $provider->getList($this->client);
         if (!is_array($list)) {
             throw new RpcClientException(
                 sprintf('Provider(%s) return format is error!', JsonHelper::encode($list))

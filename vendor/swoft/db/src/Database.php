@@ -4,8 +4,6 @@
 namespace Swoft\Db;
 
 use function bean;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Connection\MySqlConnection;
 use Swoft\Db\Connector\MySqlConnector;
@@ -13,7 +11,7 @@ use Swoft\Db\Contract\ConnectorInterface;
 use Swoft\Db\Contract\DbSelectorInterface;
 use Swoft\Db\Exception\DbException;
 use Swoft\Exception\SessionException;
-use Swoft\Server\Swoole\ConnectInterface;
+use Swoft\Server\Contract\ConnectInterface;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
@@ -121,9 +119,7 @@ class Database
      * @param Pool $pool
      *
      * @return Connection
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function createConnection(Pool $pool): Connection
     {
@@ -206,9 +202,7 @@ class Database
      * Get connector
      *
      * @return ConnectorInterface
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function getConnector(): ConnectorInterface
     {
@@ -227,9 +221,7 @@ class Database
      * Get connection
      *
      * @return Connection
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function getConnection(): Connection
     {
@@ -273,8 +265,6 @@ class Database
 
     /**
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function defaultConnectors(): array
     {
@@ -285,8 +275,6 @@ class Database
 
     /**
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function defaultConnections(): array
     {

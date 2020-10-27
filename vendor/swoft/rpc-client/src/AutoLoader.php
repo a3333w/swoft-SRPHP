@@ -4,7 +4,10 @@
 namespace Swoft\Rpc\Client;
 
 
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Packet;
+use Swoft\Rpc\Packet\SwoftPacketV1;
 use Swoft\SwoftComponent;
 
 /**
@@ -38,8 +41,16 @@ class AutoLoader extends SwoftComponent
     public function beans(): array
     {
         return [
-            'rpcClientPacket' => [
+            'rpcClientPacket'        => [
                 'class' => Packet::class
+            ],
+            'rpcClientSwoftPacketV1' => [
+                'class'   => Packet::class,
+                'packets' => [
+                    'swoftV1' => bean(SwoftPacketV1::class)
+                ],
+                'type'    => 'swoftV1',
+                'packageEof' => "\r\n",
             ]
         ];
     }

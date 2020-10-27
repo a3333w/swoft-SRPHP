@@ -12,12 +12,16 @@ use ReflectionException;
 use Swoft\Aop\Proxy;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Concern\HasAttributes;
+use Swoft\Db\Concern\HasEvent;
+use Swoft\Db\Concern\HasTimestamps;
 use Swoft\Db\Concern\HidesAttributes;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\DB;
+use Swoft\Db\DbEvent;
 use Swoft\Db\EntityRegister;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
+use Swoft\Db\Query\Expression;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Contract\Jsonable;
 use Swoft\Stdlib\Helper\JsonHelper;
@@ -34,6 +38,7 @@ use function bean;
  * @method static Builder whereKey($id)
  * @method static Builder whereKeyNot($id)
  * @method static Builder where($column, $operator = null, $value = null, string $boolean = 'and')
+ * @method static Builder whereProp($column, $operator = null, $value = null, string $boolean = 'and')
  * @method static Builder orWhere($column, $operator = null, $value = null)
  * @method static Builder latest(string $column = null)
  * @method static Builder oldest(string $column = null)
@@ -44,9 +49,15 @@ use function bean;
  * @method static Builder findOrFail($id, array $columns = ['*'])
  * @method static Builder findOrNew($id, array $columns = ['*'])
  * @method static Builder firstOrNew(array $attributes, array $values = [])
- * @method static Builder firstOrCreate(array $attributes, array $values = [])
- * @method static static updateOrCreate(array $attributes, array $values = [])
- * @method static bool updateOrInsert(array $attributes, array $values = [])
+ * @method static static firstOrCreate(array $attributes, array $values = [])
+ * @method static static updateOrCreate(array $attributes, array $values = [], array $counters = [])
+ * @method static bool updateOrInsert(array $attributes, array $values = [], array $counters = [])
+ * @method static int batchUpdateByIds(array $values)
+ * @method static int updateAllCounters(array $attributes, array $counters, array $extra = [])
+ * @method static int updateAllCountersAdoptPrimary(array $attributes, array $counters, array $extra = [])
+ * @method static int updateAllCountersById(array $ids, array $counters, array $extra = [])
+ * @method static bool modifyById(int $id, array $values)
+ * @method static bool modify(array $attributes, array $values)
  * @method static Builder firstOrFail(array $columns = ['*'])
  * @method static Builder firstOr(array $columns = ['*'], Closure $callback = null)
  * @method static mixed value(string $column)
@@ -54,9 +65,9 @@ use function bean;
  * @method static static[] getModels($columns = ['*'])
  * @method static Generator cursor()
  * @method static bool chunkById(int $count, callable $callback, string $column = null, string $alias = null)
- * @method static void enforceOrderBy()
+ * @method static void  enforceOrderBy()
  * @method static Collection pluck(string $column, string $key = null)
- * @method static static create(array $attributes = [])
+ * @method static static  create(array $attributes = [])
  * @method static Builder select(string ...$columns)
  * @method static Builder selectSub(Closure|QueryBuilder|string $query, string $as)
  * @method static Builder selectRaw(string $expression, array $bindings = [])
@@ -142,22 +153,41 @@ use function bean;
  * @method static bool    insert(array $values)
  * @method static Builder limit(int $value)
  * @method static Builder forPage(int $page, int $perPage = 15)
+ * @method static Builder forPageAfterId(int $perPage = 15, int $lastId = null, string $column = null)
+ * @method static Builder forPageBeforeId(int $perPage = 15, int $lastId = null, string $column = null)
  * @method static array   paginate(int $page = 1, int $perPage = 15, array $columns = ['*'])
- * @method static array getBindings()
- * @method static string toSql()
- * @method static bool exists()
- * @method static bool doesntExist()
- * @method static int count(string $columns = '*')
+ * @method static array   paginateById(int $perPage = 15, int $lastId = null, array $columns = ['*'], bool $useAfter = false, string $primary = null)
+ * @method static array   getBindings()
+ * @method static string  toSql()
+ * @method static bool    exists()
+ * @method static bool    doesntExist()
+ * @method static int     count(string $columns = '*')
  * @method static float|int min(string $column)
  * @method static float|int max(string $column)
  * @method static float|int sum(string $column)
  * @method static float|int avg($column)
  * @method static float|int average(string $column)
  * @method static void truncate()
+ * @method static Builder useWritePdo()
+ * @method static int getCountForPagination(array $columns = ['*'])
  */
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
-    use HidesAttributes, HasAttributes;
+    use HidesAttributes, HasAttributes, HasTimestamps, HasEvent;
+
+    /**
+     * The name of the "created at" column.
+     *
+     * @var string
+     */
+    protected const CREATED_AT = 'created_at';
+
+    /**
+     * The name of the "updated at" column.
+     *
+     * @var string
+     */
+    protected const UPDATED_AT = 'updated_at';
 
     /**
      * Indicates if the model exists.
@@ -279,9 +309,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array $columns
      *
      * @return Collection
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public static function all(array $columns = ['*']): Collection
     {
@@ -296,9 +324,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array     $extra
      *
      * @return mixed
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function increment(string $column, $amount = 1, array $extra = [])
     {
@@ -313,9 +339,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array     $extra
      *
      * @return mixed
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function decrement(string $column, $amount = 1, array $extra = [])
     {
@@ -331,9 +355,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param string    $method
      *
      * @return mixed
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function incrementOrDecrement(string $column, $amount, array $extra, string $method)
     {
@@ -359,15 +381,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param string    $method
      *
      * @return void
-     */
-    /**
-     *
-     *
-     * @param string $column
-     * @param        $amount
-     * @param        $extra
-     * @param        $method
-     *
      * @throws DbException
      */
     protected function incrementOrDecrementAttributeValue(string $column, $amount, $extra, $method)
@@ -400,6 +413,63 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     }
 
     /**
+     * Update counters by primary key
+     *
+     * @param array $counters
+     * @param array $extra
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateCounters(array $counters, array $extra = []): int
+    {
+        if (!$this->swoftExists) {
+            return 0;
+        }
+
+        $query = $this->newModelQuery();
+        $key   = $this->getKeyName();
+        $id    = $this->getAttributeValue($key);
+
+        $result = $query->updateAllCountersById((array)$id, $counters, $extra);
+
+        if ($result > 0) {
+            $this->syncCounter($counters, $extra);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Sync model data
+     *
+     * @param array $counters
+     * @param array $extra
+     *
+     * @return Model
+     * @throws DbException
+     */
+    public function syncCounter(array $counters, array $extra = []): self
+    {
+        // Sync model data
+        foreach ($counters as $column => $value) {
+            if (!$value instanceof Expression) {
+                $this->setModelAttribute($column, $this->getAttributeValue($column) + $value);
+                $this->syncOriginalAttribute($column);
+            }
+        }
+
+        if ($extra) {
+            // Sync extra
+            $this->fill($extra);
+        }
+
+        return $this;
+    }
+
+    /**
      * Save the model to the database.
      *
      * @return bool
@@ -414,8 +484,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // If the "saving" event returns false we'll bail out of the save and return
         // false, indicating that the save failed. This provides a chance for any
         // listeners to cancel save operations if validations fail or whatever.
-
-        // fire saving
+        if ($this->fireEvent(DbEvent::MODEL_SAVING) === false) {
+            return false;
+        }
 
         // If the model already exists in the database we can just update our record
         // that is already in this database using the current IDs in this "where"
@@ -465,7 +536,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     protected function finishSave()
     {
-        // fire saved
+        $this->fireEvent(DbEvent::MODEL_SAVED);
 
         $this->syncOriginal();
     }
@@ -482,7 +553,12 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     protected function performUpdate(Builder $query)
     {
-        // fire updating
+        // If the updating event returns false, we will cancel the update operation so
+        // developers can hook Validation systems into their models and cancel this
+        // operation if the model does not pass validation. Otherwise, we update.
+        if ($this->fireEvent(DbEvent::MODEL_UPDATING) === false) {
+            return false;
+        }
 
         // Once we have run the update operation, we will fire the "updated" event for
         // this model instance. This will allow developers to hook into these after
@@ -494,7 +570,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
             $this->syncChanges();
 
-            // fire updated
+            $this->fireEvent(DbEvent::MODEL_UPDATED);
         }
 
         return true;
@@ -506,9 +582,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param Builder $query
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function setKeysForSaveQuery(Builder $query)
     {
@@ -541,12 +615,14 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     protected function performInsert(Builder $query)
     {
-        // fire creating
+        if ($this->fireEvent(DbEvent::MODEL_CREATING) === false) {
+            return false;
+        }
 
         // If the model has an incrementing key, we can use the "insertGetId" method on
         // the query builder, which will give us back the final inserted ID for this
         // table from the database. Not all tables have to be incrementing though.
-        $attributes = $this->getModelAttributes();
+        $attributes = $this->getArrayableAttributes();
 
         if ($this->getIncrementing()) {
             $this->insertAndSetId($query, $attributes);
@@ -568,7 +644,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // during the event. This will allow them to do so and run an update here.
         $this->swoftExists = true;
 
-        // fire created
+        $this->fireEvent(DbEvent::MODEL_CREATED);
+
         return true;
     }
 
@@ -612,15 +689,16 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             return false;
         }
 
-        // fire deleting
+        if ($this->fireEvent(DbEvent::MODEL_DELETING) === false) {
+            return false;
+        }
 
         $this->performDeleteOnModel();
 
         // Once the model has been deleted, we will fire off the deleted event so that
         // the developers may hook into post-delete operations. We will then return
         // a boolean true as the delete is presumably successful on the database.
-
-        // fire deleted
+        $this->fireEvent(DbEvent::MODEL_DELETED);
 
         return true;
     }
@@ -658,9 +736,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Begin querying the model.
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public static function query()
     {
@@ -671,9 +747,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Get a new query builder for the model's table.
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function newQuery()
     {
@@ -684,9 +758,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Get a new query builder that doesn't have any global scopes or eager loading.
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function newModelQuery()
     {
@@ -709,9 +781,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Get a new query builder instance for the connection.
      *
      * @return QueryBuilder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function newBaseQueryBuilder()
     {
@@ -725,8 +795,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array $models
      *
      * @return Collection
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function newCollection(array $models = [])
     {
@@ -772,9 +840,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Reload a fresh model instance from the database.
      *
      * @return null|$this|object|Builder|Model
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function fresh()
     {
@@ -791,9 +857,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Reload the current model instance with fresh attributes from the database.
      *
      * @return $this
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function refresh()
     {
@@ -996,9 +1060,22 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * @return string
      */
-    protected function getClassName(): string
+    public function getClassName(): string
     {
         return Proxy::getClassName(static::class);
+    }
+
+    /**
+     * Get entity table name
+     *
+     * @return string
+     * @throws DbException
+     */
+    public static function tableName()
+    {
+        $className = Proxy::getClassName(static::class);
+
+        return EntityRegister::getTable($className);
     }
 
     /**
@@ -1008,9 +1085,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array  $parameters
      *
      * @return mixed
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function __call($method, $parameters)
     {
@@ -1032,7 +1107,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public static function __callStatic($method, $parameters)
     {
-        return (new static)->$method(...$parameters);
+        return (new static())->$method(...$parameters);
     }
 
     /**

@@ -2,12 +2,7 @@
 
 namespace Swoft\Http\Server\Command;
 
-use function bean;
-use function input;
-use function output;
-use ReflectionException;
 use Swoft;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
@@ -15,14 +10,16 @@ use Swoft\Console\Helper\Show;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
-use Swoft\Server\ServerInterface;
+use function bean;
+use function input;
+use function output;
 
 /**
- * Provide some commands to manage the swoft HTTP Server
+ * Provide some commands to manage the swoft HTTP server
  *
  * @since 2.0
  *
- * @Command("http", alias="httpserver,httpServer,http-server", coroutine=false)
+ * @Command("http", alias="httpsrv", coroutine=false)
  * @example
  *  {fullCmd}:start     Start the http server
  *  {fullCmd}:stop      Stop the http server
@@ -35,13 +32,11 @@ class HttpServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background", type="bool", default="false")
      *
-     * @example
-     *  {fullCommand}
-     *  {fullCommand} -d
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws ServerException
+     * @example
+     *   {fullCommand}
+     *   {fullCommand} -d
+     *
      */
     public function start(): void
     {
@@ -77,21 +72,12 @@ class HttpServerCommand extends BaseServerCommand
             ],
         ];
 
-        // Listener
-        $listeners = $server->getListener();
-        foreach ($listeners as $name => $listener) {
-            if (!$listener instanceof ServerInterface) {
-                continue;
-            }
-            $panel[$name] = [
-                'listen' => sprintf('%s:%s', $listener->getHost(), $listener->getPort()),
-                'type'   => $listener->getTypeName()
-            ];
-        }
+        // Port Listeners
+        $panel = $this->appendPortsToPanel($server, $panel);
 
         Show::panel($panel);
 
-        output()->writef('<success>HTTP server start success !</success>');
+        output()->writeln('<success>HTTP server start success !</success>');
 
         // Start the server
         $server->start();
@@ -102,9 +88,6 @@ class HttpServerCommand extends BaseServerCommand
      *
      * @CommandMapping(usage="{fullCommand} [-t]")
      * @CommandOption("t", desc="Only to reload task processes, default to reload worker and task")
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function reload(): void
     {
@@ -135,9 +118,6 @@ class HttpServerCommand extends BaseServerCommand
      * Stop the currently running server
      *
      * @CommandMapping()
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function stop(): void
     {
@@ -162,8 +142,6 @@ class HttpServerCommand extends BaseServerCommand
      * @example
      *  {fullCommand}
      *  {fullCommand} -d
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function restart(): void
     {
@@ -171,26 +149,30 @@ class HttpServerCommand extends BaseServerCommand
 
         // Check if it has started
         if ($server->isRunning()) {
-            $server->stop();
+            $success = $server->stop();
+
+            if (!$success) {
+                output()->error('Stop the old server failed!');
+                return;
+            }
         }
 
-        output()->writef('<success>Server HTTP reload success !</success>');
-        $server->restart();
+        output()->writef('<success>Server HTTP restart success !</success>');
+        $server->startWithDaemonize();
     }
 
     /**
      * @return HttpServer
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     private function createServer(): HttpServer
     {
-        // check env
-        // EnvHelper::check();
-        $script = input()->getScript();
+        $script  = input()->getScript();
+        $command = $this->getFullCommand();
+
         /** @var HttpServer $server */
         $server = bean('httpServer');
         $server->setScriptFile(Swoft::app()->getPath($script));
+        $server->setFullCommand($command);
 
         return $server;
     }

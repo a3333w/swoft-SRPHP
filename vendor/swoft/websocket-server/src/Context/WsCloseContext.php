@@ -2,9 +2,8 @@
 
 namespace Swoft\WebSocket\Server\Context;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
 
 /**
@@ -15,8 +14,6 @@ use Swoft\Context\AbstractContext;
  */
 class WsCloseContext extends AbstractContext
 {
-    use PrototypeTrait;
-
     /**
      * @var int
      */
@@ -25,24 +22,22 @@ class WsCloseContext extends AbstractContext
     /**
      * @var int
      */
-    private $reactorId;
+    private $rid;
 
     /**
      * @param int $fd
      * @param int $reactorId
      *
      * @return WsCloseContext
-     * @throws ContainerException
-     * @throws \ReflectionException
      */
     public static function new(int $fd, int $reactorId): self
     {
         /** @var self $ctx */
-        $ctx = self::__instance();
+        $ctx = Swoft::getBean(self::class);
 
         // Initial properties
-        $ctx->fd        = $fd;
-        $ctx->reactorId = $reactorId;
+        $ctx->fd  = $fd;
+        $ctx->rid = $reactorId;
 
         return $ctx;
     }
@@ -58,8 +53,16 @@ class WsCloseContext extends AbstractContext
     /**
      * @return int
      */
+    public function getRid(): int
+    {
+        return $this->rid;
+    }
+
+    /**
+     * @return int
+     */
     public function getReactorId(): int
     {
-        return $this->reactorId;
+        return $this->rid;
     }
 }

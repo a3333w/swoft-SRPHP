@@ -4,8 +4,6 @@
 namespace Swoft\Db\Schema;
 
 use Closure;
-use Illuminate\Database\Schema\ColumnDefinition;
-use Illuminate\Database\Schema\ForeignKeyDefinition;
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
@@ -13,8 +11,8 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Schema\Grammars\Grammar;
-use Swoft\Db\Eloquent\Collection;
 use Swoft\Stdlib\Fluent;
+use Swoft\Stdlib\Collection;
 
 /**
  * Class Builder
@@ -94,8 +92,6 @@ class Blueprint
      * @param string       $prefix
      *
      * @return Blueprint
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new($table, Closure $callback = null, $prefix = ''): self
     {
@@ -113,17 +109,16 @@ class Blueprint
     /**
      * Execute the blueprint against the database.
      *
-     * @param Connection $connection
-     * @param Grammar    $grammar
+     * @param Builder $builder
      *
      * @throws ContainerException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
-    public function build(Connection $connection, Grammar $grammar)
+    public function build(Builder $builder)
     {
-        foreach ($this->toSql($connection, $grammar) as $statement) {
-            $connection->statement($statement);
+        foreach ($this->toSql($builder->getConnection(), $builder->grammar) as $statement) {
+            $builder->getConnection()->unprepared($statement);
         }
     }
 
@@ -135,8 +130,6 @@ class Blueprint
      * @param Grammar    $grammar
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function toSql(Connection $connection, Grammar $grammar)
     {
@@ -153,7 +146,7 @@ class Blueprint
                 }
             }
         }
-
+        $connection->release();
         return $statements;
     }
 
@@ -163,12 +156,10 @@ class Blueprint
      * @param array $names
      *
      * @return Collection
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function commandsNamed(array $names)
     {
-        return Collection::new($this->commands)->filter(function ($command) use ($names) {
+        return Collection::make($this->commands)->filter(function ($command) use ($names) {
             return in_array($command->name, $names);
         });
     }
@@ -179,8 +170,6 @@ class Blueprint
      * @param Grammar $grammar
      *
      * @return void
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function addImpliedCommands(Grammar $grammar)
     {
@@ -280,12 +269,10 @@ class Blueprint
      * Determine if the blueprint has a create command.
      *
      * @return bool
-     * @throws ContainerException
-     * @throws ReflectionException
      */
-    protected function creating()
+    public function creating()
     {
-        return Collection::new($this->commands)->contains(function (Fluent $command) {
+        return Collection::make($this->commands)->contains(function (Fluent $command) {
             return $command['name'] === 'create';
         });
     }
@@ -293,13 +280,13 @@ class Blueprint
     /**
      * Indicate that the table needs to be created.
      *
-     * @param bool $ifNotExist
+     * @param bool $ifNotExists
      *
      * @return Fluent
      */
-    public function create(bool $ifNotExist)
+    public function create(bool $ifNotExists)
     {
-        return $this->addCommand('create', compact('ifNotExist'));
+        return $this->addCommand('create', compact('ifNotExists'));
     }
 
     /**
@@ -462,6 +449,32 @@ class Blueprint
     public function dropTimestampsTz()
     {
         $this->dropTimestamps();
+    }
+
+    /**
+     * Add a "deleted at" timestamp for the table.
+     *
+     * @param string $column
+     * @param int    $precision
+     *
+     * @return ColumnDefinition
+     */
+    public function softDeletes($column = 'deleted_at', $precision = 0)
+    {
+        return $this->timestamp($column, $precision)->nullable();
+    }
+
+    /**
+     * Add a "deleted at" timestampTz for the table.
+     *
+     * @param string $column
+     * @param int    $precision
+     *
+     * @return ColumnDefinition
+     */
+    public function softDeletesTz($column = 'deleted_at', $precision = 0)
+    {
+        return $this->timestampTz($column, $precision)->nullable();
     }
 
     /**
@@ -737,12 +750,13 @@ class Blueprint
      * @param string $column
      * @param bool   $autoIncrement
      * @param bool   $unsigned
+     * @param int    $length
      *
      * @return ColumnDefinition
      */
-    public function integer($column, $autoIncrement = false, $unsigned = false)
+    public function integer(string $column, bool $autoIncrement = false, bool $unsigned = false, int $length = null)
     {
-        return $this->addColumn('integer', $column, compact('autoIncrement', 'unsigned'));
+        return $this->addColumn('integer', $column, compact('autoIncrement', 'unsigned', 'length'));
     }
 
     /**
@@ -751,12 +765,13 @@ class Blueprint
      * @param string $column
      * @param bool   $autoIncrement
      * @param bool   $unsigned
+     * @param int    $length
      *
      * @return ColumnDefinition
      */
-    public function tinyInteger($column, $autoIncrement = false, $unsigned = false)
+    public function tinyInteger(string $column, bool $autoIncrement = false, bool $unsigned = false, int $length = null)
     {
-        return $this->addColumn('tinyInteger', $column, compact('autoIncrement', 'unsigned'));
+        return $this->addColumn('tinyInteger', $column, compact('autoIncrement', 'unsigned', 'length'));
     }
 
     /**
@@ -765,12 +780,13 @@ class Blueprint
      * @param string $column
      * @param bool   $autoIncrement
      * @param bool   $unsigned
+     * @param int    $length
      *
      * @return ColumnDefinition
      */
-    public function smallInteger($column, $autoIncrement = false, $unsigned = false)
+    public function smallInteger(string $column, bool $autoIncrement = false, bool $unsigned = false, int $length = null)
     {
-        return $this->addColumn('smallInteger', $column, compact('autoIncrement', 'unsigned'));
+        return $this->addColumn('smallInteger', $column, compact('autoIncrement', 'unsigned', 'length'));
     }
 
     /**
@@ -779,12 +795,13 @@ class Blueprint
      * @param string $column
      * @param bool   $autoIncrement
      * @param bool   $unsigned
+     * @param int    $length
      *
      * @return ColumnDefinition
      */
-    public function mediumInteger($column, $autoIncrement = false, $unsigned = false)
+    public function mediumInteger(string $column, bool $autoIncrement = false, bool $unsigned = false, int $length = null)
     {
-        return $this->addColumn('mediumInteger', $column, compact('autoIncrement', 'unsigned'));
+        return $this->addColumn('mediumInteger', $column, compact('autoIncrement', 'unsigned', 'length'));
     }
 
     /**
@@ -793,12 +810,13 @@ class Blueprint
      * @param string $column
      * @param bool   $autoIncrement
      * @param bool   $unsigned
+     * @param int    $length
      *
      * @return ColumnDefinition
      */
-    public function bigInteger($column, $autoIncrement = false, $unsigned = false)
+    public function bigInteger(string $column, bool $autoIncrement = false, bool $unsigned = false, int $length = null)
     {
-        return $this->addColumn('bigInteger', $column, compact('autoIncrement', 'unsigned'));
+        return $this->addColumn('bigInteger', $column, compact('autoIncrement', 'unsigned', 'length'));
     }
 
     /**

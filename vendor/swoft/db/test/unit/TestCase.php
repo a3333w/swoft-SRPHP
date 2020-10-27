@@ -3,14 +3,12 @@
 
 namespace SwoftTest\Db\Unit;
 
-
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
 use Swoft\Stdlib\Helper\Str;
 use SwoftTest\Db\Testing\Entity\Count;
 use SwoftTest\Db\Testing\Entity\User;
-use Swoole\Event;
 
 /**
  * Class TestCase
@@ -19,14 +17,6 @@ use Swoole\Event;
  */
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * Wait event
-     */
-    public function tearDown(): void
-    {
-        Event::wait();
-    }
-
     /**
      * @return int
      * @throws ContainerException
